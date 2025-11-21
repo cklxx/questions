@@ -7,6 +7,8 @@ ENV PORT=3000
 
 # Install dependencies
 COPY package.json package-lock.json tsconfig.json ./
+# Ensure postinstall scripts are available during bun install
+COPY scripts ./scripts
 RUN bun install
 
 # Copy source code and assets
