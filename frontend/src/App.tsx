@@ -178,6 +178,19 @@ function App() {
     };
 
     useEffect(() => {
+        // Reset local state so lists/detail reload cleanly when switching language
+        setCategories([]);
+        setTemplates([]);
+        setSelectedCategory('');
+        setSelectedTemplateId('');
+        setTemplateDetail(null);
+        setValues({});
+        setRendered('');
+        setMissing([]);
+        setAiFilledKeys([]);
+    }, [language]);
+
+    useEffect(() => {
         api.getConfig().then(setAiConfig);
     }, []);
 
