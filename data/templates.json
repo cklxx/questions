@@ -6293,6 +6293,786 @@
           ]
         },
         {
+          "id": "NB_BILINGUAL_PROMPT_CARD",
+          "name": "Nano Banana 中英双语提示卡",
+          "short_description": "一次产出中文+英文的完整提示词与要点速览。",
+          "category_id": "text2image",
+          "prompt_template": "为 Nano Banana Pro 输出一张中英双语提示卡，用于快速生成 {{use_case}}。要求：1) 场景目标：用一句话描述本次要实现的效果（中文 + English）。2) 视觉元素：用 bullet 列出主体 {{subject_focus}}、必须包含 {{must_include}}、需要避免的 {{avoid_elements}}。3) 风格与画幅：指定 {{style}}、{{aspect_ratio}}，分别给出中英文表达。4) 双语完整 Prompt：先给中文 Prompt，再给英文 Prompt，两段都要包含光线、构图与文本排版要求（如需文字，注明 {{text_content}} 的语言与位置）。输出格式：Markdown，分成「中文 Prompt」/「English Prompt」/「要点速览」三节，条理清晰可直接复制。",
+          "placeholders": [
+            {
+              "key": "use_case",
+              "label": "使用场景",
+              "type": "string",
+              "required": true,
+              "hint": "本次要解决的需求",
+              "ai_fill": true
+            },
+            {
+              "key": "subject_focus",
+              "label": "主体聚焦",
+              "type": "string",
+              "required": true,
+              "hint": "主角或核心物件",
+              "default": "人物/产品/场景",
+              "ai_fill": true
+            },
+            {
+              "key": "must_include",
+              "label": "必须包含",
+              "type": "textarea",
+              "required": false,
+              "hint": "必备元素或道具",
+              "default": "关键道具、品牌 logo、环境细节",
+              "ai_fill": true
+            },
+            {
+              "key": "avoid_elements",
+              "label": "需要避免",
+              "type": "textarea",
+              "required": false,
+              "hint": "不要出现的内容",
+              "default": "多余水印、乱码文字、不相关角色",
+              "ai_fill": false
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "画面审美取向",
+              "enum_options": [
+                "写实摄影",
+                "现代扁平插画",
+                "电影感胶片",
+                "商业海报",
+                "信息图"
+              ],
+              "default": "写实摄影",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅比例",
+              "type": "enum",
+              "required": true,
+              "hint": "成片比例",
+              "enum_options": [
+                "1:1",
+                "16:9",
+                "9:16"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "text_content",
+              "label": "文字内容",
+              "type": "string",
+              "required": false,
+              "hint": "需要写进画面的文字",
+              "default": "标题与副标题，无乱码",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "ratio"
+            }
+          ],
+          "tags": [
+            "双语",
+            "提示词",
+            "Nano Banana"
+          ],
+          "example_inputs": [
+            {
+              "name": "教育信息图",
+              "placeholder_values": {
+                "use_case": "把光合作用讲给高中生",
+                "subject_focus": "植物、太阳光与气泡箭头",
+                "must_include": "CO2 → 进入叶片、O2 → 释放、能量流向",
+                "avoid_elements": "卡通表情、过度装饰字体",
+                "style": "信息图",
+                "aspect_ratio": "16:9",
+                "text_content": "中文与英文标签都需清晰可读"
+              },
+              "notes": "输出需中英文双份 prompt，方便复制"
+            }
+          ]
+        },
+        {
+          "id": "NB_GEOMETRY_VISUAL_SOLVE",
+          "name": "几何题可视化解题",
+          "short_description": "在题图上叠加辅助线、标注与简要解释。",
+          "category_id": "text2image",
+          "prompt_template": "在这道 {{problem_focus}} 的原图基础上，生成一张带有解题路径的新版图。动作：添加红色虚线辅助线显示 {{hidden_relations}}，用标记突出 {{highlight_shapes}}。注释：清晰标注 {{new_points_labels}}，并在右侧用简短文字说明每条辅助线的作用（{{annotation_style}}）。保持原题尺寸与比例，不要遮挡已有文字。",
+          "placeholders": [
+            {
+              "key": "problem_focus",
+              "label": "题目焦点",
+              "type": "string",
+              "required": true,
+              "hint": "几何题类型或考点",
+              "ai_fill": true
+            },
+            {
+              "key": "hidden_relations",
+              "label": "隐含关系",
+              "type": "textarea",
+              "required": true,
+              "hint": "需要显式画出的垂线/平行/角平分线等",
+              "ai_fill": true
+            },
+            {
+              "key": "highlight_shapes",
+              "label": "高亮形状",
+              "type": "textarea",
+              "required": true,
+              "hint": "关键三角形或角度",
+              "ai_fill": true
+            },
+            {
+              "key": "new_points_labels",
+              "label": "新点标注",
+              "type": "string",
+              "required": true,
+              "hint": "新辅助点的命名方式",
+              "default": "A1、B1 等字母序列",
+              "ai_fill": false
+            },
+            {
+              "key": "annotation_style",
+              "label": "标注语言",
+              "type": "string",
+              "required": false,
+              "hint": "标注文字的语言与格式",
+              "default": "简体中文，必要时附角度符号",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "annotation_style",
+              "label": "标注格式",
+              "type": "string",
+              "control_type": "structure"
+            }
+          ],
+          "tags": [
+            "教育",
+            "几何",
+            "解题可视化",
+            "叠加注释"
+          ],
+          "example_inputs": [
+            {
+              "name": "等腰三角形辅助线",
+              "placeholder_values": {
+                "problem_focus": "等腰三角形高线与腰中点关系",
+                "hidden_relations": "从顶点向底边作垂线，连接底边中点并标注平行关系",
+                "highlight_shapes": "两个全等直角三角形与顶角的角平分",
+                "new_points_labels": "D、E、F 依次从左到右",
+                "annotation_style": "中文角度标注，右侧 3 行概念说明"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_BUSINESS_HEADSHOT",
+          "name": "AI 商务形象照",
+          "short_description": "保留人脸一致性，生成专业商务头像。",
+          "category_id": "text2image",
+          "prompt_template": "保持上传人物五官完全一致，生成一张 {{orientation}} 构图的 {{outfit_style}} 商务形象照。背景设置为 {{background_style}}，光线使用 {{lighting_setup}}，表情 {{expression}}。使用 {{camera_setup}} 机位呈现真实皮肤纹理与自然眼神高光，衣料有细腻质感，整体写实且干净。",
+          "placeholders": [
+            {
+              "key": "orientation",
+              "label": "构图",
+              "type": "enum",
+              "required": true,
+              "enum_options": [
+                "胸像",
+                "半身",
+                "全身"
+              ],
+              "default": "胸像",
+              "ai_fill": true
+            },
+            {
+              "key": "outfit_style",
+              "label": "服装风格",
+              "type": "string",
+              "required": true,
+              "hint": "西装/衬衫等",
+              "ai_fill": true
+            },
+            {
+              "key": "background_style",
+              "label": "背景",
+              "type": "string",
+              "required": true,
+              "hint": "纯色/影棚渐变/办公",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_setup",
+              "label": "光线",
+              "type": "string",
+              "required": true,
+              "hint": "三点布光/柔光/轮廓光",
+              "ai_fill": true
+            },
+            {
+              "key": "expression",
+              "label": "表情",
+              "type": "string",
+              "required": false,
+              "default": "自信且友好的微笑",
+              "ai_fill": false
+            },
+            {
+              "key": "camera_setup",
+              "label": "机位镜头",
+              "type": "string",
+              "required": false,
+              "default": "Sony A7III, 85mm f/1.4 人像镜头",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "outfit_style",
+              "label": "服装",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "background_style",
+              "label": "背景",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "人像",
+            "商务照",
+            "人脸一致性"
+          ],
+          "example_inputs": [
+            {
+              "name": "工牌/领英通用",
+              "placeholder_values": {
+                "orientation": "胸像",
+                "outfit_style": "藏蓝色西装外套 + 白衬衫",
+                "background_style": "暗灰渐变影棚背景，边缘轻微晕影",
+                "lighting_setup": "经典三点布光，右侧补光与后方轮廓光",
+                "expression": "自然微笑，目光坚定",
+                "camera_setup": "85mm f/1.4 大光圈，虚化背景"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_VIRTUAL_MODEL_TRYON",
+          "name": "虚拟模特试穿",
+          "short_description": "用服装平铺图与模特氛围图生成逼真上身照。",
+          "category_id": "text2image",
+          "prompt_template": "使用图 1 的服装和图 2 的模特，生成模特穿着该服装的全身或半身照。服装需自然垂坠、贴合体态，保留 {{fabric_details}} 与原有纹理。场景光线匹配 {{ambient_light}}，背景为 {{background_setting}}，模特姿态遵循 {{model_pose}}。整体为干净的电商 lookbook 风格。",
+          "placeholders": [
+            {
+              "key": "fabric_details",
+              "label": "面料细节",
+              "type": "string",
+              "required": true,
+              "hint": "质地/颜色/Logo",
+              "ai_fill": true
+            },
+            {
+              "key": "model_pose",
+              "label": "模特姿态",
+              "type": "string",
+              "required": true,
+              "hint": "站姿/回头/行走等",
+              "ai_fill": true
+            },
+            {
+              "key": "ambient_light",
+              "label": "光线",
+              "type": "string",
+              "required": true,
+              "hint": "棚拍柔光/街拍自然光",
+              "ai_fill": true
+            },
+            {
+              "key": "background_setting",
+              "label": "背景",
+              "type": "string",
+              "required": true,
+              "hint": "干净背景/街景/工作室",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "background_setting",
+              "label": "背景",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "ambient_light",
+              "label": "光线",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "电商",
+            "模特试穿",
+            "人像"
+          ],
+          "example_inputs": [
+            {
+              "name": "夏季 T 恤上身图",
+              "placeholder_values": {
+                "fabric_details": "白色纯棉 T 恤，胸前有小 logo",
+                "model_pose": "双手插兜的直立站姿，微笑看向镜头",
+                "ambient_light": "自然窗光，柔和阴影",
+                "background_setting": "简洁浅灰棚拍背景"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_WHITE_BG_PRODUCT_SHOT",
+          "name": "纯白底电商商品图",
+          "short_description": "自动抠图去手去杂，生成专业白底主图。",
+          "category_id": "text2image",
+          "prompt_template": "识别上传照片中的主商品，去除手部或杂乱背景，生成高端电商白底主图。主体为 {{product_name}}，清晰保留质感与材质。背景为纯白，添加 {{shadow_style}} 接触阴影。光线采用 {{lighting_style}}，修正 {{defects_to_fix}}，整体锐利、色彩准确。",
+          "placeholders": [
+            {
+              "key": "product_name",
+              "label": "商品名称",
+              "type": "string",
+              "required": true,
+              "hint": "主商品品类",
+              "ai_fill": true
+            },
+            {
+              "key": "defects_to_fix",
+              "label": "需修正缺陷",
+              "type": "textarea",
+              "required": true,
+              "hint": "手指/污渍/畸变",
+              "ai_fill": true
+            },
+            {
+              "key": "shadow_style",
+              "label": "阴影样式",
+              "type": "string",
+              "required": false,
+              "default": "轻微自然接触阴影",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting_style",
+              "label": "光线风格",
+              "type": "string",
+              "required": false,
+              "default": "柔和商业棚拍光，均匀无高光爆点",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "shadow_style",
+              "label": "阴影",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "电商",
+            "抠图",
+            "白底"
+          ],
+          "example_inputs": [
+            {
+              "name": "纯白主图",
+              "placeholder_values": {
+                "product_name": "不锈钢保温杯",
+                "defects_to_fix": "移除抓握的手指，修正杯身反光与变形",
+                "shadow_style": "杯底一圈淡淡的椭圆阴影",
+                "lighting_style": "柔光箱打亮，质感清晰"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_HANDDRAWN_FLOWCHART",
+          "name": "手绘流程图美化",
+          "short_description": "白板/草图一键变为麦肯锡风商务流程图。",
+          "category_id": "text2image",
+          "prompt_template": "将手绘流程草图转为专业商务流程图。使用 {{color_palette}} 配色，所有节点对齐严格网格，连线均为直角箭头。将 {{shape_labels}} 转录为易读的无衬线体，并保持 {{brand_font}} 字体风格。背景纯白，整体极简，突出 {{business_goal}} 逻辑。",
+          "placeholders": [
+            {
+              "key": "business_goal",
+              "label": "业务主题",
+              "type": "string",
+              "required": true,
+              "hint": "流程图要表达的目标",
+              "ai_fill": true
+            },
+            {
+              "key": "shape_labels",
+              "label": "节点文字",
+              "type": "textarea",
+              "required": true,
+              "hint": "方框/菱形的文字内容",
+              "ai_fill": true
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "default": "蓝灰高级配色，留白充足",
+              "ai_fill": false
+            },
+            {
+              "key": "brand_font",
+              "label": "字体风格",
+              "type": "string",
+              "required": false,
+              "default": "粗体无衬线体（如 Arial/Roboto）",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "流程图",
+            "职场",
+            "矢量"
+          ],
+          "example_inputs": [
+            {
+              "name": "项目立项流程",
+              "placeholder_values": {
+                "business_goal": "项目立项审批流程",
+                "shape_labels": "需求收集 → 方案评审 → 成本核算 → 领导审批 → 启动会",
+                "color_palette": "深蓝主色 + 浅灰背景框",
+                "brand_font": "Roboto 粗体"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_UI_WIREFRAME_TO_HIFI",
+          "name": "线框到高保真移动界面",
+          "short_description": "草稿线框自动变为现代设计体系的高清 UI。",
+          "category_id": "text2image",
+          "prompt_template": "将上传的线框草图转换为高保真移动端界面。设计体系采用 {{design_system}}，主色为 {{primary_color}}，组件圆角、阴影与留白符合现代规范。保留线框中的 {{primary_action}} 位置与层级，图像区域替换为高质量占位图，文案区域填充易读排版。将成品放入 {{device_frame}} 样机，整体清晰可上线演示。",
+          "placeholders": [
+            {
+              "key": "design_system",
+              "label": "设计体系",
+              "type": "string",
+              "required": true,
+              "hint": "如 iOS / Material 3",
+              "ai_fill": true
+            },
+            {
+              "key": "primary_color",
+              "label": "主色",
+              "type": "string",
+              "required": true,
+              "hint": "界面主色调",
+              "ai_fill": true
+            },
+            {
+              "key": "primary_action",
+              "label": "主要操作",
+              "type": "string",
+              "required": true,
+              "hint": "主按钮/CTA 的内容与位置",
+              "ai_fill": true
+            },
+            {
+              "key": "device_frame",
+              "label": "设备外框",
+              "type": "string",
+              "required": false,
+              "default": "iPhone 16 真实样机框",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "design_system",
+              "label": "体系",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "primary_color",
+              "label": "主色",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "UI",
+            "高保真",
+            "移动端"
+          ],
+          "example_inputs": [
+            {
+              "name": "咖啡订购 App",
+              "placeholder_values": {
+                "design_system": "Material Design 3",
+                "primary_color": "活力橙 #F36B2D",
+                "primary_action": "底部大按钮“下单”",
+                "device_frame": "带状态栏的 iPhone 样机"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_SMART_OUTPAINT_169",
+          "name": "智能扩图 16:9",
+          "short_description": "将窄图扩展为指定比例，补全环境与缺失物体。",
+          "category_id": "text2image",
+          "prompt_template": "将图片扩展到 {{target_ratio}} 画幅，主要向 {{expansion_sides}} 延展。依据 {{environment_clues}} 无缝续画背景，并自然补全 {{important_elements}}，保持原主体不拉伸不变形。光线与纹理需与原图一致，避免 {{avoid_elements}}。",
+          "placeholders": [
+            {
+              "key": "target_ratio",
+              "label": "目标比例",
+              "type": "enum",
+              "required": true,
+              "enum_options": [
+                "16:9",
+                "4:3",
+                "21:9"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "expansion_sides",
+              "label": "扩展方向",
+              "type": "string",
+              "required": true,
+              "hint": "左右/四周/上方",
+              "ai_fill": true
+            },
+            {
+              "key": "environment_clues",
+              "label": "环境线索",
+              "type": "textarea",
+              "required": true,
+              "hint": "天空/海面/建筑材质等",
+              "ai_fill": true
+            },
+            {
+              "key": "important_elements",
+              "label": "需补全元素",
+              "type": "textarea",
+              "required": false,
+              "default": "被裁掉的肩膀或树枝",
+              "ai_fill": false
+            },
+            {
+              "key": "avoid_elements",
+              "label": "避免内容",
+              "type": "textarea",
+              "required": false,
+              "default": "重复纹理、模糊拉伸",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "target_ratio",
+              "label": "比例",
+              "type": "enum",
+              "control_type": "ratio"
+            }
+          ],
+          "tags": [
+            "扩图",
+            "修图",
+            "壁纸"
+          ],
+          "example_inputs": [
+            {
+              "name": "旅行照横版壁纸",
+              "placeholder_values": {
+                "target_ratio": "16:9",
+                "expansion_sides": "左右两侧",
+                "environment_clues": "蓝天、群山和草地纹理",
+                "important_elements": "人物左肩和右手完整呈现",
+                "avoid_elements": "重复的山体块或模糊云朵"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_CONTEXT_CLEAN_REMOVAL",
+          "name": "智能清场去路人",
+          "short_description": "移除杂物/游客后用真实背景填补。",
+          "category_id": "text2image",
+          "prompt_template": "在保持主角 {{main_subject}} 完整的前提下，移除画面中的 {{remove_items}}，并用与场景一致的 {{background_description}} 填补。保持光线与景深与原图一致（{{lighting_notes}}），不留涂抹痕迹或模糊背景。",
+          "placeholders": [
+            {
+              "key": "main_subject",
+              "label": "主体",
+              "type": "string",
+              "required": true,
+              "hint": "人物或物体描述",
+              "ai_fill": true
+            },
+            {
+              "key": "remove_items",
+              "label": "移除对象",
+              "type": "textarea",
+              "required": true,
+              "hint": "需要去掉的路人/垃圾桶等",
+              "ai_fill": true
+            },
+            {
+              "key": "background_description",
+              "label": "背景填充",
+              "type": "textarea",
+              "required": true,
+              "hint": "替补的地面/墙面/景观细节",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_notes",
+              "label": "光线说明",
+              "type": "string",
+              "required": false,
+              "default": "午后自然光，浅景深",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "background_description",
+              "label": "背景",
+              "type": "textarea",
+              "control_type": "structure"
+            }
+          ],
+          "tags": [
+            "修图",
+            "去除",
+            "旅游"
+          ],
+          "example_inputs": [
+            {
+              "name": "景点包场效果",
+              "placeholder_values": {
+                "main_subject": "前景合影的两位游客",
+                "remove_items": "背景散落的游客和垃圾桶",
+                "background_description": "石板路和绿树延伸到远处，栏杆完整连续",
+                "lighting_notes": "阴天柔光，背景虚化"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_MENU_TRANSLATION_TEXTURE",
+          "name": "菜单翻译保质感",
+          "short_description": "翻译墙面/纸质菜单，保留原有质感与排版。",
+          "category_id": "text2image",
+          "prompt_template": "将 {{source_language}} 菜单翻译为 {{target_language}}，擦除原文字并填补背景纹理（{{texture_notes}}）。新文字沿用 {{font_style}}，保持油渍/磨损质感，保留价格与符号 {{currency_keep}}，排版自然贴合原位置。",
+          "placeholders": [
+            {
+              "key": "source_language",
+              "label": "源语言",
+              "type": "string",
+              "required": true,
+              "hint": "墙面原文语言",
+              "default": "中文",
+              "ai_fill": true
+            },
+            {
+              "key": "target_language",
+              "label": "目标语言",
+              "type": "string",
+              "required": true,
+              "hint": "需要翻译成的语言",
+              "default": "English",
+              "ai_fill": true
+            },
+            {
+              "key": "texture_notes",
+              "label": "质感说明",
+              "type": "textarea",
+              "required": false,
+              "default": "油腻墙面/泛黄纸张的纹理与污渍",
+              "ai_fill": false
+            },
+            {
+              "key": "font_style",
+              "label": "字体风格",
+              "type": "string",
+              "required": false,
+              "default": "手写风/粉笔字，与原图一致",
+              "ai_fill": false
+            },
+            {
+              "key": "currency_keep",
+              "label": "价格保留",
+              "type": "string",
+              "required": false,
+              "default": "保留 ¥ 和数字不改动",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "target_language",
+              "label": "目标语言",
+              "type": "string",
+              "control_type": "structure"
+            }
+          ],
+          "tags": [
+            "翻译",
+            "生活",
+            "质感"
+          ],
+          "example_inputs": [
+            {
+              "name": "苍蝇馆子墙面菜单",
+              "placeholder_values": {
+                "source_language": "中文",
+                "target_language": "English",
+                "texture_notes": "墙面有油烟和磨损，略微褪色",
+                "font_style": "粉笔手写体，略粗糙",
+                "currency_keep": "所有 ¥ 价格保持不变"
+              }
+            }
+          ]
+        },
+        {
           "id": "NB_BOOK_PAGE_CONTINUATION",
           "name": "书页续写（下一页排版 + 插图延续）",
           "short_description": "延续上一页内容与排版，生成下一页的文字与插图排版图。",
@@ -6398,6 +7178,637 @@
                 "text_style": "宋体",
                 "content_summary": "上一页讲小狐狸夜晚躺在草地上望着月亮，决定造一个小木梯去够到月光。",
                 "page_layout": "上图下文"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_CINEMATIC_FILM_PORTRAIT",
+          "name": "胶片感情绪人像",
+          "short_description": "保持人脸一致，生成电影质感的胶片风写真。",
+          "category_id": "text2image",
+          "prompt_template": "保持上传人物的五官完全一致，生成一张 {{setting}} 的电影质感肖像。风格：{{film_stock}} 胶片，光线来自 {{lighting_direction}}，营造 {{mood_keywords}} 的氛围。动作与表情：{{pose_action}}。细节：保留皮肤纹理、自然颗粒与景深虚化。",
+          "placeholders": [
+            {
+              "key": "setting",
+              "label": "场景位置",
+              "type": "string",
+              "required": true,
+              "hint": "如街头咖啡馆窗边、雨夜霓虹",
+              "ai_fill": true
+            },
+            {
+              "key": "film_stock",
+              "label": "胶片/风格",
+              "type": "string",
+              "required": true,
+              "hint": "如 Kodak Portra 400、电影感柔焦",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_direction",
+              "label": "光线方向",
+              "type": "string",
+              "required": true,
+              "hint": "侧光/逆光/窗外暖光",
+              "ai_fill": true
+            },
+            {
+              "key": "mood_keywords",
+              "label": "情绪关键词",
+              "type": "textarea",
+              "required": true,
+              "hint": "如怀旧、梦幻、故事感",
+              "ai_fill": true
+            },
+            {
+              "key": "pose_action",
+              "label": "动作与表情",
+              "type": "string",
+              "required": true,
+              "hint": "目光方向、手势、道具",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "film_stock",
+              "label": "胶片风格",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "人像",
+            "胶片",
+            "情绪",
+            "风格迁移"
+          ],
+          "example_inputs": [
+            {
+              "name": "日落咖啡馆写真",
+              "placeholder_values": {
+                "setting": "黄昏街头咖啡馆窗边",
+                "film_stock": "Kodak Portra 400",
+                "lighting_direction": "暖色侧逆光，窗外金色",
+                "mood_keywords": "温暖、怀旧、故事感",
+                "pose_action": "侧身望窗外，手持咖啡杯，微笑放松"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_FURNITURE_ROOM_COMPOSITE",
+          "name": "家具合成软装试错",
+          "short_description": "把家具合成到房间照片中，匹配透视与光影。",
+          "category_id": "text2image",
+          "prompt_template": "将 {{furniture_item}} 合成到客厅照片中，放置在 {{placement}}。要求：透视与尺寸匹配现有墙面与地面；光影依据 {{light_source}} 投射真实阴影；色温与材质与房间保持一致；除合成外保持场景原样。",
+          "placeholders": [
+            {
+              "key": "furniture_item",
+              "label": "家具名称",
+              "type": "string",
+              "required": true,
+              "hint": "如米色双人沙发、圆形茶几",
+              "ai_fill": true
+            },
+            {
+              "key": "placement",
+              "label": "摆放位置",
+              "type": "string",
+              "required": true,
+              "hint": "靠主背景墙/窗边/电视下方",
+              "ai_fill": true
+            },
+            {
+              "key": "light_source",
+              "label": "光源方向",
+              "type": "string",
+              "required": true,
+              "hint": "窗户/吊灯/落地灯位置",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "家装",
+            "合成",
+            "光影匹配"
+          ],
+          "example_inputs": [
+            {
+              "name": "米色沙发试摆",
+              "placeholder_values": {
+                "furniture_item": "米色三人沙发",
+                "placement": "客厅主背景墙中央",
+                "light_source": "左侧落地窗自然光"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_FLOORPLAN_DESIGN_BOARD",
+          "name": "户型图全屋设计板",
+          "short_description": "从户型图生成拼贴式全屋设计方案。",
+          "category_id": "text2image",
+          "prompt_template": "基于上传的户型图，生成一张拼贴设计板。布局：顶部一张主画面呈现 {{main_area}} 的宽角；底部左侧展示 {{bedroom_view}}，中间展示 {{study_view}}，右侧展示 {{topdown_view}}。统一风格：{{style_theme}}，光线 {{lighting}}，画幅保持高清。",
+          "placeholders": [
+            {
+              "key": "main_area",
+              "label": "主区域",
+              "type": "string",
+              "required": true,
+              "hint": "如客餐厅一体视角",
+              "ai_fill": true
+            },
+            {
+              "key": "bedroom_view",
+              "label": "卧室视角",
+              "type": "string",
+              "required": true,
+              "hint": "床与窗的角度",
+              "ai_fill": true
+            },
+            {
+              "key": "study_view",
+              "label": "书房视角",
+              "type": "string",
+              "required": true,
+              "hint": "书桌与收纳布局",
+              "ai_fill": true
+            },
+            {
+              "key": "topdown_view",
+              "label": "俯视内容",
+              "type": "string",
+              "required": true,
+              "hint": "家具动线、尺度",
+              "ai_fill": true
+            },
+            {
+              "key": "style_theme",
+              "label": "整体风格",
+              "type": "string",
+              "required": true,
+              "hint": "如现代简约、原木",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "string",
+              "required": true,
+              "hint": "柔和自然光/日落暖光",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "家装",
+            "设计方案",
+            "拼贴"
+          ],
+          "example_inputs": [
+            {
+              "name": "现代简约全屋板",
+              "placeholder_values": {
+                "main_area": "客厅与餐桌连通的主视角",
+                "bedroom_view": "主卧床头与飘窗",
+                "study_view": "书桌朝窗、侧边书柜",
+                "topdown_view": "3D 俯视家具布置",
+                "style_theme": "现代简约，暖色木地板、米白墙",
+                "lighting": "柔和自然光"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_VIRAL_THUMBNAIL",
+          "name": "爆款封面图",
+          "short_description": "人物指向主体的大字封面，文字与图形一体化。",
+          "category_id": "text2image",
+          "prompt_template": "使用上传人物，保持脸部一致。构图：人物在左侧 {{person_pose}} 指向右侧的 {{hero_subject}}。添加 {{graphic_element}} 引导视线。文字：中央叠加 {{headline_text}}，字体 {{headline_style}}，需高对比可读。背景为 {{background_setting}}，整体高饱和高对比。",
+          "placeholders": [
+            {
+              "key": "person_pose",
+              "label": "人物姿态",
+              "type": "string",
+              "required": true,
+              "hint": "如手指向右、兴奋表情",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_subject",
+              "label": "右侧主体",
+              "type": "string",
+              "required": true,
+              "hint": "如美食、道具、产品",
+              "ai_fill": true
+            },
+            {
+              "key": "graphic_element",
+              "label": "指示图形",
+              "type": "string",
+              "required": true,
+              "hint": "粗箭头/光束",
+              "ai_fill": true
+            },
+            {
+              "key": "headline_text",
+              "label": "标题文案",
+              "type": "string",
+              "required": true,
+              "hint": "短促有力的口号",
+              "ai_fill": true
+            },
+            {
+              "key": "headline_style",
+              "label": "标题样式",
+              "type": "string",
+              "required": true,
+              "hint": "粗体描边/投影",
+              "ai_fill": true
+            },
+            {
+              "key": "background_setting",
+              "label": "背景场景",
+              "type": "string",
+              "required": true,
+              "hint": "模糊厨房/彩色渐变",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "封面",
+            "自媒体",
+            "文字排版"
+          ],
+          "example_inputs": [
+            {
+              "name": "3 分钟美食封面",
+              "placeholder_values": {
+                "person_pose": "兴奋指向右侧，嘴角上扬",
+                "hero_subject": "牛油果吐司特写",
+                "graphic_element": "粗黄色箭头",
+                "headline_text": "3 分钟搞定!",
+                "headline_style": "白色粗体，黑色描边，强投影",
+                "background_setting": "明亮厨房虚化"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PROMO_POSTER",
+          "name": "商业促销海报",
+          "short_description": "一张包含主产品、优惠信息的促销海报。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{business_type}} 设计促销海报。主体：{{hero_product}} 的电影级特写放置画面中心。背景：{{background_mood}}。文字融合：顶部主标题 {{main_title}} 采用 {{title_style}}；侧面显眼徽章写 {{offer_text}}；底部小字 {{footer_text}}。确保文字拼写正确、对齐、融入景深。",
+          "placeholders": [
+            {
+              "key": "business_type",
+              "label": "店铺/品类",
+              "type": "string",
+              "required": true,
+              "hint": "咖啡店/餐厅/零售",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_product",
+              "label": "主打产品",
+              "type": "string",
+              "required": true,
+              "hint": "如卡布奇诺、甜品",
+              "ai_fill": true
+            },
+            {
+              "key": "background_mood",
+              "label": "背景氛围",
+              "type": "string",
+              "required": true,
+              "hint": "如秋日木桌、暖色叶子",
+              "ai_fill": true
+            },
+            {
+              "key": "main_title",
+              "label": "主标题",
+              "type": "string",
+              "required": true,
+              "hint": "活动主题",
+              "ai_fill": true
+            },
+            {
+              "key": "title_style",
+              "label": "标题字体",
+              "type": "string",
+              "required": true,
+              "hint": "金色衬线/现代无衬线",
+              "ai_fill": true
+            },
+            {
+              "key": "offer_text",
+              "label": "优惠信息",
+              "type": "string",
+              "required": true,
+              "hint": "买一送一、限时",
+              "ai_fill": true
+            },
+            {
+              "key": "footer_text",
+              "label": "底部小字",
+              "type": "string",
+              "required": true,
+              "hint": "如 Limited Time Only",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "促销",
+            "海报",
+            "文字排版"
+          ],
+          "example_inputs": [
+            {
+              "name": "秋季咖啡促销",
+              "placeholder_values": {
+                "business_type": "咖啡店",
+                "hero_product": "热气腾腾的卡布奇诺",
+                "background_mood": "木桌与秋叶的温暖氛围",
+                "main_title": "Autumn Special",
+                "title_style": "优雅金色衬线体",
+                "offer_text": "Buy One Get One Free",
+                "footer_text": "Limited Time Only"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_COMIC_LOCALIZATION",
+          "name": "漫画/梗图无痕汉化",
+          "short_description": "擦除原文字并用对应字体填入译文。",
+          "category_id": "text2image",
+          "prompt_template": "将图片中的 {{source_language}} 文本翻译为 {{target_language}}。步骤：擦除气泡或标题中的原文，恢复背景；用匹配原图的 {{text_style}} 字体填入译文；排版自然不遮挡人物。保证背景补全无涂抹痕迹。",
+          "placeholders": [
+            {
+              "key": "source_language",
+              "label": "原文语言",
+              "type": "string",
+              "required": true,
+              "hint": "日文/英文等",
+              "ai_fill": true
+            },
+            {
+              "key": "target_language",
+              "label": "目标语言",
+              "type": "string",
+              "required": true,
+              "hint": "中文/英文",
+              "ai_fill": true
+            },
+            {
+              "key": "text_style",
+              "label": "字体风格",
+              "type": "string",
+              "required": true,
+              "hint": "手写体/粗体 meme 风",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "翻译",
+            "漫画",
+            "文字替换"
+          ],
+          "example_inputs": [
+            {
+              "name": "日漫汉化",
+              "placeholder_values": {
+                "source_language": "日文",
+                "target_language": "中文",
+                "text_style": "随意手写体"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_ALLERGY_CARD",
+          "name": "过敏警示卡",
+          "short_description": "生成高对比的过敏/禁忌数字提示卡。",
+          "category_id": "text2image",
+          "prompt_template": "设计一张全屏数字警示图，主题为对 {{allergen}} 过敏。构图：中央真实图标加粗红色禁止符号。文字：顶部大号警告词 {{warning_title}}；中间使用 {{local_text}}；底部 {{english_warning}}。风格：平面矢量，白色背景，高对比，无多余装饰。",
+          "placeholders": [
+            {
+              "key": "allergen",
+              "label": "过敏源",
+              "type": "string",
+              "required": true,
+              "hint": "花生/海鲜/牛奶",
+              "ai_fill": true
+            },
+            {
+              "key": "warning_title",
+              "label": "顶部警告",
+              "type": "string",
+              "required": true,
+              "default": "WARNING!",
+              "ai_fill": false
+            },
+            {
+              "key": "local_text",
+              "label": "当地语言提示",
+              "type": "string",
+              "required": true,
+              "hint": "当地语言 + 过敏说明",
+              "ai_fill": true
+            },
+            {
+              "key": "english_warning",
+              "label": "英文提示",
+              "type": "string",
+              "required": true,
+              "hint": "NO xxx! Serious Health Risk.",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "旅行",
+            "警示",
+            "文字排版"
+          ],
+          "example_inputs": [
+            {
+              "name": "泰国花生过敏卡",
+              "placeholder_values": {
+                "allergen": "花生",
+                "warning_title": "WARNING!",
+                "local_text": "ฉันแพ้ถั่วลิสง",
+                "english_warning": "NO PEANUTS! Serious Health Risk."
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_TRAVEL_DEST_CARD",
+          "name": "出行目的地卡",
+          "short_description": "用于打车/问路的全屏目的地指示卡。",
+          "category_id": "text2image",
+          "prompt_template": "制作一张垂直竖版出行卡。上半部展示 {{landmark_visual}} 的清晰插画或剪影。文字：顶部大号当地语言“请送我去这里” {{local_instruction}}；中部大号地名 {{local_name}}；底部英文 {{english_name}}。背景干净、平面色块，保证远距离可读。",
+          "placeholders": [
+            {
+              "key": "landmark_visual",
+              "label": "地标视觉",
+              "type": "string",
+              "required": true,
+              "hint": "寺庙/景点/酒店外观",
+              "ai_fill": true
+            },
+            {
+              "key": "local_instruction",
+              "label": "当地提示语",
+              "type": "string",
+              "required": true,
+              "default": "ここへお願いします",
+              "ai_fill": false
+            },
+            {
+              "key": "local_name",
+              "label": "当地语言地名",
+              "type": "string",
+              "required": true,
+              "ai_fill": true
+            },
+            {
+              "key": "english_name",
+              "label": "英文地名",
+              "type": "string",
+              "required": true,
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "旅行",
+            "指示卡",
+            "高可读"
+          ],
+          "example_inputs": [
+            {
+              "name": "浅草寺卡片",
+              "placeholder_values": {
+                "landmark_visual": "浅草寺雷门大灯笼插画",
+                "local_instruction": "ここへお願いします",
+                "local_name": "浅草寺",
+                "english_name": "Senso-ji Temple"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_POPMART_AVATAR",
+          "name": "3D 盲盒风头像",
+          "short_description": "把真人变成泡泡玛特风格的可爱 3D 公仔头像。",
+          "category_id": "text2image",
+          "prompt_template": "将上传人物转换为可爱的 3D Pop Mart 盲盒角色。保持 {{key_features}} 的可识别度，添加 {{accessories}}。风格：C4D 渲染，Q 版比例，柔和棚拍光，塑料质感。背景使用 {{background_color}}，表情 {{expression}}。",
+          "placeholders": [
+            {
+              "key": "key_features",
+              "label": "保留特征",
+              "type": "textarea",
+              "required": true,
+              "hint": "发色、眼镜、发型",
+              "ai_fill": true
+            },
+            {
+              "key": "accessories",
+              "label": "配饰",
+              "type": "string",
+              "required": false,
+              "hint": "帽子/背包/徽章",
+              "ai_fill": true
+            },
+            {
+              "key": "background_color",
+              "label": "背景颜色",
+              "type": "string",
+              "required": true,
+              "default": "柔和浅蓝",
+              "ai_fill": false
+            },
+            {
+              "key": "expression",
+              "label": "表情",
+              "type": "string",
+              "required": true,
+              "hint": "友好/微笑/呆萌",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "头像",
+            "3D",
+            "卡通"
+          ],
+          "example_inputs": [
+            {
+              "name": "眼镜女孩盲盒头像",
+              "placeholder_values": {
+                "key_features": "棕色短发、黑框眼镜",
+                "accessories": "小单肩包",
+                "background_color": "马卡龙粉蓝渐变",
+                "expression": "微笑，正面"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PET_STICKER_DOODLE",
+          "name": "宠物丑萌手绘表情包",
+          "short_description": "将宠物照变成线条涂鸦风的搞笑表情包。",
+          "category_id": "text2image",
+          "prompt_template": "把上传的 {{pet_type}} 照片转成丑萌线条画贴纸。风格：极简黑白涂鸦，白底。表情夸张成 {{exaggerated_expression}}，在头部周围添加 {{doodle_elements}}。在底部用潦草手写体写上 {{caption_text}}。保持宠物神态可识别。",
+          "placeholders": [
+            {
+              "key": "pet_type",
+              "label": "宠物类型",
+              "type": "string",
+              "required": true,
+              "hint": "猫/狗",
+              "ai_fill": true
+            },
+            {
+              "key": "exaggerated_expression",
+              "label": "夸张表情",
+              "type": "string",
+              "required": true,
+              "hint": "震惊/鄙视/慵懒",
+              "ai_fill": true
+            },
+            {
+              "key": "doodle_elements",
+              "label": "涂鸦元素",
+              "type": "string",
+              "required": true,
+              "hint": "汗滴/问号/星星",
+              "ai_fill": true
+            },
+            {
+              "key": "caption_text",
+              "label": "中文文案",
+              "type": "string",
+              "required": true,
+              "hint": "搞快点/累了/暗中观察",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "宠物",
+            "表情包",
+            "线条画"
+          ],
+          "example_inputs": [
+            {
+              "name": "猫咪暗中观察",
+              "placeholder_values": {
+                "pet_type": "猫",
+                "exaggerated_expression": "半眯眼的鄙视脸",
+                "doodle_elements": "小问号与汗滴",
+                "caption_text": "暗中观察"
               }
             }
           ]
