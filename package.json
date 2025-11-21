@@ -4,15 +4,11 @@
   "description": "Local prompt template platform with static JSON templates and simple Node server",
   "main": "dist/server.js",
   "scripts": {
-    "build": "node scripts/prepare-assets.js && tsc",
-    "start": "node dist/server.js",
-    "start:bun": "bun dist/server.js",
-    "start:bun:ts": "bun src/server.ts",
-    "dev": "ts-node src/server.ts",
-    "start:build": "npm run build && npm run start",
-    "bun:start": "bun run build && bun run start:bun",
+    "start": "bun src/server.ts",
+    "dev": "bun --watch src/server.ts",
     "deploy": "scripts/deploy.sh",
     "test:e2e": "playwright test",
+    "prepare-assets": "node scripts/prepare-assets.js",
     "postinstall": "node scripts/prepare-assets.js"
   },
   "dependencies": {

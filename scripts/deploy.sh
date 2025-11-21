@@ -33,11 +33,11 @@ start_with_bun() {
   echo "[deploy] Installing dependencies..."
   bun install
 
-  echo "[deploy] Building TypeScript..."
-  PORT="$PORT" bun run build
+  echo "[deploy] Preparing assets..."
+  PORT="$PORT" bun run prepare-assets
 
   echo "[deploy] Starting server directly from TypeScript via Bun (Ctrl+C to stop)..."
-  PORT="$PORT" bun run start:bun:ts
+  PORT="$PORT" bun run start
 }
 
 main() {
