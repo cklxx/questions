@@ -5,7 +5,7 @@ import createTemplateRouter from './routes/templates';
 import { TemplateStore } from './types';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
@@ -26,7 +26,7 @@ app.use('/api/templates', createTemplateRouter(templateStore));
 const publicPath = path.resolve(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
-app.get('*', (_req, res) => {
+app.use((_req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
