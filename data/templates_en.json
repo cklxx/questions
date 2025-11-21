@@ -6320,12 +6320,12 @@
               "required": true,
               "hint": "Arial/serif/sans-serif/handwriting feel",
               "enum_options": [
-                "宋体",
+                "Songti",
                 "Serif",
                 "Sans serif",
                 "Handwriting"
               ],
-              "default": "宋体",
+              "default": "Songti",
               "ai_fill": false
             },
             {
@@ -6395,7 +6395,7 @@
               "name": "Next page of the picture book \"Little Fox Exploring the Moon\"",
               "placeholder_values": {
                 "book_type": "Picture book",
-                "text_style": "宋体",
+                "text_style": "Songti",
                 "content_summary": "The previous page tells about the little fox lying on the grass at night and looking at the moon, and decided to build a small wooden ladder to reach the moonlight.",
                 "page_layout": "Above picture below"
               }
