@@ -17,6 +17,21 @@ const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '');
 
 const supportedLanguages: Language[] = ['zh', 'en'];
 const defaultLanguage: Language = 'zh';
+const priorityCategories = ['text2image'];
+
+const sortByPriority = <T extends { id: string }>(items: T[], priorities: string[]): T[] => {
+  const priorityMap = new Map(priorities.map((id, idx) => [id, idx]));
+  const base = priorities.length;
+
+  return items
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      const aRank = priorityMap.has(a.item.id) ? priorityMap.get(a.item.id)! : base + a.index;
+      const bRank = priorityMap.has(b.item.id) ? priorityMap.get(b.item.id)! : base + b.index;
+      return aRank - bRank;
+    })
+    .map((entry) => entry.item);
+};
 
 const addTemplateMeta = (tpl: any, fallbackUpdatedAt: string) => ({
   ...tpl,
@@ -26,15 +41,16 @@ const addTemplateMeta = (tpl: any, fallbackUpdatedAt: string) => ({
 const loadDataset = (lang: Language, filePath: string) => {
   const lastModified = statSync(filePath).mtime.toISOString();
   const parsed = JSON.parse(readFileSync(filePath, 'utf8'));
+  const categories = sortByPriority(parsed.categories || [], priorityCategories);
   const allTemplates: any[] = [];
-  (parsed.categories || []).forEach((cat: any) => {
+  categories.forEach((cat: any) => {
     if (cat.templates && Array.isArray(cat.templates)) {
       allTemplates.push(...cat.templates.map((tpl: any) => addTemplateMeta(tpl, lastModified)));
     }
   });
 
   return {
-    data: parsed,
+    data: { ...parsed, categories },
     allTemplates,
     lastModified,
   };
