@@ -454,7 +454,7 @@ function App() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f7f8fc] via-[#f2f4f8] to-[#f6f8fb] text-slate-900 font-sans selection:bg-primary/15">
             <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-                <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
+                <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 rounded-2xl bg-white shadow-[0_10px_30px_-22px_rgba(0,0,0,0.55)] border border-slate-100">
                             <Terminal className="w-6 h-6 text-primary" />
@@ -465,7 +465,7 @@ function App() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3 md:justify-end">
                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-600 shadow-sm">
                             <Layers className="w-4 h-4 text-primary" />
                             <span className="font-medium text-slate-800">
@@ -530,7 +530,7 @@ function App() {
                 </div>
             </header>
 
-            <main className="max-w-[1600px] mx-auto px-6 pb-8 pt-6">
+            <main className="max-w-[1600px] mx-auto px-4 sm:px-6 pb-8 pt-6">
                 <div className="grid gap-6 lg:grid-cols-[320px_1.1fr_0.95fr]">
                     {/* Sidebar */}
                     <aside className="flex flex-col gap-4">
@@ -650,7 +650,7 @@ function App() {
                             </div>
                         </div>
 
-                        <div className="rounded-2xl border border-slate-200 bg-white/80 p-3 h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent space-y-3 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.4)]">
+                        <div className="rounded-2xl border border-slate-200 bg-white/80 p-3 space-y-3 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.4)] lg:h-[calc(100vh-220px)] lg:overflow-y-auto lg:scrollbar-thin lg:scrollbar-thumb-slate-200 lg:scrollbar-track-transparent">
                             {filteredTemplates.map((tpl) => {
                                 const requiredCount = (tpl.placeholders || []).filter((p) => p.required).length;
                                 const exampleCount = (tpl.example_inputs || []).length;
@@ -831,7 +831,7 @@ function App() {
                                 ))}
                             </div>
 
-                            <div className="max-h-[70vh] overflow-y-auto px-5 py-5 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+                            <div className="px-5 py-5 space-y-4 lg:max-h-[70vh] lg:overflow-y-auto lg:scrollbar-thin lg:scrollbar-thumb-slate-200 lg:scrollbar-track-transparent">
                                 {(templateDetail.placeholders || []).map((p) => {
                                     if (p.type === 'textarea') {
                                         return (
@@ -956,7 +956,7 @@ function App() {
                                     </Button>
                                 </div>
                             </div>
-                            <div className="p-5 bg-slate-50 max-h-[55vh] overflow-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+                            <div className="p-5 bg-slate-50 lg:max-h-[55vh] lg:overflow-auto lg:scrollbar-thin lg:scrollbar-thumb-slate-200 lg:scrollbar-track-transparent">
                                 <pre className="text-sm whitespace-pre-wrap font-mono text-slate-800 leading-relaxed">
                                     {rendered || <span className="text-slate-400 italic">{t.placeholders.waiting}</span>}
                                 </pre>
@@ -968,7 +968,7 @@ function App() {
                                 <Layout className="w-4 h-4 text-primary" />
                                 <h3 className="font-semibold text-sm text-slate-800">{t.sections.rules}</h3>
                             </div>
-                            <div className="p-5 space-y-5 max-h-[40vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+                            <div className="p-5 space-y-5 lg:max-h-[40vh] lg:overflow-y-auto lg:scrollbar-thin lg:scrollbar-thumb-slate-200 lg:scrollbar-track-transparent">
                                 {(templateDetail.evaluation_rules?.manual_checklist || []).length > 0 && (
                                     <div>
                                         <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
