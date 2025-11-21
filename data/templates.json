@@ -1,0 +1,364 @@
+{
+  "version": "0.1.0",
+  "categories": [
+    {
+      "id": "text2text",
+      "name": "文生文",
+      "description": "文本到文本的模版集合",
+      "templates": [
+        {
+          "id": "T1_explain_to_target",
+          "name": "知识解释 + 受众适配",
+          "short_description": "面向特定受众解释复杂概念并给出结构化呈现。",
+          "category_id": "text2text",
+          "prompt_template": "请面向 {{target_audience}}，用 {{style}} 的风格在 {{max_length}} 字以内解释 {{topic}}，先给结论，再用类比或例子帮助理解，并在最后给出一个可操作的建议。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "要解释的核心概念",
+              "ai_fill": true
+            },
+            {
+              "key": "target_audience",
+              "label": "受众",
+              "type": "enum",
+              "required": true,
+              "hint": "如：高一学生、新入职 PM、VC 合伙人",
+              "enum_options": ["高一学生", "新入职 PM", "VC 合伙人"],
+              "ai_fill": true,
+              "default": "新入职 PM"
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "语气和写作方式",
+              "enum_options": ["口语化", "严谨", "类比驱动"],
+              "ai_fill": true,
+              "default": "类比驱动"
+            },
+            {
+              "key": "max_length",
+              "label": "长度上限",
+              "type": "number",
+              "required": false,
+              "hint": "输出字数限制",
+              "default": 500,
+              "constraints": {"min": 50, "max": 800},
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {"key": "target_audience", "label": "受众", "type": "enum", "control_type": "audience"},
+            {"key": "style", "label": "风格", "type": "enum", "control_type": "style"},
+            {"key": "max_length", "label": "长度", "type": "number", "control_type": "length"}
+          ],
+          "evaluation_rules": {
+            "auto_checks": ["首段需包含结论", "正文控制在 max_length 字以内"],
+            "manual_checklist": [
+              "是否使用了明确的例子或类比？",
+              "是否按受众水平解释，无生僻术语？",
+              "是否在结尾给出可执行建议？"
+            ]
+          },
+          "tags": ["受众适配", "类比", "结论先行"],
+          "example_inputs": [
+            {
+              "name": "向新入职 PM 解释 A/B 测试",
+              "placeholder_values": {
+                "topic": "A/B 测试",
+                "target_audience": "新入职 PM",
+                "style": "类比驱动",
+                "max_length": 400
+              },
+              "notes": "突出低成本试验的价值"
+            }
+          ]
+        },
+        {
+          "id": "T2_nano_banana_launch_copy",
+          "name": "nano banana pro 上市全渠道文案",
+          "short_description": "生成针对 nano banana pro 的新品发布文案，适配不同渠道与受众。",
+          "category_id": "text2text",
+          "prompt_template": "为新品 {{product_name}} 撰写一则 {{channel}} 发布文案，目标受众为 {{target_audience}}。突出核心卖点：{{hero_feature}}，结合场景亮点：{{use_case}}，采用 {{tone}} 语气，在 {{word_limit}} 字以内给出：1) 强钩子开头 2) 场景化描述 3) 明确的 {{call_to_action}} 行动口令。",
+          "placeholders": [
+            {"key": "product_name", "label": "产品名", "type": "string", "required": true, "hint": "默认 nano banana pro，可改为其他型号", "default": "nano banana pro", "ai_fill": true},
+            {"key": "channel", "label": "发布渠道", "type": "enum", "required": true, "hint": "选择要发布的渠道", "enum_options": ["微信朋友圈", "抖音短视频文案", "B 站社区帖", "小红书笔记"], "default": "微信朋友圈", "ai_fill": true},
+            {"key": "target_audience", "label": "目标受众", "type": "enum", "required": true, "hint": "预期阅读人群", "enum_options": ["数码发烧友", "通勤上班族", "学生党", "礼品送礼场景"], "default": "通勤上班族", "ai_fill": true},
+            {"key": "hero_feature", "label": "核心卖点", "type": "textarea", "required": true, "hint": "一句话概括产品亮点，如：续航/轻薄/抗摔/防水", "ai_fill": true},
+            {"key": "use_case", "label": "场景亮点", "type": "textarea", "required": false, "hint": "在何种生活/工作场景最出彩", "ai_fill": true},
+            {"key": "tone", "label": "语气风格", "type": "enum", "required": true, "hint": "决定文案调性", "enum_options": ["热血发布", "生活化陪伴", "科技感", "简洁克制"], "default": "科技感", "ai_fill": true},
+            {"key": "call_to_action", "label": "行动口令", "type": "enum", "required": true, "hint": "希望读者做什么", "enum_options": ["预约试用", "立即下单", "到店体验", "转发抽奖"], "default": "预约试用", "ai_fill": true},
+            {"key": "word_limit", "label": "字数上限", "type": "number", "required": false, "hint": "控制整体长度", "default": 180, "constraints": {"min": 80, "max": 260}, "ai_fill": false}
+          ],
+          "controls": [
+            {"key": "channel", "label": "渠道", "type": "enum", "control_type": "structure"},
+            {"key": "tone", "label": "语气", "type": "enum", "control_type": "style"},
+            {"key": "word_limit", "label": "长度", "type": "number", "control_type": "length"}
+          ],
+          "evaluation_rules": {
+            "auto_checks": ["正文不超过 word_limit 字", "包含明确行动口令 call_to_action"],
+            "manual_checklist": [
+              "开头是否直接给出强钩子？",
+              "是否清晰点出 hero_feature 与真实使用场景？",
+              "CTA 是否具体且可执行？"
+            ]
+          },
+          "tags": ["新品发布", "渠道文案", "nano banana pro"],
+          "example_inputs": [
+            {
+              "name": "朋友圈发布：轻薄耐摔亮点",
+              "placeholder_values": {
+                "product_name": "nano banana pro",
+                "channel": "微信朋友圈",
+                "target_audience": "通勤上班族",
+                "hero_feature": "全新钛合金一体壳 + 全天候 48h 续航，通勤包里不占重",
+                "use_case": "公交/地铁人挤人依旧耐磨，办公室桌面轻量随身不累赘",
+                "tone": "生活化陪伴",
+                "call_to_action": "预约试用",
+                "word_limit": 180
+              },
+              "notes": "突出轻薄与耐摔，适合日常分享"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "text2artifact",
+      "name": "文生产物",
+      "description": "生成代码、Agent 工作流或结构化产物的模版集合",
+      "templates": [
+        {
+          "id": "P1_code_with_tests",
+          "name": "代码实现 + 最小自测",
+          "short_description": "生成指定语言的代码并附带最小可运行的测试用例。",
+          "category_id": "text2artifact",
+          "prompt_template": "请用 {{language}} 编写满足需求的代码：{{task_description}}。遵循约束：{{constraints}}。输出格式：先给主代码，再给至少 {{test_count}} 个最小自测用例，标明如何运行。",
+          "placeholders": [
+            {
+              "key": "task_description",
+              "label": "任务描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "用自然语言描述要实现的功能",
+              "ai_fill": false
+            },
+            {
+              "key": "language",
+              "label": "编程语言",
+              "type": "enum",
+              "required": true,
+              "hint": "选择目标语言",
+              "enum_options": ["Python", "TypeScript", "Go"],
+              "default": "Python",
+              "ai_fill": true
+            },
+            {
+              "key": "constraints",
+              "label": "约束",
+              "type": "textarea",
+              "required": false,
+              "hint": "可选：禁止第三方库、需考虑复杂度等",
+              "ai_fill": true
+            },
+            {
+              "key": "test_count",
+              "label": "最少测试数",
+              "type": "number",
+              "required": false,
+              "hint": "至少需要多少个测试用例",
+              "default": 3,
+              "constraints": {"min": 1, "max": 10},
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {"key": "language", "label": "编程语言", "type": "enum", "control_type": "format"},
+            {"key": "constraints", "label": "约束", "type": "textarea", "control_type": "safety"},
+            {"key": "test_count", "label": "最少测试", "type": "number", "control_type": "structure"}
+          ],
+          "evaluation_rules": {
+            "auto_checks": ["测试用例数量不少于 test_count"],
+            "manual_checklist": [
+              "主代码和测试代码是否分段展示？",
+              "是否说明如何运行测试？",
+              "是否覆盖边界条件？"
+            ]
+          },
+          "tags": ["代码", "测试", "结构化输出"],
+          "example_inputs": [
+            {
+              "name": "实现 LRU 缓存（Python）",
+              "placeholder_values": {
+                "task_description": "实现一个支持 get/put 的 LRU 缓存类，容量可配置",
+                "language": "Python",
+                "constraints": "不使用第三方库，需给出时间复杂度说明",
+                "test_count": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "text2image",
+      "name": "文生图",
+      "description": "文本到图像的模版集合",
+      "templates": [
+        {
+          "id": "I1_nano_banana_hero_poster",
+          "name": "nano banana pro 视觉海报提示",
+          "short_description": "生成 nano banana pro 的品牌视觉海报提示，突出材质与配色。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{product_name}} 生成主视觉海报，主题场景是 {{scene}}，突出配色 {{hero_color}} 与材质质感，风格 {{style}}，氛围 {{mood}}，光线 {{lighting}}，分辨率 {{resolution}}。确保画面中产品主体居中，品牌标识清晰。",
+          "placeholders": [
+            {"key": "product_name", "label": "产品名", "type": "string", "required": true, "hint": "默认 nano banana pro，可改为其他型号", "default": "nano banana pro", "ai_fill": true},
+            {"key": "scene", "label": "场景", "type": "enum", "required": true, "hint": "视觉演绎场景", "enum_options": ["都市夜景", "科幻实验室", "极简工作桌", "户外徒步"], "default": "都市夜景", "ai_fill": true},
+            {"key": "hero_color", "label": "主配色", "type": "string", "required": true, "hint": "例如：钛灰 + 霓虹蓝侧光", "default": "钛灰 + 霓虹蓝侧光", "ai_fill": true},
+            {"key": "style", "label": "画面风格", "type": "enum", "required": true, "hint": "整体视觉风格", "enum_options": ["赛博未来", "极简商业", "杂志大片", "写实摄影"], "default": "赛博未来", "ai_fill": true},
+            {"key": "mood", "label": "氛围", "type": "enum", "required": true, "hint": "画面情绪", "enum_options": ["冷静克制", "高能发布", "温暖陪伴", "探索感"], "default": "高能发布", "ai_fill": true},
+            {"key": "lighting", "label": "光线", "type": "enum", "required": false, "hint": "光照与阴影风格", "enum_options": ["硬光强对比", "柔光氛围", "背光剪影", "侧光质感"], "default": "侧光质感", "ai_fill": true},
+            {"key": "resolution", "label": "分辨率", "type": "enum", "required": false, "hint": "生成分辨率", "enum_options": ["4k", "8k", "square 1:1", "portrait 9:16"], "default": "4k", "ai_fill": false}
+          ],
+          "controls": [
+            {"key": "style", "label": "风格", "type": "enum", "control_type": "style"},
+            {"key": "scene", "label": "场景", "type": "enum", "control_type": "structure"},
+            {"key": "resolution", "label": "分辨率", "type": "enum", "control_type": "length"}
+          ],
+          "evaluation_rules": {
+            "auto_checks": ["画面需包含品牌主体，并保持产品居中"],
+            "manual_checklist": [
+              "配色是否与 hero_color 保持一致？",
+              "风格/氛围是否与品牌调性匹配？",
+              "产品细节是否清晰可辨？"
+            ]
+          },
+          "tags": ["视觉海报", "nano banana pro", "品牌视觉"],
+          "example_inputs": [
+            {
+              "name": "赛博夜景海报",
+              "placeholder_values": {
+                "product_name": "nano banana pro",
+                "scene": "都市夜景",
+                "hero_color": "钛灰 + 霓虹蓝侧光",
+                "style": "赛博未来",
+                "mood": "高能发布",
+                "lighting": "硬光强对比",
+                "resolution": "portrait 9:16"
+              },
+              "notes": "适合竖版投放，突出高能科技感"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "text2video",
+      "name": "文生视频",
+      "description": "文本到视频的模版集合",
+      "templates": [
+        {
+          "id": "V1_nano_banana_15s_script",
+          "name": "nano banana pro 15 秒短视频脚本",
+          "short_description": "生成 15 秒以内的爆点脚本，突出 nano banana pro 卖点与行动口令。",
+          "category_id": "text2video",
+          "prompt_template": "为 {{product_name}} 生成 {{duration}} 秒内的 {{platform}} 爆点脚本。开头用 {{hook}} 抢眼，核心卖点：{{key_features}}。要求包含分镜列表（时间戳 + 画面 + 旁白/字幕），结尾给出 {{cta}}。节奏 {{pacing}}，确保镜头切换清晰可执行。",
+          "placeholders": [
+            {"key": "product_name", "label": "产品名", "type": "string", "required": true, "hint": "默认 nano banana pro", "default": "nano banana pro", "ai_fill": true},
+            {"key": "platform", "label": "平台", "type": "enum", "required": true, "hint": "投放平台", "enum_options": ["抖音", "B 站", "视频号", "YouTube Shorts"], "default": "抖音", "ai_fill": true},
+            {"key": "duration", "label": "时长秒数", "type": "number", "required": true, "hint": "整体时长", "default": 15, "constraints": {"min": 10, "max": 30}, "ai_fill": false},
+            {"key": "hook", "label": "开场钩子", "type": "string", "required": true, "hint": "3-5 秒内吸睛的句子/画面", "ai_fill": true},
+            {"key": "key_features", "label": "核心卖点", "type": "textarea", "required": true, "hint": "列出 2-3 个亮点，用分号分隔", "ai_fill": true},
+            {"key": "pacing", "label": "节奏感", "type": "enum", "required": true, "hint": "整体节奏", "enum_options": ["快节奏", "稳重叙述", "先快后稳"], "default": "快节奏", "ai_fill": true},
+            {"key": "cta", "label": "行动号召", "type": "enum", "required": true, "hint": "结尾希望观众做什么", "enum_options": ["评论 + 预约", "点击购买", "私信领取优惠", "到店体验"], "default": "评论 + 预约", "ai_fill": true}
+          ],
+          "controls": [
+            {"key": "platform", "label": "平台", "type": "enum", "control_type": "structure"},
+            {"key": "pacing", "label": "节奏", "type": "enum", "control_type": "style"},
+            {"key": "duration", "label": "时长", "type": "number", "control_type": "length"}
+          ],
+          "evaluation_rules": {
+            "auto_checks": ["脚本总时长不超过 duration 秒"],
+            "manual_checklist": [
+              "前 3 秒是否有强钩子？",
+              "分镜是否明确时间戳、画面与字幕/旁白？",
+              "结尾 CTA 是否呼应目标？"
+            ]
+          },
+          "tags": ["短视频脚本", "爆点", "nano banana pro"],
+          "example_inputs": [
+            {
+              "name": "抖音快节奏脚本",
+              "placeholder_values": {
+                "product_name": "nano banana pro",
+                "platform": "抖音",
+                "duration": 15,
+                "hook": "一台能陪你连轴转 48 小时的轻薄旗舰？",
+                "key_features": "钛合金一体壳；双倍续航 48h；一键应急防摔模式",
+                "pacing": "快节奏",
+                "cta": "评论 + 预约"
+              },
+              "notes": "突出续航与耐摔，适合短视频快闪节奏"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "text2doc",
+      "name": "文生文档",
+      "description": "文本到文档的模版集合",
+      "templates": [
+        {
+          "id": "D1_nano_banana_launch_brief",
+          "name": "nano banana pro 上市作战简报",
+          "short_description": "生成针对 nano banana pro 的上市战役简报（目标、受众、信息主轴、节奏）。",
+          "category_id": "text2doc",
+          "prompt_template": "围绕 {{product_name}}，输出一份上市作战简报，包含：1) 目标受众 {{target_segment}} 画像与痛点 2) 信息主轴与独特卖点：{{unique_selling_points}} 3) 核心 offer：{{hero_offer}} 4) 渠道组合与节奏：{{channel_plan}} 5) 30 天重点里程碑：{{milestones}}。请用分级标题与要点列出，控制在 {{max_length}} 字内。",
+          "placeholders": [
+            {"key": "product_name", "label": "产品名", "type": "string", "required": true, "hint": "默认 nano banana pro", "default": "nano banana pro", "ai_fill": true},
+            {"key": "target_segment", "label": "目标受众", "type": "textarea", "required": true, "hint": "目标人群画像与场景", "ai_fill": true},
+            {"key": "unique_selling_points", "label": "独特卖点", "type": "textarea", "required": true, "hint": "列出 2-3 个 USP", "ai_fill": true},
+            {"key": "hero_offer", "label": "核心优惠/权益", "type": "textarea", "required": false, "hint": "如预约礼、以旧换新、延保", "ai_fill": true},
+            {"key": "channel_plan", "label": "渠道组合与节奏", "type": "textarea", "required": true, "hint": "按阶段列出投放/自有渠道", "ai_fill": true},
+            {"key": "milestones", "label": "30 天里程碑", "type": "textarea", "required": true, "hint": "列出关键日期与交付物", "ai_fill": true},
+            {"key": "max_length", "label": "长度上限", "type": "number", "required": false, "hint": "整体字数控制", "default": 800, "constraints": {"min": 400, "max": 1200}, "ai_fill": false}
+          ],
+          "controls": [
+            {"key": "max_length", "label": "长度", "type": "number", "control_type": "length"},
+            {"key": "channel_plan", "label": "渠道节奏", "type": "textarea", "control_type": "structure"}
+          ],
+          "evaluation_rules": {
+            "auto_checks": ["正文不超过 max_length 字"],
+            "manual_checklist": [
+              "目标受众痛点是否明确可验证？",
+              "USP 是否可感知、可量化？",
+              "里程碑是否包含日期、负责人、产出物？"
+            ]
+          },
+          "tags": ["上市规划", "战役简报", "nano banana pro"],
+          "example_inputs": [
+            {
+              "name": "轻薄耐摔定位的 30 天战役",
+              "placeholder_values": {
+                "product_name": "nano banana pro",
+                "target_segment": "一二线城市通勤人群，追求轻薄、耐摔、续航的日常机",
+                "unique_selling_points": "钛合金机身；48h 续航；抗摔等级通过 MIL-STD 测试",
+                "hero_offer": "前 7 天预约赠碎屏险 + 无忧换新",
+                "channel_plan": "T-7 预热：KOL 体验 + 朋友圈投放；T+0 发布会直播；T+7 开启线下体验店快闪",
+                "milestones": "T-10 完成测评素材；T-3 释出预热视频；T+0 发布会；T+10 渠道复盘",
+                "max_length": 900
+              },
+              "notes": "突出核心卖点 + 渠道节奏"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

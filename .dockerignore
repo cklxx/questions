@@ -1,0 +1,7 @@
+node_modules
+npm-debug.log
+bun.lockb
+.DS_Store
+dist
+.tmp
+.env

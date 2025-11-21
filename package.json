@@ -1,0 +1,32 @@
+{
+  "name": "prompt-template-platform",
+  "version": "0.1.0",
+  "description": "Local prompt template platform with static JSON templates and simple Node server",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "node scripts/prepare-assets.js && tsc",
+    "start": "node dist/server.js",
+    "start:bun": "bun dist/server.js",
+    "start:bun:ts": "bun src/server.ts",
+    "dev": "ts-node src/server.ts",
+    "start:build": "npm run build && npm run start",
+    "bun:start": "bun run build && bun run start:bun",
+    "deploy": "scripts/deploy.sh",
+    "test:e2e": "playwright test",
+    "postinstall": "node scripts/prepare-assets.js"
+  },
+  "dependencies": {
+    "@babel/standalone": "^7.25.2",
+    "express": "^4.19.2",
+    "modern-normalize": "^2.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "@playwright/test": "^1.46.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}
