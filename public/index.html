@@ -228,6 +228,64 @@
         align-items: center;
         flex-wrap: wrap;
       }
+      .spinner {
+        border: 2px solid rgba(124, 58, 237, 0.2);
+        border-top: 2px solid var(--accent);
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid var(--border);
+      }
+      .status-indicator.connected {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.3);
+        color: #22c55e;
+      }
+      .status-indicator.disconnected {
+        background: rgba(251, 146, 60, 0.1);
+        border-color: rgba(251, 146, 60, 0.3);
+        color: #fb923c;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .ai-filled {
+        position: relative;
+      }
+      .ai-filled::after {
+        content: '✨';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 12px;
+        opacity: 0.5;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, var(--accent) 0%, #22c55e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
     </style>
   </head>
   <body>
@@ -268,10 +326,15 @@
           });
           return res.json();
         },
+        async getConfig() {
+          const res = await fetch('/api/config');
+          return res.json();
+        },
       };
 
-      function PlaceholderField({ placeholder, value, onChange, onAIFill }) {
+      function PlaceholderField({ placeholder, value, onChange, onAIFill, aiFilledKeys, isAIFilling }) {
         const { key, label, type, hint, required, enum_options, ai_fill } = placeholder;
+        const isAIFilled = aiFilledKeys.includes(key);
         const handleChange = (e) => {
           let val = e.target.value;
           if (type === 'number') {
@@ -284,9 +347,11 @@
         };
 
         let control;
+        const commonClass = isAIFilled ? 'ai-filled' : '';
         if (type === 'textarea') {
           control = (
             <textarea
+              className={commonClass}
               value={value ?? ''}
               placeholder={hint || ''}
               onChange={handleChange}
@@ -294,7 +359,7 @@
           );
         } else if (type === 'enum') {
           control = (
-            <select value={value ?? ''} onChange={handleChange}>
+            <select className={commonClass} value={value ?? ''} onChange={handleChange}>
               <option value="" disabled>
                 请选择
               </option>
@@ -308,7 +373,7 @@
         } else if (type === 'number') {
           control = (
             <input
-              className="input"
+              className={`input ${commonClass}`}
               type="number"
               value={value ?? ''}
               placeholder={hint || ''}
@@ -325,7 +390,7 @@
         } else {
           control = (
             <input
-              className="input"
+              className={`input ${commonClass}`}
               value={value ?? ''}
               placeholder={hint || ''}
               onChange={handleChange}
@@ -340,8 +405,14 @@
                 {label} {required && <span style={{ color: '#f43f5e' }}>*</span>}
               </label>
               {ai_fill && (
-                <button className="ghost-btn" onClick={() => onAIFill(key)} style={{ padding: '6px 10px' }}>
-                  ✨ AI 填写
+                <button 
+                  className="ghost-btn" 
+                  onClick={() => onAIFill(key)} 
+                  style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  disabled={isAIFilling}
+                >
+                  {isAIFilling ? <div className="spinner" /> : '✨'}
+                  AI 填写
                 </button>
               )}
             </div>
@@ -375,10 +446,16 @@
         const [loading, setLoading] = useState(false);
         const [isRaw, setIsRaw] = useState(false);
         const [message, setMessage] = useState('');
+        const [aiConfig, setAiConfig] = useState(null);
+        const [aiFilledKeys, setAiFilledKeys] = useState([]);
+        const [isAIFilling, setIsAIFilling] = useState(false);
 
         useEffect(() => {
           api.getCategories().then((data) => {
             setCategories(data.categories || []);
+          });
+          api.getConfig().then((config) => {
+            setAiConfig(config);
           });
         }, []);
 
@@ -434,19 +511,31 @@
 
         const handleAIFill = async (targetKey) => {
           if (!templateDetail) return;
-          const res = await api.aiFill(templateDetail.id, values, targetKey);
-          const incoming = res.suggested_values || {};
-          const merged = { ...values };
-          Object.entries(incoming).forEach(([k, v]) => {
-            if (targetKey) {
-              merged[k] = v;
-            } else if (merged[k] === undefined || merged[k] === null || merged[k] === '') {
-              merged[k] = v;
-            }
-          });
-          setValues(merged);
-          setMessage(targetKey ? `字段 ${targetKey} 已由 AI 填充` : '已应用 AI 建议');
-          setTimeout(() => setMessage(''), 2500);
+          setIsAIFilling(true);
+          try {
+            const res = await api.aiFill(templateDetail.id, values, targetKey);
+            const incoming = res.suggested_values || {};
+            const merged = { ...values };
+            const filledKeys = [];
+            Object.entries(incoming).forEach(([k, v]) => {
+              if (targetKey) {
+                merged[k] = v;
+                filledKeys.push(k);
+              } else if (merged[k] === undefined || merged[k] === null || merged[k] === '') {
+                merged[k] = v;
+                filledKeys.push(k);
+              }
+            });
+            setValues(merged);
+            setAiFilledKeys((prev) => [...new Set([...prev, ...filledKeys])]);
+            const reasoning = res.reasoning || 'AI 填充完成';
+            setMessage(targetKey ? `✨ ${reasoning}` : `✨ ${reasoning}`);
+          } catch (error) {
+            setMessage(`❌ AI 填充失败: ${error.message}`);
+          } finally {
+            setIsAIFilling(false);
+            setTimeout(() => setMessage(''), 3500);
+          }
         };
 
         const copyPrompt = async () => {
@@ -473,10 +562,16 @@
         return (
           <div>
             <header>
-              <h1>问题模版平台 · React 版</h1>
+              <h1 className="gradient-text">问题模版平台</h1>
               <div className="row">
+                {aiConfig && (
+                  <div className={`status-indicator ${aiConfig.configured ? 'connected' : 'disconnected'}`}>
+                    <div className="status-dot" />
+                    {aiConfig.configured ? `AI: ${aiConfig.model}` : 'AI 未配置'}
+                  </div>
+                )}
                 {message && <span className="pill">{message}</span>}
-                <button className="ghost-btn" onClick={() => window.location.reload()}>刷新数据</button>
+                <button className="ghost-btn" onClick={() => window.location.reload()}>刷新</button>
               </div>
             </header>
 
@@ -549,8 +644,14 @@
                         title={templateDetail.name}
                         subtitle={templateDetail.short_description}
                         actions={[
-                          <button key="ai" onClick={() => handleAIFill()}>
-                            ✨ 一键 AI 补全
+                          <button 
+                            key="ai" 
+                            onClick={() => handleAIFill()}
+                            disabled={isAIFilling || !aiConfig?.configured}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                          >
+                            {isAIFilling ? <div className="spinner" /> : '✨'}
+                            {isAIFilling ? 'AI 填充中...' : '一键 AI 补全'}
                           </button>,
                         ]}
                       />
@@ -569,6 +670,8 @@
                             value={values[p.key]}
                             onChange={(k, v) => applyValues({ [k]: v })}
                             onAIFill={handleAIFill}
+                            aiFilledKeys={aiFilledKeys}
+                            isAIFilling={isAIFilling}
                           />
                         ))}
                       </div>

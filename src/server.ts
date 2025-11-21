@@ -3,6 +3,7 @@ import path from 'path';
 import { loadTemplates } from './templateLoader';
 import createTemplateRouter from './routes/templates';
 import { TemplateStore } from './types';
+import { getAIConfig } from './aiFiller';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,6 +21,12 @@ try {
   console.error('模板加载失败:', error.message);
   process.exit(1);
 }
+
+// API configuration endpoint
+app.get('/api/config', (_req, res) => {
+  const config = getAIConfig();
+  res.json(config);
+});
 
 app.use('/api/templates', createTemplateRouter(templateStore));
 
