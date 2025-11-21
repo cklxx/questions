@@ -5838,6 +5838,569 @@
               }
             }
           ]
+        },
+        {
+          "id": "NB_POEM_SCROLL_PAINTING",
+          "name": "诗卷 + 场景水墨长卷",
+          "short_description": "上卷书法下卷水墨意境画，全文清晰且画意呼应。",
+          "category_id": "text2image",
+          "prompt_template": "生成一幅上下分区的长卷：上方写完整 {{poem_full_text}}，书法风格 {{calligraphy_style}}，标题 {{poem_title}}、作者 {{poet_name}} 可落款；下方以 {{painting_style}} 描绘 {{scene_description}} 的意境，画幅比例 {{layout_ratio}}。长卷足够展开，文字清晰无缺字，画面与诗意呼应，文字不遮挡下方画面，可补充夜色/雾气等氛围。",
+          "placeholders": [
+            {
+              "key": "poem_full_text",
+              "label": "诗文全文",
+              "type": "textarea",
+              "required": true,
+              "hint": "完整诗/歌词正文",
+              "ai_fill": true
+            },
+            {
+              "key": "poem_title",
+              "label": "题目",
+              "type": "string",
+              "required": true,
+              "hint": "诗歌/歌词标题",
+              "ai_fill": true
+            },
+            {
+              "key": "poet_name",
+              "label": "作者",
+              "type": "string",
+              "required": true,
+              "hint": "作者/译者名",
+              "ai_fill": true
+            },
+            {
+              "key": "calligraphy_style",
+              "label": "书法风格",
+              "type": "enum",
+              "required": true,
+              "hint": "行书/草书/楷书/碑帖风",
+              "enum_options": [
+                "行书",
+                "草书",
+                "楷书",
+                "碑帖风"
+              ],
+              "default": "行书",
+              "ai_fill": false
+            },
+            {
+              "key": "painting_style",
+              "label": "画风",
+              "type": "enum",
+              "required": true,
+              "hint": "水墨/青绿/工笔/水彩等",
+              "enum_options": [
+                "中国水墨",
+                "青绿山水",
+                "工笔",
+                "水彩"
+              ],
+              "default": "中国水墨",
+              "ai_fill": false
+            },
+            {
+              "key": "scene_description",
+              "label": "意境描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "画面要表达的场景/氛围",
+              "ai_fill": true
+            },
+            {
+              "key": "layout_ratio",
+              "label": "上下比例",
+              "type": "enum",
+              "required": true,
+              "hint": "上卷:下画面的占比",
+              "enum_options": [
+                "1:1",
+                "1:2",
+                "2:1",
+                "3:4"
+              ],
+              "default": "1:1",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "calligraphy_style",
+              "label": "书法风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "painting_style",
+              "label": "画风",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "layout_ratio",
+              "label": "布局比例",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "上卷完整呈现 poem_full_text 且文字清晰无缺漏",
+              "下方画面主题符合 scene_description 并与诗意呼应",
+              "书法区域与画面区分清楚，文字不覆盖主要画面"
+            ],
+            "manual_checklist": [
+              "是否有 poem_title 与 poet_name 的落款？",
+              "书法风格与 painting_style 是否协调统一？",
+              "卷轴长度与 layout_ratio 是否符合预期？"
+            ]
+          },
+          "tags": [
+            "书法",
+            "水墨",
+            "长卷",
+            "中文文字"
+          ],
+          "example_inputs": [
+            {
+              "name": "琵琶行长卷",
+              "placeholder_values": {
+                "poem_full_text": "浔阳江头夜送客，枫叶荻花秋瑟瑟。主人下马客在船，举酒欲饮无管弦。醉不成欢惨将别，别时茫茫江浸月。",
+                "poem_title": "琵琶行",
+                "poet_name": "白居易",
+                "calligraphy_style": "行书",
+                "painting_style": "中国水墨",
+                "scene_description": "秋夜的浔阳江边，渔火点点，枫叶飘落，江面泛起月光，船上送别的侧影",
+                "layout_ratio": "1:2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_CHAT_LOG_SCREENSHOT_CN",
+          "name": "聊天记录仿真截图（微信/IM）",
+          "short_description": "仿真聊天界面截图，还原指定 App UI、头像与消息顺序。",
+          "category_id": "text2image",
+          "prompt_template": "生成一张 {{app_type}} 聊天界面的全屏截图，顶部标题为 {{chat_title}}。根据 {{participants}} 绘制头像与昵称，左右气泡颜色与布局符合 {{app_type}} 习惯。按 {{messages}} 的顺序排布消息，文字语言为 {{ui_language}}，可带时间戳/已读状态。界面元素需真实，无伪造按钮或拼写错误，文字清晰可读。",
+          "placeholders": [
+            {
+              "key": "app_type",
+              "label": "聊天 App",
+              "type": "enum",
+              "required": true,
+              "hint": "微信/QQ/Slack/Discord 等",
+              "enum_options": [
+                "微信",
+                "QQ",
+                "Slack",
+                "Discord",
+                "iMessage"
+              ],
+              "default": "微信",
+              "ai_fill": false
+            },
+            {
+              "key": "chat_title",
+              "label": "聊天标题",
+              "type": "string",
+              "required": true,
+              "hint": "群名或单聊标题",
+              "ai_fill": true
+            },
+            {
+              "key": "participants",
+              "label": "参与者列表",
+              "type": "textarea",
+              "required": true,
+              "hint": "含昵称与头像描述的列表，建议 JSON",
+              "ai_fill": true
+            },
+            {
+              "key": "messages",
+              "label": "消息序列",
+              "type": "textarea",
+              "required": true,
+              "hint": "发送者、文本、表情/配图描述，建议 JSON",
+              "ai_fill": true
+            },
+            {
+              "key": "ui_language",
+              "label": "界面语言",
+              "type": "enum",
+              "required": true,
+              "hint": "中文/英文",
+              "enum_options": [
+                "中文",
+                "英文"
+              ],
+              "default": "中文",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "app_type",
+              "label": "App 类型",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "ui_language",
+              "label": "界面语言",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "聊天文本语言符合 ui_language 设置",
+              "消息顺序与 messages 描述一致，顶部标题为 chat_title"
+            ],
+            "manual_checklist": [
+              "UI 是否一眼看出是指定 app_type？",
+              "头像与气泡是否匹配正确的发送者？",
+              "是否出现假 UI 元素或明显拼写错误？"
+            ]
+          },
+          "tags": [
+            "聊天截图",
+            "仿真UI",
+            "中文文字"
+          ],
+          "example_inputs": [
+            {
+              "name": "紫禁城吃瓜群",
+              "placeholder_values": {
+                "app_type": "微信",
+                "chat_title": "紫禁城吃瓜群",
+                "participants": "[{\"name\":\"德妃\",\"avatar\":\"穿清宫服的女性头像\"},{\"name\":\"御前带刀\",\"avatar\":\"持刀侍卫的剪影\"},{\"name\":\"瓜主\",\"avatar\":\"戴墨镜的橘猫\"}]",
+                "messages": "[{\"sender\":\"德妃\",\"text\":\"听说今儿又有人翻墙？\"},{\"sender\":\"御前带刀\",\"text\":\"别乱说，截图发来看看\",\"image\":\"监控模糊截图\"},{\"sender\":\"瓜主\",\"text\":\"哈哈哈，十分钟后见\"}]",
+                "ui_language": "中文"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PET_COSPLAY_BRAND_POSTER",
+          "name": "宠物 Cosplay & 品牌联名海报",
+          "short_description": "上传宠物形象，套用指定角色与品牌元素的联名海报。",
+          "category_id": "text2image",
+          "prompt_template": "在保留 {{pet_description}} 的脸型、毛色与表情的前提，让宠物穿上 {{cosplay_character}} 的服装与道具。若提供 {{brand_elements}}，将品牌色/Logo/场景融入海报。按 {{poster_layout}} 布局主视觉与标题，文字风格遵循 {{text_style}}。整体需具备真实商业海报感，Cos 与品牌元素自然贴合。",
+          "placeholders": [
+            {
+              "key": "pet_description",
+              "label": "宠物描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "品种、毛色、表情、姿势",
+              "ai_fill": true
+            },
+            {
+              "key": "cosplay_character",
+              "label": "Cos 角色",
+              "type": "string",
+              "required": true,
+              "hint": "电影/动画角色或职业形象",
+              "ai_fill": true
+            },
+            {
+              "key": "brand_elements",
+              "label": "品牌元素",
+              "type": "textarea",
+              "required": false,
+              "hint": "品牌色、Logo、道具、场景",
+              "ai_fill": true
+            },
+            {
+              "key": "poster_layout",
+              "label": "海报布局",
+              "type": "textarea",
+              "required": true,
+              "hint": "主视觉、标题、Logo 的位置说明",
+              "ai_fill": true
+            },
+            {
+              "key": "text_style",
+              "label": "文字风格",
+              "type": "enum",
+              "required": true,
+              "hint": "标题/标语排版风格",
+              "enum_options": [
+                "大标题 + 副标",
+                "仅 Logo 与小标",
+                "电影海报风",
+                "手写感装饰标题"
+              ],
+              "default": "大标题 + 副标",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "cosplay_character",
+              "label": "角色",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "brand_elements",
+              "label": "品牌",
+              "type": "textarea",
+              "control_type": "structure"
+            },
+            {
+              "key": "poster_layout",
+              "label": "布局",
+              "type": "textarea",
+              "control_type": "structure"
+            },
+            {
+              "key": "text_style",
+              "label": "文字风格",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "宠物的脸型与毛色保持与 pet_description 一致",
+              "Cosplay 服装与道具完整呈现，贴合身体",
+              "若提供 brand_elements，品牌色与 Logo 清晰且位置合理"
+            ],
+            "manual_checklist": [
+              "海报排版是否符合 poster_layout？",
+              "文字风格是否符合 text_style，具备商业感？",
+              "Cos 与品牌元素是否自然，无明显违和？"
+            ]
+          },
+          "tags": [
+            "宠物",
+            "Cosplay",
+            "品牌联名",
+            "海报"
+          ],
+          "example_inputs": [
+            {
+              "name": "橘猫 × 肯德基联名",
+              "placeholder_values": {
+                "pet_description": "一只微胖的橘猫，圆脸，表情无辜，坐姿",
+                "cosplay_character": "疯狂动物城兔子警官",
+                "brand_elements": "肯德基红白配色、Logo、店内柜台与纸袋",
+                "poster_layout": "主视觉居中，左上角 Logo，右下角标语与价格位",
+                "text_style": "大标题 + 副标"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_POSTER_STYLE_TRANSFER_EDIT",
+          "name": "单图海报风格迁移（改色+改品类+改文案）",
+          "short_description": "保持原海报布局/字体不变，只替换主题、配色与文案。",
+          "category_id": "text2image",
+          "prompt_template": "在保持 {{keep_elements}}（布局、字体、构图）不变的前提下，按 {{new_theme}} 与主色 {{new_main_color}} 重绘海报。将 {{content_to_replace}} 全部替换为 {{new_content_description}}，包含产品、年份、标题与小字，不能留旧主题残留。整体风格沿用原排版，确保颜色和文案统一更新。",
+          "placeholders": [
+            {
+              "key": "new_theme",
+              "label": "新主题",
+              "type": "string",
+              "required": true,
+              "hint": "新的品类或节日主题",
+              "ai_fill": true
+            },
+            {
+              "key": "new_main_color",
+              "label": "新主色",
+              "type": "string",
+              "required": true,
+              "hint": "新的主色调或配色方案",
+              "ai_fill": true
+            },
+            {
+              "key": "content_to_replace",
+              "label": "替换元素",
+              "type": "textarea",
+              "required": true,
+              "hint": "原图需改的文案/产品/图标",
+              "ai_fill": true
+            },
+            {
+              "key": "new_content_description",
+              "label": "新内容描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "替换后的产品与文案细节",
+              "ai_fill": true
+            },
+            {
+              "key": "keep_elements",
+              "label": "保持元素",
+              "type": "textarea",
+              "required": true,
+              "hint": "必须保持的构图、字体或装饰",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "new_theme",
+              "label": "主题",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "new_main_color",
+              "label": "配色",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "keep_elements",
+              "label": "保留元素",
+              "type": "textarea",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "原海报的布局与字体保持不变",
+              "所有旧文案/年份/品类均替换为新主题内容",
+              "整体主色调切换为 new_main_color"
+            ],
+            "manual_checklist": [
+              "是否有未替换的旧主题元素或年份？",
+              "新的品类与文案是否自然契合新主题？",
+              "保持元素 keep_elements 是否被破坏？"
+            ]
+          },
+          "tags": [
+            "风格迁移",
+            "海报编辑",
+            "改色",
+            "文本替换"
+          ],
+          "example_inputs": [
+            {
+              "name": "蛇年 2025 → 马年 2026",
+              "placeholder_values": {
+                "new_theme": "蛇年生肖海报改为马年生肖",
+                "new_main_color": "宝石蓝与银色",
+                "content_to_replace": "蛇形插画、SNAKE 2025 文案、生肖图标、配角小字",
+                "new_content_description": "马头剪影主视觉、HORSE 2026 标题、与马相关的祝福小字与图标",
+                "keep_elements": "原海报的构图框架、字体风格、光影层次"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_BOOK_PAGE_CONTINUATION",
+          "name": "书页续写（下一页排版 + 插图延续）",
+          "short_description": "延续上一页内容与排版，生成下一页的文字与插图排版图。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{book_type}} 生成下一页的版式与插图，文字风格使用 {{text_style}}，排版遵循 {{page_layout}}。内容需承接 {{content_summary}} 的情节/知识点，字体字号行距与上一页一致，如有插图则风格与色调统一。生成完整页面的排版图而非纯插图。",
+          "placeholders": [
+            {
+              "key": "book_type",
+              "label": "书类型",
+              "type": "enum",
+              "required": true,
+              "hint": "小说/科普/绘本等",
+              "enum_options": [
+                "小说",
+                "科普",
+                "绘本"
+              ],
+              "default": "绘本",
+              "ai_fill": false
+            },
+            {
+              "key": "text_style",
+              "label": "文字风格",
+              "type": "enum",
+              "required": true,
+              "hint": "宋体/衬线/无衬线/手写感",
+              "enum_options": [
+                "宋体",
+                "衬线体",
+                "无衬线体",
+                "手写体"
+              ],
+              "default": "宋体",
+              "ai_fill": false
+            },
+            {
+              "key": "content_summary",
+              "label": "上一页内容摘要",
+              "type": "textarea",
+              "required": true,
+              "hint": "上一页的关键情节或知识点",
+              "ai_fill": true
+            },
+            {
+              "key": "page_layout",
+              "label": "排版布局",
+              "type": "enum",
+              "required": true,
+              "hint": "单双栏、上图下文等",
+              "enum_options": [
+                "单栏文字 + 插图角落",
+                "双栏文字",
+                "上图下文",
+                "全页插图 + 文字边栏"
+              ],
+              "default": "上图下文",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "book_type",
+              "label": "书类型",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "text_style",
+              "label": "文字风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "page_layout",
+              "label": "排版布局",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "版式与 page_layout 一致，包含文字与必要插图",
+              "文字样式符合 text_style，与上一页保持一致",
+              "内容承接 content_summary 的情节/主题"
+            ],
+            "manual_checklist": [
+              "画面是否延续书的整体画风与色调？",
+              "图文比例是否易读，留白是否足够？",
+              "是否出现与上一页冲突的情节或术语？"
+            ]
+          },
+          "tags": [
+            "图文排版",
+            "续写",
+            "书籍",
+            "版面复刻"
+          ],
+          "example_inputs": [
+            {
+              "name": "绘本《小狐狸探月》下一页",
+              "placeholder_values": {
+                "book_type": "绘本",
+                "text_style": "宋体",
+                "content_summary": "上一页讲小狐狸夜晚躺在草地上望着月亮，决定造一个小木梯去够到月光。",
+                "page_layout": "上图下文"
+              }
+            }
+          ]
         }
       ]
     }
