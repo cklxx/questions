@@ -5,18 +5,18 @@ export default {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: '#7c3aed',
-                    dark: '#6d28d9',
+                    DEFAULT: '#6b7fb8',
+                    soft: '#8fa1cb',
                 },
-                accent: '#3b82f6',
-                success: '#22c55e',
-                warning: '#fb923c',
-                error: '#ef4444',
+                accent: '#74b3b0',
+                success: '#46b18f',
+                warning: '#e8b166',
+                error: '#e96d6d'
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace'],
-            },
+                sans: ['"Manrope"', 'system-ui', 'sans-serif'],
+                mono: ['"Space Grotesk"', 'monospace'],
+            }
         },
     },
     plugins: [],

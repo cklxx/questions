@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 antialiased;
+    @apply bg-gradient-to-br from-[#f7f8fc] via-[#f1f4f9] to-[#f6f8fb] text-slate-900 font-sans antialiased;
   }
 }
 

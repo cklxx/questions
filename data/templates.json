@@ -1,230 +1,64 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "categories": [
     {
       "id": "text2text",
-      "name": "文生文",
-      "description": "文本到文本的模版集合",
+      "name": "高效文案/决策",
+      "description": "极致浓缩的文字模版，直接输出决策、执行与复盘",
       "templates": [
         {
-          "id": "T1_explain_to_target",
-          "name": "知识解释 + 受众适配",
-          "short_description": "面向特定受众解释复杂概念并给出结构化呈现。",
+          "id": "T1_decision_canvas",
+          "name": "秒读决策画布",
+          "short_description": "一屏读懂决策：目标/信号/选项/推荐/72 小时动作。",
           "category_id": "text2text",
-          "prompt_template": "请面向 {{target_audience}}，用 {{style}} 的风格在 {{max_length}} 字以内解释 {{topic}}，先给结论，再用类比或例子帮助理解，并在最后给出一个可操作的建议。",
+          "prompt_template": "以「{{decision_owner}}」的视角，针对 {{topic}} 写一份 1 页决策画布。结构：1) 目标与硬约束（限 {{word_limit}} 字，用 bullets） 2) 关键信号（数据或事实） 3) 3 个可行选项：收益 / 成本 / 风险 4) 推荐方案 + 最强反对意见 5) 72 小时内的 3 个动作。语气 {{tone}}，输出用中英文小标题。",
           "placeholders": [
             {
               "key": "topic",
-              "label": "主题",
+              "label": "决策主题",
               "type": "string",
               "required": true,
-              "hint": "要解释的核心概念",
+              "hint": "要解决的核心问题",
               "ai_fill": true
             },
             {
-              "key": "target_audience",
-              "label": "受众",
-              "type": "enum",
-              "required": true,
-              "hint": "如：高一学生、新入职 PM、VC 合伙人",
-              "enum_options": [
-                "高一学生",
-                "新入职 PM",
-                "VC 合伙人"
-              ],
-              "ai_fill": true,
-              "default": "新入职 PM"
-            },
-            {
-              "key": "style",
-              "label": "风格",
-              "type": "enum",
-              "required": true,
-              "hint": "语气和写作方式",
-              "enum_options": [
-                "口语化",
-                "严谨",
-                "类比驱动"
-              ],
-              "ai_fill": true,
-              "default": "类比驱动"
-            },
-            {
-              "key": "max_length",
-              "label": "长度上限",
-              "type": "number",
-              "required": false,
-              "hint": "输出字数限制",
-              "default": 500,
-              "constraints": {
-                "min": 50,
-                "max": 800
-              },
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "target_audience",
-              "label": "受众",
-              "type": "enum",
-              "control_type": "audience"
-            },
-            {
-              "key": "style",
-              "label": "风格",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "max_length",
-              "label": "长度",
-              "type": "number",
-              "control_type": "length"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "首段需包含结论",
-              "正文控制在 max_length 字以内"
-            ],
-            "manual_checklist": [
-              "是否使用了明确的例子或类比？",
-              "是否按受众水平解释，无生僻术语？",
-              "是否在结尾给出可执行建议？"
-            ]
-          },
-          "tags": [
-            "受众适配",
-            "类比",
-            "结论先行"
-          ],
-          "example_inputs": [
-            {
-              "name": "向新入职 PM 解释 A/B 测试",
-              "placeholder_values": {
-                "topic": "A/B 测试",
-                "target_audience": "新入职 PM",
-                "style": "类比驱动",
-                "max_length": 400
-              },
-              "notes": "突出低成本试验的价值"
-            }
-          ]
-        },
-        {
-          "id": "T2_nano_banana_launch_copy",
-          "name": "nano banana pro 上市全渠道文案",
-          "short_description": "生成针对 nano banana pro 的新品发布文案，适配不同渠道与受众。",
-          "category_id": "text2text",
-          "prompt_template": "为新品 {{product_name}} 撰写一则 {{channel}} 发布文案，目标受众为 {{target_audience}}。突出核心卖点：{{hero_feature}}，结合场景亮点：{{use_case}}，采用 {{tone}} 语气，在 {{word_limit}} 字以内给出：1) 强钩子开头 2) 场景化描述 3) 明确的 {{call_to_action}} 行动口令。",
-          "placeholders": [
-            {
-              "key": "product_name",
-              "label": "产品名",
+              "key": "decision_owner",
+              "label": "决策人",
               "type": "string",
               "required": true,
-              "hint": "默认 nano banana pro，可改为其他型号",
-              "default": "nano banana pro",
-              "ai_fill": true
-            },
-            {
-              "key": "channel",
-              "label": "发布渠道",
-              "type": "enum",
-              "required": true,
-              "hint": "选择要发布的渠道",
-              "enum_options": [
-                "微信朋友圈",
-                "抖音短视频文案",
-                "B 站社区帖",
-                "小红书笔记"
-              ],
-              "default": "微信朋友圈",
-              "ai_fill": true
-            },
-            {
-              "key": "target_audience",
-              "label": "目标受众",
-              "type": "enum",
-              "required": true,
-              "hint": "预期阅读人群",
-              "enum_options": [
-                "数码发烧友",
-                "通勤上班族",
-                "学生党",
-                "礼品送礼场景"
-              ],
-              "default": "通勤上班族",
-              "ai_fill": true
-            },
-            {
-              "key": "hero_feature",
-              "label": "核心卖点",
-              "type": "textarea",
-              "required": true,
-              "hint": "一句话概括产品亮点，如：续航/轻薄/抗摔/防水",
-              "ai_fill": true
-            },
-            {
-              "key": "use_case",
-              "label": "场景亮点",
-              "type": "textarea",
-              "required": false,
-              "hint": "在何种生活/工作场景最出彩",
+              "hint": "负责拍板的人或角色",
+              "default": "Owner",
               "ai_fill": true
             },
             {
               "key": "tone",
-              "label": "语气风格",
+              "label": "语气",
               "type": "enum",
               "required": true,
-              "hint": "决定文案调性",
+              "hint": "输出调性",
               "enum_options": [
-                "热血发布",
-                "生活化陪伴",
-                "科技感",
-                "简洁克制"
+                "硬核决策",
+                "极简理性",
+                "鼓舞团队"
               ],
-              "default": "科技感",
-              "ai_fill": true
-            },
-            {
-              "key": "call_to_action",
-              "label": "行动口令",
-              "type": "enum",
-              "required": true,
-              "hint": "希望读者做什么",
-              "enum_options": [
-                "预约试用",
-                "立即下单",
-                "到店体验",
-                "转发抽奖"
-              ],
-              "default": "预约试用",
-              "ai_fill": true
+              "default": "硬核决策",
+              "ai_fill": false
             },
             {
               "key": "word_limit",
-              "label": "字数上限",
+              "label": "文字上限",
               "type": "number",
               "required": false,
-              "hint": "控制整体长度",
+              "hint": "画布正文字数限制",
               "default": 180,
               "constraints": {
                 "min": 80,
-                "max": 260
+                "max": 280
               },
               "ai_fill": false
             }
           ],
           "controls": [
-            {
-              "key": "channel",
-              "label": "渠道",
-              "type": "enum",
-              "control_type": "structure"
-            },
             {
               "key": "tone",
               "label": "语气",
@@ -241,33 +75,223 @@
           "evaluation_rules": {
             "auto_checks": [
               "正文不超过 word_limit 字",
-              "包含明确行动口令 call_to_action"
+              "必须列出 3 个选项并给出推荐"
             ],
             "manual_checklist": [
-              "开头是否直接给出强钩子？",
-              "是否清晰点出 hero_feature 与真实使用场景？",
-              "CTA 是否具体且可执行？"
+              "推荐方案是否基于关键信号，而非直觉？",
+              "反对意见是否具体且可验证？",
+              "72 小时行动是否可直接执行、可度量？"
             ]
           },
           "tags": [
-            "新品发布",
-            "渠道文案",
-            "nano banana pro"
+            "决策",
+            "短平快",
+            "行动导向"
           ],
           "example_inputs": [
             {
-              "name": "朋友圈发布：轻薄耐摔亮点",
+              "name": "新品定价决策",
               "placeholder_values": {
-                "product_name": "nano banana pro",
-                "channel": "微信朋友圈",
-                "target_audience": "通勤上班族",
-                "hero_feature": "全新钛合金一体壳 + 全天候 48h 续航，通勤包里不占重",
-                "use_case": "公交/地铁人挤人依旧耐磨，办公室桌面轻量随身不累赘",
-                "tone": "生活化陪伴",
-                "call_to_action": "预约试用",
+                "topic": "新品 A 的首发定价策略",
+                "decision_owner": "产品线 VP",
+                "tone": "硬核决策",
                 "word_limit": 180
               },
-              "notes": "突出轻薄与耐摔，适合日常分享"
+              "notes": "强调信号与行动并行"
+            }
+          ]
+        },
+        {
+          "id": "T2_lightning_brief",
+          "name": "闪电 Brief → 交付",
+          "short_description": "压缩碎片信息成可执行 brief + checklist。",
+          "category_id": "text2text",
+          "prompt_template": "为交付物 {{deliverable}} 写一份闪电 brief。输入素材：{{raw_notes}}。受众 {{audience}}，必须包含成品标准：{{definition_of_done}}，限制条件：{{constraints}}。输出：1) 3 行概要 2) 成品要素检查清单 3) 风格 / 禁忌 4) 负责人与截止时间预留位。",
+          "placeholders": [
+            {
+              "key": "deliverable",
+              "label": "交付物",
+              "type": "string",
+              "required": true,
+              "hint": "要产出的具体东西",
+              "ai_fill": true
+            },
+            {
+              "key": "raw_notes",
+              "label": "素材",
+              "type": "textarea",
+              "required": true,
+              "hint": "零散信息、想法、背景",
+              "ai_fill": true
+            },
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "required": true,
+              "hint": "谁会阅读/执行",
+              "enum_options": [
+                "高层决策",
+                "工程团队",
+                "市场团队",
+                "运营"
+              ],
+              "default": "工程团队",
+              "ai_fill": true
+            },
+            {
+              "key": "definition_of_done",
+              "label": "完成标准",
+              "type": "textarea",
+              "required": true,
+              "hint": "成品必须满足什么",
+              "ai_fill": false
+            },
+            {
+              "key": "constraints",
+              "label": "限制条件",
+              "type": "string",
+              "required": false,
+              "hint": "时间 / 预算 / 渠道等约束",
+              "default": "本周内完成",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "control_type": "audience"
+            },
+            {
+              "key": "constraints",
+              "label": "限制",
+              "type": "string",
+              "control_type": "safety"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "概要部分不超过 3 行",
+              "Checklist 覆盖交付物的关键要素"
+            ],
+            "manual_checklist": [
+              "完成标准是否可验收、可度量？",
+              "有无明确的禁忌或风险提醒？",
+              "受众是否能一眼执行？"
+            ]
+          },
+          "tags": [
+            "Brief",
+            "执行力",
+            "高信噪"
+          ],
+          "example_inputs": [
+            {
+              "name": "登录页面改版 Brief",
+              "placeholder_values": {
+                "deliverable": "移动端登录页 UI & 文案",
+                "raw_notes": "现有转化 12%，需要提高到 20%；必须兼容 SSO；品牌语调冷静克制；文案需要更轻量；线框已有初稿。",
+                "audience": "工程团队",
+                "definition_of_done": "上线后 7 天内转化率提升到 18% 以上；兼容 SSO 与手机号登录；文案通过品牌审校；性能指标保持 TTFB < 200ms。",
+                "constraints": "一周内上线灰度"
+              },
+              "notes": "突出完成标准与禁忌"
+            }
+          ]
+        },
+        {
+          "id": "T3_red_team_review",
+          "name": "红队快速反驳",
+          "short_description": "生成最尖锐的反对论点与修复动作，避免盲点。",
+          "category_id": "text2text",
+          "prompt_template": "作为红队，针对方案：{{plan_summary}}，在 {{context}} 场景下提出最尖锐的反驳和修复建议。输出：① 反驳理由 3 条，每条含潜在后果 ② 需补充的证据 ③ 立即可做的修补动作（限 {{action_limit}} 项）。语气 {{tone}}，禁止客套。",
+          "placeholders": [
+            {
+              "key": "plan_summary",
+              "label": "方案摘要",
+              "type": "textarea",
+              "required": true,
+              "hint": "当前方案或策略的核心内容",
+              "ai_fill": true
+            },
+            {
+              "key": "context",
+              "label": "使用场景",
+              "type": "string",
+              "required": true,
+              "hint": "目标用户、资源或约束",
+              "ai_fill": true
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "反驳的风格",
+              "enum_options": [
+                "冷静客观",
+                "无情吐槽",
+                "数据驱动"
+              ],
+              "default": "冷静客观",
+              "ai_fill": false
+            },
+            {
+              "key": "action_limit",
+              "label": "修补动作数",
+              "type": "number",
+              "required": false,
+              "hint": "要列出的修补动作数量上限",
+              "default": 3,
+              "constraints": {
+                "min": 2,
+                "max": 6
+              },
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "action_limit",
+              "label": "动作数",
+              "type": "number",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "必须给出反驳与潜在后果",
+              "修补动作数量不超过 action_limit"
+            ],
+            "manual_checklist": [
+              "反驳是否命中关键假设而非细枝末节？",
+              "修补动作是否可立刻执行？",
+              "建议是否含可验证的证据指引？"
+            ]
+          },
+          "tags": [
+            "红队",
+            "风险控制",
+            "质疑假设"
+          ],
+          "example_inputs": [
+            {
+              "name": "增长实验红队",
+              "placeholder_values": {
+                "plan_summary": "计划在首页弹出优惠券吸引新用户下单，目标提升首单转化 5%。",
+                "context": "预算有限；主要用户为一二线城市 25-35 岁；需符合合规要求。",
+                "tone": "数据驱动",
+                "action_limit": 3
+              },
+              "notes": "关注合规与用户体验风险"
             }
           ]
         }
@@ -275,1686 +299,72 @@
     },
     {
       "id": "text2artifact",
-      "name": "文生产物",
-      "description": "生成代码、Agent 工作流或结构化产物的模版集合",
+      "name": "结构化产物",
+      "description": "高信噪比的系统提示、测试矩阵等结构化输出",
       "templates": [
         {
-          "id": "P1_code_with_tests",
-          "name": "代码实现 + 最小自测",
-          "short_description": "生成指定语言的代码并附带最小可运行的测试用例。",
+          "id": "P1_system_prompt_blueprint",
+          "name": "Agent 系统提示蓝图",
+          "short_description": "最小而完整的系统提示：角色、流程、拒绝清单、输出格式。",
           "category_id": "text2artifact",
-          "prompt_template": "请用 {{language}} 编写满足需求的代码：{{task_description}}。遵循约束：{{constraints}}。输出格式：先给主代码，再给至少 {{test_count}} 个最小自测用例，标明如何运行。",
+          "prompt_template": "为一个 {{agent_type}} Agent 生成系统提示蓝图。使命：{{mission}}。可用工具：{{tools}}。护栏：{{guardrails}}。要求：输出角色设定、输入解析流程、拒绝清单、输出格式示例，限制在 {{tokens_limit}} tokens 内，语气 {{output_style}}。",
           "placeholders": [
             {
-              "key": "task_description",
-              "label": "任务描述",
+              "key": "agent_type",
+              "label": "Agent 类型",
+              "type": "string",
+              "required": true,
+              "hint": "如：数据分析助手、代码巡检员",
+              "ai_fill": true
+            },
+            {
+              "key": "mission",
+              "label": "使命",
               "type": "textarea",
               "required": true,
-              "hint": "用自然语言描述要实现的功能",
+              "hint": "Agent 要完成的核心任务",
+              "ai_fill": true
+            },
+            {
+              "key": "tools",
+              "label": "可用工具",
+              "type": "textarea",
+              "required": false,
+              "hint": "可调用的 API、函数或限制",
+              "ai_fill": true
+            },
+            {
+              "key": "guardrails",
+              "label": "护栏",
+              "type": "textarea",
+              "required": false,
+              "hint": "要避免的行为、隐私或合规限制",
+              "ai_fill": true
+            },
+            {
+              "key": "output_style",
+              "label": "输出风格",
+              "type": "enum",
+              "required": true,
+              "hint": "系统提示的表达方式",
+              "enum_options": [
+                "结构化分段",
+                "表格 + 要点",
+                "极简步骤",
+                "审计口吻"
+              ],
+              "default": "结构化分段",
               "ai_fill": false
             },
             {
-              "key": "language",
-              "label": "编程语言",
-              "type": "enum",
-              "required": true,
-              "hint": "选择目标语言",
-              "enum_options": [
-                "Python",
-                "TypeScript",
-                "Go"
-              ],
-              "default": "Python",
-              "ai_fill": true
-            },
-            {
-              "key": "constraints",
-              "label": "约束",
-              "type": "textarea",
-              "required": false,
-              "hint": "可选：禁止第三方库、需考虑复杂度等",
-              "ai_fill": true
-            },
-            {
-              "key": "test_count",
-              "label": "最少测试数",
+              "key": "tokens_limit",
+              "label": "Token 上限",
               "type": "number",
               "required": false,
-              "hint": "至少需要多少个测试用例",
-              "default": 3,
+              "hint": "系统提示长度控制",
+              "default": 600,
               "constraints": {
-                "min": 1,
-                "max": 10
-              },
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "language",
-              "label": "编程语言",
-              "type": "enum",
-              "control_type": "format"
-            },
-            {
-              "key": "constraints",
-              "label": "约束",
-              "type": "textarea",
-              "control_type": "safety"
-            },
-            {
-              "key": "test_count",
-              "label": "最少测试",
-              "type": "number",
-              "control_type": "structure"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "测试用例数量不少于 test_count"
-            ],
-            "manual_checklist": [
-              "主代码和测试代码是否分段展示？",
-              "是否说明如何运行测试？",
-              "是否覆盖边界条件？"
-            ]
-          },
-          "tags": [
-            "代码",
-            "测试",
-            "结构化输出"
-          ],
-          "example_inputs": [
-            {
-              "name": "实现 LRU 缓存（Python）",
-              "placeholder_values": {
-                "task_description": "实现一个支持 get/put 的 LRU 缓存类，容量可配置",
-                "language": "Python",
-                "constraints": "不使用第三方库，需给出时间复杂度说明",
-                "test_count": 3
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "text2image",
-      "name": "文生图",
-      "description": "文本到图像的模版集合",
-      "templates": [
-        {
-          "id": "I1_nano_banana_hero_poster",
-          "name": "nano banana pro 视觉海报提示",
-          "short_description": "生成 nano banana pro 的品牌视觉海报提示，突出材质与配色。",
-          "category_id": "text2image",
-          "prompt_template": "为 {{product_name}} 生成主视觉海报，主题场景是 {{scene}}，突出配色 {{hero_color}} 与材质质感，风格 {{style}}，氛围 {{mood}}，光线 {{lighting}}，分辨率 {{resolution}}。确保画面中产品主体居中，品牌标识清晰。",
-          "placeholders": [
-            {
-              "key": "product_name",
-              "label": "产品名",
-              "type": "string",
-              "required": true,
-              "hint": "默认 nano banana pro，可改为其他型号",
-              "default": "nano banana pro",
-              "ai_fill": true
-            },
-            {
-              "key": "scene",
-              "label": "场景",
-              "type": "enum",
-              "required": true,
-              "hint": "视觉演绎场景",
-              "enum_options": [
-                "都市夜景",
-                "科幻实验室",
-                "极简工作桌",
-                "户外徒步"
-              ],
-              "default": "都市夜景",
-              "ai_fill": true
-            },
-            {
-              "key": "hero_color",
-              "label": "主配色",
-              "type": "string",
-              "required": true,
-              "hint": "例如：钛灰 + 霓虹蓝侧光",
-              "default": "钛灰 + 霓虹蓝侧光",
-              "ai_fill": true
-            },
-            {
-              "key": "style",
-              "label": "画面风格",
-              "type": "enum",
-              "required": true,
-              "hint": "整体视觉风格",
-              "enum_options": [
-                "赛博未来",
-                "极简商业",
-                "杂志大片",
-                "写实摄影"
-              ],
-              "default": "赛博未来",
-              "ai_fill": true
-            },
-            {
-              "key": "mood",
-              "label": "氛围",
-              "type": "enum",
-              "required": true,
-              "hint": "画面情绪",
-              "enum_options": [
-                "冷静克制",
-                "高能发布",
-                "温暖陪伴",
-                "探索感"
-              ],
-              "default": "高能发布",
-              "ai_fill": true
-            },
-            {
-              "key": "lighting",
-              "label": "光线",
-              "type": "enum",
-              "required": false,
-              "hint": "光照与阴影风格",
-              "enum_options": [
-                "硬光强对比",
-                "柔光氛围",
-                "背光剪影",
-                "侧光质感"
-              ],
-              "default": "侧光质感",
-              "ai_fill": true
-            },
-            {
-              "key": "resolution",
-              "label": "分辨率",
-              "type": "enum",
-              "required": false,
-              "hint": "生成分辨率",
-              "enum_options": [
-                "4k",
-                "8k",
-                "square 1:1",
-                "portrait 9:16"
-              ],
-              "default": "4k",
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "style",
-              "label": "风格",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "scene",
-              "label": "场景",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "resolution",
-              "label": "分辨率",
-              "type": "enum",
-              "control_type": "length"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "画面需包含品牌主体，并保持产品居中"
-            ],
-            "manual_checklist": [
-              "配色是否与 hero_color 保持一致？",
-              "风格/氛围是否与品牌调性匹配？",
-              "产品细节是否清晰可辨？"
-            ]
-          },
-          "tags": [
-            "视觉海报",
-            "nano banana pro",
-            "品牌视觉"
-          ],
-          "example_inputs": [
-            {
-              "name": "赛博夜景海报",
-              "placeholder_values": {
-                "product_name": "nano banana pro",
-                "scene": "都市夜景",
-                "hero_color": "钛灰 + 霓虹蓝侧光",
-                "style": "赛博未来",
-                "mood": "高能发布",
-                "lighting": "硬光强对比",
-                "resolution": "portrait 9:16"
-              },
-              "notes": "适合竖版投放，突出高能科技感"
-            }
-          ]
-        },
-        {
-          "id": "I2_character_consistency",
-          "name": "角色一致性生成",
-          "short_description": "在多个场景中保持角色外观一致，适合故事板、漫画或多场景项目。",
-          "category_id": "text2image",
-          "prompt_template": "创建一个角色，描述：{{character_description}}。在 {{scene_description}} 场景中，角色采取 {{pose}} 姿势，背景为 {{background}}。保持角色外观一致性级别：{{consistency_level}}，画面风格：{{art_style}}，光照：{{lighting}}，视角：{{camera_angle}}。",
-          "placeholders": [
-            {
-              "key": "character_description",
-              "label": "角色描述",
-              "type": "textarea",
-              "required": true,
-              "hint": "详细描述角色外貌、服装、特征，如：年轻女性，黑色长发，穿蓝色连衣裙，戴圆框眼镜",
-              "ai_fill": true
-            },
-            {
-              "key": "scene_description",
-              "label": "场景描述",
-              "type": "textarea",
-              "required": true,
-              "hint": "描述场景环境和氛围，如：温馨咖啡馆内，窗外阳光洒入",
-              "ai_fill": true
-            },
-            {
-              "key": "pose",
-              "label": "姿势动作",
-              "type": "string",
-              "required": true,
-              "hint": "角色的姿势或动作，如：坐在椅子上看书",
-              "ai_fill": true
-            },
-            {
-              "key": "background",
-              "label": "背景细节",
-              "type": "enum",
-              "required": true,
-              "hint": "背景处理方式",
-              "enum_options": [
-                "简约纯色",
-                "模糊虚化",
-                "详细场景",
-                "梦幻光斑"
-              ],
-              "default": "详细场景",
-              "ai_fill": true
-            },
-            {
-              "key": "consistency_level",
-              "label": "一致性级别",
-              "type": "enum",
-              "required": true,
-              "hint": "保持角色特征的严格程度",
-              "enum_options": [
-                "严格一致",
-                "主要特征一致",
-                "风格一致"
-              ],
-              "default": "严格一致",
-              "ai_fill": false
-            },
-            {
-              "key": "art_style",
-              "label": "艺术风格",
-              "type": "enum",
-              "required": true,
-              "hint": "整体画面风格",
-              "enum_options": [
-                "写实摄影",
-                "动漫插画",
-                "水彩手绘",
-                "3D渲染"
-              ],
-              "default": "写实摄影",
-              "ai_fill": true
-            },
-            {
-              "key": "lighting",
-              "label": "光照效果",
-              "type": "enum",
-              "required": false,
-              "hint": "场景光照风格",
-              "enum_options": [
-                "自然光",
-                "影棚布光",
-                "戏剧性侧光",
-                "柔和漫射光"
-              ],
-              "default": "自然光",
-              "ai_fill": true
-            },
-            {
-              "key": "camera_angle",
-              "label": "相机角度",
-              "type": "enum",
-              "required": false,
-              "hint": "拍摄视角",
-              "enum_options": [
-                "平视",
-                "俯视",
-                "仰视",
-                "特写"
-              ],
-              "default": "平视",
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "consistency_level",
-              "label": "一致性",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "art_style",
-              "label": "风格",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "camera_angle",
-              "label": "视角",
-              "type": "enum",
-              "control_type": "other"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "角色关键特征（发型、服装、面部特征）需保持一致"
-            ],
-            "manual_checklist": [
-              "角色的主要识别特征是否在所有场景中保持一致？",
-              "姿势和动作是否符合场景设定？",
-              "背景是否适当衬托角色而不喧宾夺主？"
-            ]
-          },
-          "tags": [
-            "角色一致性",
-            "故事板",
-            "漫画制作",
-            "多场景"
-          ],
-          "example_inputs": [
-            {
-              "name": "咖啡馆读书场景",
-              "placeholder_values": {
-                "character_description": "25岁亚洲女性，齐肩黑发，穿白色衬衫和牛仔裤，戴细框眼镜，温柔的笑容",
-                "scene_description": "温馨的街角咖啡馆，木质桌椅，绿植装饰，下午阳光透过大窗户洒入",
-                "pose": "坐在靠窗座位，手捧咖啡杯，看向窗外",
-                "background": "详细场景",
-                "consistency_level": "严格一致",
-                "art_style": "写实摄影",
-                "lighting": "自然光",
-                "camera_angle": "平视"
-              },
-              "notes": "适合生活类故事板，强调角色细节一致性"
-            }
-          ]
-        },
-        {
-          "id": "I3_product_photography",
-          "name": "专业产品摄影",
-          "short_description": "生成高质量电商产品照片，适合在线商店、目录和营销材料。",
-          "category_id": "text2image",
-          "prompt_template": "为 {{product_type}} 创建专业产品照片。产品描述：{{product_details}}。背景：{{background_style}}，光照设置：{{lighting_setup}}，拍摄角度：{{shooting_angle}}，构图：{{composition}}，分辨率：{{resolution}}。确保产品细节清晰，色彩准确，{{additional_requirements}}。",
-          "placeholders": [
-            {
-              "key": "product_type",
-              "label": "产品类型",
-              "type": "string",
-              "required": true,
-              "hint": "如：智能手表、咖啡杯、运动鞋",
-              "ai_fill": true
-            },
-            {
-              "key": "product_details",
-              "label": "产品细节",
-              "type": "textarea",
-              "required": true,
-              "hint": "详细描述产品的颜色、材质、特征等",
-              "ai_fill": true
-            },
-            {
-              "key": "background_style",
-              "label": "背景风格",
-              "type": "enum",
-              "required": true,
-              "hint": "产品背景选择",
-              "enum_options": [
-                "纯白背景",
-                "纯色背景",
-                "木质纹理",
-                "大理石台面",
-                "生活场景",
-                "渐变背景"
-              ],
-              "default": "纯白背景",
-              "ai_fill": true
-            },
-            {
-              "key": "lighting_setup",
-              "label": "光照布置",
-              "type": "enum",
-              "required": true,
-              "hint": "影棚光照方式",
-              "enum_options": [
-                "三点布光",
-                "柔光箱顶光",
-                "侧光加轮廓光",
-                "自然窗光",
-                "戏剧性强光"
-              ],
-              "default": "三点布光",
-              "ai_fill": true
-            },
-            {
-              "key": "shooting_angle",
-              "label": "拍摄角度",
-              "type": "enum",
-              "required": true,
-              "hint": "相机位置",
-              "enum_options": [
-                "正面平视",
-                "45度俯视",
-                "侧面展示",
-                "顶视图",
-                "低角度仰视"
-              ],
-              "default": "45度俯视",
-              "ai_fill": false
-            },
-            {
-              "key": "composition",
-              "label": "构图方式",
-              "type": "enum",
-              "required": true,
-              "hint": "画面布局",
-              "enum_options": [
-                "居中构图",
-                "三分法",
-                "对角线构图",
-                "留白构图"
-              ],
-              "default": "居中构图",
-              "ai_fill": false
-            },
-            {
-              "key": "resolution",
-              "label": "分辨率",
-              "type": "enum",
-              "required": false,
-              "hint": "输出分辨率",
-              "enum_options": [
-                "4K",
-                "2K",
-                "方形 1:1",
-                "竖版 3:4"
-              ],
-              "default": "4K",
-              "ai_fill": false
-            },
-            {
-              "key": "additional_requirements",
-              "label": "附加要求",
-              "type": "string",
-              "required": false,
-              "hint": "如：展示商标清晰、包含阴影效果、凸显质感等",
-              "ai_fill": true
-            }
-          ],
-          "controls": [
-            {
-              "key": "lighting_setup",
-              "label": "光照",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "shooting_angle",
-              "label": "角度",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "resolution",
-              "label": "分辨率",
-              "type": "enum",
-              "control_type": "length"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "产品需清晰锐利，背景干净无杂物"
-            ],
-            "manual_checklist": [
-              "产品细节（材质、纹理）是否清晰可见？",
-              "光照是否均匀，有无过曝或阴影过重？",
-              "背景是否专业且不分散注意力？",
-              "构图是否符合电商展示标准？"
-            ]
-          },
-          "tags": [
-            "产品摄影",
-            "电商",
-            "专业摄影",
-            "商品展示"
-          ],
-          "example_inputs": [
-            {
-              "name": "智能手表产品图",
-              "placeholder_values": {
-                "product_type": "智能手表",
-                "product_details": "黑色金属表壳，AMOLED圆形屏幕，硅胶表带，屏幕显示时间和心率数据",
-                "background_style": "纯白背景",
-                "lighting_setup": "三点布光",
-                "shooting_angle": "45度俯视",
-                "composition": "居中构图",
-                "resolution": "4K",
-                "additional_requirements": "屏幕发光效果清晰，金属质感明显，表带柔软质地可见"
-              },
-              "notes": "标准电商白底图规范"
-            }
-          ]
-        },
-        {
-          "id": "I4_editorial_fashion",
-          "name": "时尚编辑大片",
-          "short_description": "创建高级时尚杂志风格的编辑摄影，适合时尚品牌和创意项目。",
-          "category_id": "text2image",
-          "prompt_template": "创作时尚编辑摄影作品。模特描述：{{model_description}}，服装造型：{{outfit_styling}}，拍摄场景：{{setting}}，情绪氛围：{{mood}}，摄影风格：{{photography_style}}，镜头规格：{{camera_specs}}，后期色调：{{color_grading}}。画面需体现 {{creative_concept}}。",
-          "placeholders": [
-            {
-              "key": "model_description",
-              "label": "模特描述",
-              "type": "textarea",
-              "required": true,
-              "hint": "模特的外貌、气质、姿态等，如：高挑的亚洲女模特，冷峻表情，直视镜头",
-              "ai_fill": true
-            },
-            {
-              "key": "outfit_styling",
-              "label": "服装造型",
-              "type": "textarea",
-              "required": true,
-              "hint": "详细描述服装、配饰、发型妆容",
-              "ai_fill": true
-            },
-            {
-              "key": "setting",
-              "label": "拍摄场景",
-              "type": "enum",
-              "required": true,
-              "hint": "拍摄环境选择",
-              "enum_options": [
-                "影棚纯色背景",
-                "都市街头",
-                "自然户外",
-                "工业废墟",
-                "复古室内",
-                "未来主义空间"
-              ],
-              "default": "影棚纯色背景",
-              "ai_fill": true
-            },
-            {
-              "key": "mood",
-              "label": "情绪氛围",
-              "type": "enum",
-              "required": true,
-              "hint": "整体情感基调",
-              "enum_options": [
-                "冷峻高级",
-                "浪漫梦幻",
-                "前卫先锋",
-                "复古优雅",
-                "野性力量"
-              ],
-              "default": "冷峻高级",
-              "ai_fill": true
-            },
-            {
-              "key": "photography_style",
-              "label": "摄影风格",
-              "type": "enum",
-              "required": true,
-              "hint": "拍摄技法和美学风格",
-              "enum_options": [
-                "Vogue杂志风",
-                "街头抓拍感",
-                "极简主义",
-                "电影胶片感",
-                "数字艺术"
-              ],
-              "default": "Vogue杂志风",
-              "ai_fill": true
-            },
-            {
-              "key": "camera_specs",
-              "label": "镜头规格",
-              "type": "enum",
-              "required": false,
-              "hint": "模拟相机参数",
-              "enum_options": [
-                "85mm f/1.4 人像",
-                "50mm f/1.8 标准",
-                "35mm f/2 广角",
-                "135mm f/2 长焦"
-              ],
-              "default": "85mm f/1.4 人像",
-              "ai_fill": false
-            },
-            {
-              "key": "color_grading",
-              "label": "后期色调",
-              "type": "enum",
-              "required": false,
-              "hint": "色彩处理风格",
-              "enum_options": [
-                "高对比黑白",
-                "暖色电影调",
-                "冷色高级灰",
-                "鲜艳饱和",
-                "复古胶片"
-              ],
-              "default": "冷色高级灰",
-              "ai_fill": true
-            },
-            {
-              "key": "creative_concept",
-              "label": "创意概念",
-              "type": "string",
-              "required": false,
-              "hint": "作品要传达的主题或理念",
-              "ai_fill": true
-            }
-          ],
-          "controls": [
-            {
-              "key": "photography_style",
-              "label": "风格",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "mood",
-              "label": "氛围",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "camera_specs",
-              "label": "镜头",
-              "type": "enum",
-              "control_type": "other"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "画面需符合时尚杂志专业水准"
-            ],
-            "manual_checklist": [
-              "服装细节和质感是否清晰展现？",
-              "模特姿态和表情是否符合情绪设定？",
-              "光影和色调是否营造出预期氛围？",
-              "整体构图是否具有视觉冲击力和艺术性？"
-            ]
-          },
-          "tags": [
-            "时尚摄影",
-            "编辑大片",
-            "高级时尚",
-            "杂志风格"
-          ],
-          "example_inputs": [
-            {
-              "name": "都市冷峻风",
-              "placeholder_values": {
-                "model_description": "高挑亚洲女模特，短发利落，冷峻眼神，直视镜头，姿态挺拔自信",
-                "outfit_styling": "黑色oversized西装外套，白色衬衫，搭配银色项链，简约耳环，黑色皮靴",
-                "setting": "都市街头",
-                "mood": "冷峻高级",
-                "photography_style": "Vogue杂志风",
-                "camera_specs": "85mm f/1.4 人像",
-                "color_grading": "冷色高级灰",
-                "creative_concept": "现代都市女性的力量感与独立气质"
-              },
-              "notes": "适合高端时尚品牌lookbook"
-            }
-          ]
-        },
-        {
-          "id": "I5_background_replacement",
-          "name": "智能背景替换",
-          "short_description": "保持主体完整性的同时替换背景，适合人像处理和场景合成。",
-          "category_id": "text2image",
-          "prompt_template": "将主体 {{subject_description}} 的背景替换为 {{new_background}}。保持主体的 {{preserve_elements}}，使用 {{blend_mode}} 进行融合。新背景的光照方向：{{lighting_direction}}，整体色调：{{color_harmony}}，景深效果：{{depth_of_field}}。确保边缘 {{edge_quality}}，画面 {{realism_level}}。",
-          "placeholders": [
-            {
-              "key": "subject_description",
-              "label": "主体描述",
-              "type": "textarea",
-              "required": true,
-              "hint": "描述要保留的主体，如：穿红色连衣裙的女性，全身站姿",
-              "ai_fill": true
-            },
-            {
-              "key": "new_background",
-              "label": "新背景描述",
-              "type": "textarea",
-              "required": true,
-              "hint": "详细描述替换后的背景场景，如：日落时分的海滩，橙红色天空",
-              "ai_fill": true
-            },
-            {
-              "key": "preserve_elements",
-              "label": "保留要素",
-              "type": "string",
-              "required": true,
-              "hint": "需完整保留的元素，如：原始比例、光照细节、肤色、服装质感",
-              "default": "原始比例、光照细节、肤色",
-              "ai_fill": false
-            },
-            {
-              "key": "blend_mode",
-              "label": "融合模式",
-              "type": "enum",
-              "required": true,
-              "hint": "主体与背景的融合方式",
-              "enum_options": [
-                "自然过渡",
-                "清晰边缘",
-                "艺术化融合",
-                "光晕柔化"
-              ],
-              "default": "自然过渡",
-              "ai_fill": false
-            },
-            {
-              "key": "lighting_direction",
-              "label": "光照方向",
-              "type": "enum",
-              "required": true,
-              "hint": "新背景的光源方向需与主体匹配",
-              "enum_options": [
-                "顶光",
-                "侧光",
-                "背光",
-                "正面光"
-              ],
-              "default": "侧光",
-              "ai_fill": true
-            },
-            {
-              "key": "color_harmony",
-              "label": "色彩协调",
-              "type": "enum",
-              "required": false,
-              "hint": "主体与背景的色调统一",
-              "enum_options": [
-                "暖色调统一",
-                "冷色调统一",
-                "互补色对比",
-                "保持原色"
-              ],
-              "default": "保持原色",
-              "ai_fill": true
-            },
-            {
-              "key": "depth_of_field",
-              "label": "景深效果",
-              "type": "enum",
-              "required": false,
-              "hint": "背景虚化程度",
-              "enum_options": [
-                "背景清晰",
-                "轻微虚化",
-                "强虚化",
-                "渐进虚化"
-              ],
-              "default": "轻微虚化",
-              "ai_fill": false
-            },
-            {
-              "key": "edge_quality",
-              "label": "边缘质量",
-              "type": "enum",
-              "required": false,
-              "hint": "主体边缘处理",
-              "enum_options": [
-                "精细抠图",
-                "自然羽化",
-                "艺术化模糊"
-              ],
-              "default": "精细抠图",
-              "ai_fill": false
-            },
-            {
-              "key": "realism_level",
-              "label": "真实感",
-              "type": "enum",
-              "required": false,
-              "hint": "最终画面的真实程度",
-              "enum_options": [
-                "照片级真实",
-                "自然真实",
-                "艺术化处理"
-              ],
-              "default": "照片级真实",
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "blend_mode",
-              "label": "融合",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "depth_of_field",
-              "label": "景深",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "realism_level",
-              "label": "真实感",
-              "type": "enum",
-              "control_type": "style"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "主体边缘需自然无明显抠图痕迹"
-            ],
-            "manual_checklist": [
-              "主体与新背景的光照方向是否一致？",
-              "色调是否和谐统一？",
-              "主体边缘是否自然融合，无锯齿或光晕？",
-              "景深效果是否真实可信？"
-            ]
-          },
-          "tags": [
-            "背景替换",
-            "抠图",
-            "场景合成",
-            "人像处理"
-          ],
-          "example_inputs": [
-            {
-              "name": "海滩人像背景替换",
-              "placeholder_values": {
-                "subject_description": "穿白色连衣裙的年轻女性，长发飘逸，微笑表情，全身站姿",
-                "new_background": "日落时分的海滩，橙红色渐变天空，海浪轻柔，沙滩细腻",
-                "preserve_elements": "原始比例、发丝细节、肤色、服装质感",
-                "blend_mode": "自然过渡",
-                "lighting_direction": "侧光",
-                "color_harmony": "暖色调统一",
-                "depth_of_field": "轻微虚化",
-                "edge_quality": "精细抠图",
-                "realism_level": "照片级真实"
-              },
-              "notes": "适合人像摄影后期处理，营造浪漫氛围"
-            }
-          ]
-        },
-        {
-          "id": "I6_text_in_image",
-          "name": "文字融合图像",
-          "short_description": "生成带有清晰、风格化文字的图像，适合海报、卡片、社交媒体内容。",
-          "category_id": "text2image",
-          "prompt_template": "创建包含文字 \"{{text_content}}\" 的图像。文字字体风格：{{font_style}}，排版布局：{{text_layout}}，背景主题：{{background_theme}}，配色方案：{{color_scheme}}，装饰元素：{{decorative_elements}}，整体风格：{{overall_style}}，尺寸比例：{{aspect_ratio}}。确保文字 {{text_legibility}}。",
-          "placeholders": [
-            {
-              "key": "text_content",
-              "label": "文字内容",
-              "type": "string",
-              "required": true,
-              "hint": "要在图像中显示的文字，如：新年快乐、Summer Sale",
-              "ai_fill": false
-            },
-            {
-              "key": "font_style",
-              "label": "字体风格",
-              "type": "enum",
-              "required": true,
-              "hint": "文字的字体类型",
-              "enum_options": [
-                "现代无衬线",
-                "优雅衬线",
-                "手写书法",
-                "粗体海报字",
-                "可爱圆体",
-                "复古打字机"
-              ],
-              "default": "现代无衬线",
-              "ai_fill": true
-            },
-            {
-              "key": "text_layout",
-              "label": "排版布局",
-              "type": "enum",
-              "required": true,
-              "hint": "文字在画面中的位置",
-              "enum_options": [
-                "居中大标题",
-                "顶部横幅",
-                "底部标语",
-                "对角线排列",
-                "环绕式布局",
-                "分散式排列"
-              ],
-              "default": "居中大标题",
-              "ai_fill": false
-            },
-            {
-              "key": "background_theme",
-              "label": "背景主题",
-              "type": "textarea",
-              "required": true,
-              "hint": "背景的视觉主题和元素，如：樱花飘落、烟花绽放、几何图案",
-              "ai_fill": true
-            },
-            {
-              "key": "color_scheme",
-              "label": "配色方案",
-              "type": "enum",
-              "required": true,
-              "hint": "整体色彩搭配",
-              "enum_options": [
-                "鲜艳对比",
-                "柔和粉彩",
-                "黑白简约",
-                "渐变彩虹",
-                "复古暖色",
-                "清新冷色"
-              ],
-              "default": "鲜艳对比",
-              "ai_fill": true
-            },
-            {
-              "key": "decorative_elements",
-              "label": "装饰元素",
-              "type": "string",
-              "required": false,
-              "hint": "额外的装饰图案，如：星星点缀、花卉边框、几何线条",
-              "ai_fill": true
-            },
-            {
-              "key": "overall_style",
-              "label": "整体风格",
-              "type": "enum",
-              "required": true,
-              "hint": "图像的艺术风格",
-              "enum_options": [
-                "扁平插画",
-                "3D立体",
-                "手绘水彩",
-                "矢量艺术",
-                "照片拼贴",
-                "极简主义"
-              ],
-              "default": "扁平插画",
-              "ai_fill": true
-            },
-            {
-              "key": "aspect_ratio",
-              "label": "尺寸比例",
-              "type": "enum",
-              "required": false,
-              "hint": "画面比例",
-              "enum_options": [
-                "方形 1:1",
-                "横版 16:9",
-                "竖版 9:16",
-                "海报 2:3"
-              ],
-              "default": "方形 1:1",
-              "ai_fill": false
-            },
-            {
-              "key": "text_legibility",
-              "label": "文字清晰度",
-              "type": "enum",
-              "required": false,
-              "hint": "文字的可读性要求",
-              "enum_options": [
-                "完全清晰可读",
-                "装饰性优先",
-                "艺术化效果"
-              ],
-              "default": "完全清晰可读",
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "font_style",
-              "label": "字体",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "text_layout",
-              "label": "布局",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "overall_style",
-              "label": "风格",
-              "type": "enum",
-              "control_type": "style"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "文字必须清晰可辨，无拼写错误"
-            ],
-            "manual_checklist": [
-              "文字是否完整显示，无截断或遮挡？",
-              "字体风格是否与主题匹配？",
-              "文字与背景对比度是否足够，确保可读性？",
-              "整体设计是否美观且符合使用场景？"
-            ]
-          },
-          "tags": [
-            "文字图像",
-            "海报设计",
-            "卡片",
-            "社交媒体",
-            "排版"
-          ],
-          "example_inputs": [
-            {
-              "name": "新年祝福卡片",
-              "placeholder_values": {
-                "text_content": "新年快乐 2025",
-                "font_style": "手写书法",
-                "text_layout": "居中大标题",
-                "background_theme": "红色灯笼，金色烟花绽放，飘落的金色纸屑",
-                "color_scheme": "复古暖色",
-                "decorative_elements": "中国结图案，梅花点缀",
-                "overall_style": "扁平插画",
-                "aspect_ratio": "方形 1:1",
-                "text_legibility": "完全清晰可读"
-              },
-              "notes": "适合社交媒体新年祝福帖"
-            }
-          ]
-        },
-        {
-          "id": "I7_scene_transformation",
-          "name": "场景风格转换",
-          "short_description": "将场景进行创意转换，如日夜切换、季节变化、艺术风格转换等。",
-          "category_id": "text2image",
-          "prompt_template": "对场景 {{original_scene}} 进行 {{transformation_type}} 转换。转换强度：{{intensity}}，保留元素：{{preserve_elements}}，新增效果：{{added_effects}}，色调处理：{{color_treatment}}，光照调整：{{lighting_adjustment}}，氛围营造：{{atmosphere}}。确保转换后 {{quality_requirement}}。",
-          "placeholders": [
-            {
-              "key": "original_scene",
-              "label": "原始场景",
-              "type": "textarea",
-              "required": true,
-              "hint": "描述要转换的场景，如：白天的城市街道，阳光明媚",
-              "ai_fill": true
-            },
-            {
-              "key": "transformation_type",
-              "label": "转换类型",
-              "type": "enum",
-              "required": true,
-              "hint": "场景转换的方向",
-              "enum_options": [
-                "日转夜",
-                "夜转日",
-                "夏转冬",
-                "春转秋",
-                "现实转水彩",
-                "现实转油画",
-                "现实转动漫",
-                "现代转复古"
-              ],
-              "default": "日转夜",
-              "ai_fill": false
-            },
-            {
-              "key": "intensity",
-              "label": "转换强度",
-              "type": "enum",
-              "required": true,
-              "hint": "转换的剧烈程度",
-              "enum_options": [
-                "轻微调整",
-                "适度转换",
-                "完全改变"
-              ],
-              "default": "适度转换",
-              "ai_fill": false
-            },
-            {
-              "key": "preserve_elements",
-              "label": "保留元素",
-              "type": "string",
-              "required": true,
-              "hint": "需要保持不变的场景元素，如：建筑结构、构图、主体物",
-              "default": "建筑结构、构图",
-              "ai_fill": false
-            },
-            {
-              "key": "added_effects",
-              "label": "新增效果",
-              "type": "textarea",
-              "required": false,
-              "hint": "转换后添加的新元素，如：路灯、星空、雪花、落叶",
-              "ai_fill": true
-            },
-            {
-              "key": "color_treatment",
-              "label": "色调处理",
-              "type": "enum",
-              "required": true,
-              "hint": "色彩调整方式",
-              "enum_options": [
-                "暖色增强",
-                "冷色增强",
-                "饱和度提升",
-                "黑白转换",
-                "复古色调",
-                "梦幻柔和"
-              ],
-              "default": "冷色增强",
-              "ai_fill": true
-            },
-            {
-              "key": "lighting_adjustment",
-              "label": "光照调整",
-              "type": "enum",
-              "required": true,
-              "hint": "光线变化",
-              "enum_options": [
-                "增加人工光源",
-                "自然光变化",
-                "戏剧性光影",
-                "柔和漫射",
-                "霓虹灯效果"
-              ],
-              "default": "增加人工光源",
-              "ai_fill": true
-            },
-            {
-              "key": "atmosphere",
-              "label": "氛围营造",
-              "type": "enum",
-              "required": false,
-              "hint": "转换后的情感基调",
-              "enum_options": [
-                "宁静舒适",
-                "神秘梦幻",
-                "热闹繁华",
-                "孤独寂寥",
-                "浪漫温馨"
-              ],
-              "default": "宁静舒适",
-              "ai_fill": true
-            },
-            {
-              "key": "quality_requirement",
-              "label": "质量要求",
-              "type": "enum",
-              "required": false,
-              "hint": "转换后的画面标准",
-              "enum_options": [
-                "照片级真实",
-                "艺术化呈现",
-                "风格化夸张"
-              ],
-              "default": "照片级真实",
-              "ai_fill": false
-            }
-          ],
-          "controls": [
-            {
-              "key": "transformation_type",
-              "label": "转换类型",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "intensity",
-              "label": "强度",
-              "type": "enum",
-              "control_type": "other"
-            },
-            {
-              "key": "color_treatment",
-              "label": "色调",
-              "type": "enum",
-              "control_type": "style"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "转换后需保持场景结构连贯性"
-            ],
-            "manual_checklist": [
-              "转换类型是否准确体现（如日夜光照变化）？",
-              "保留元素是否完整保持？",
-              "新增效果是否自然融入场景？",
-              "整体氛围是否符合转换目标？"
-            ]
-          },
-          "tags": [
-            "场景转换",
-            "风格迁移",
-            "创意变换",
-            "氛围调整"
-          ],
-          "example_inputs": [
-            {
-              "name": "城市街道日转夜",
-              "placeholder_values": {
-                "original_scene": "繁忙的城市街道，白天阳光照耀，车流人流，现代建筑林立",
-                "transformation_type": "日转夜",
-                "intensity": "适度转换",
-                "preserve_elements": "建筑结构、街道布局、车辆位置",
-                "added_effects": "路灯亮起、霓虹招牌、车灯光束、星空点缀",
-                "color_treatment": "冷色增强",
-                "lighting_adjustment": "增加人工光源",
-                "atmosphere": "热闹繁华",
-                "quality_requirement": "照片级真实"
-              },
-              "notes": "展示同一场景的昼夜对比效果"
-            }
-          ]
-        },
-        {
-          "id": "I8_character_capsule",
-          "name": "角色扭蛋胶囊",
-          "short_description": "创建透明扭蛋胶囊中的微缩人物场景，适合收藏品概念和创意展示。",
-          "category_id": "text2image",
-          "prompt_template": "创建一个透明扭蛋胶囊场景，手指握持。胶囊内主角：{{character_name}}，呈现 {{iconic_pose}}。人物描述：{{figure_details}}，背景元素：{{background_elements}}，光照主题：{{lighting_theme}}，整体氛围：{{capsule_atmosphere}}，胶囊材质：{{capsule_material}}，尺寸比例：{{size_scale}}。画面需体现 {{creative_theme}}。",
-          "placeholders": [
-            {
-              "key": "character_name",
-              "label": "角色名称",
-              "type": "string",
-              "required": true,
-              "hint": "胶囊内的主角，如：篮球运动员、宇航员、芭蕾舞者",
-              "ai_fill": true
-            },
-            {
-              "key": "iconic_pose",
-              "label": "标志性姿势",
-              "type": "string",
-              "required": true,
-              "hint": "角色的经典动作或姿态，如：扣篮动作、太空漫步、旋转跳跃",
-              "ai_fill": true
-            },
-            {
-              "key": "figure_details",
-              "label": "人物细节",
-              "type": "textarea",
-              "required": true,
-              "hint": "角色的外观、服装、配饰等，如：穿23号球衣，红色运动鞋",
-              "ai_fill": true
-            },
-            {
-              "key": "background_elements",
-              "label": "背景元素",
-              "type": "textarea",
-              "required": true,
-              "hint": "胶囊内的场景布置，如：篮球场、星空、舞台",
-              "ai_fill": true
-            },
-            {
-              "key": "lighting_theme",
-              "label": "光照主题",
-              "type": "enum",
-              "required": true,
-              "hint": "胶囊内的光照风格",
-              "enum_options": [
-                "戏剧聚光",
-                "柔和全局光",
-                "霓虹灯效果",
-                "自然日光",
-                "魔幻光晕"
-              ],
-              "default": "戏剧聚光",
-              "ai_fill": true
-            },
-            {
-              "key": "capsule_atmosphere",
-              "label": "胶囊氛围",
-              "type": "enum",
-              "required": true,
-              "hint": "整体情感和视觉感受",
-              "enum_options": [
-                "动感激情",
-                "梦幻唯美",
-                "科幻未来",
-                "复古怀旧",
-                "可爱Q版"
-              ],
-              "default": "动感激情",
-              "ai_fill": true
-            },
-            {
-              "key": "capsule_material",
-              "label": "胶囊材质",
-              "type": "enum",
-              "required": false,
-              "hint": "扭蛋外壳的质感",
-              "enum_options": [
-                "透明亚克力",
-                "磨砂半透",
-                "彩色透明",
-                "水晶质感"
-              ],
-              "default": "透明亚克力",
-              "ai_fill": false
-            },
-            {
-              "key": "size_scale",
-              "label": "尺寸比例",
-              "type": "enum",
-              "required": false,
-              "hint": "胶囊与手的比例关系",
-              "enum_options": [
-                "手掌大小",
-                "拳头大小",
-                "鸡蛋大小"
-              ],
-              "default": "手掌大小",
-              "ai_fill": false
-            },
-            {
-              "key": "creative_theme",
-              "label": "创意主题",
-              "type": "string",
-              "required": false,
-              "hint": "作品要传达的概念，如：经典瞬间收藏、时光胶囊",
-              "ai_fill": true
-            }
-          ],
-          "controls": [
-            {
-              "key": "lighting_theme",
-              "label": "光照",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "capsule_atmosphere",
-              "label": "氛围",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "size_scale",
-              "label": "尺寸",
-              "type": "enum",
-              "control_type": "structure"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "胶囊需透明清晰，内部场景完整可见"
-            ],
-            "manual_checklist": [
-              "角色姿势是否标志性且具辨识度？",
-              "胶囊透明度是否适中，既能看清内部又有质感？",
-              "背景元素是否契合角色主题？",
-              "整体设计是否精致，具有收藏品质感？"
-            ]
-          },
-          "tags": [
-            "扭蛋",
-            "微缩场景",
-            "收藏品",
-            "创意设计",
-            "角色胶囊"
-          ],
-          "example_inputs": [
-            {
-              "name": "篮球巨星扭蛋",
-              "placeholder_values": {
-                "character_name": "篮球运动员",
-                "iconic_pose": "飞跃扣篮动作，单手持球",
-                "figure_details": "穿红色23号球衣，黑色短裤，红黑配色篮球鞋，肌肉线条清晰",
-                "background_elements": "篮球场木地板，篮筐，观众席虚化背景，聚光灯光束",
-                "lighting_theme": "戏剧聚光",
-                "capsule_atmosphere": "动感激情",
-                "capsule_material": "透明亚克力",
-                "size_scale": "手掌大小",
-                "creative_theme": "经典扣篮瞬间的永恒收藏"
-              },
-              "notes": "适合体育主题收藏品概念设计"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "text2video",
-      "name": "文生视频",
-      "description": "文本到视频的模版集合",
-      "templates": [
-        {
-          "id": "V1_nano_banana_15s_script",
-          "name": "nano banana pro 15 秒短视频脚本",
-          "short_description": "生成 15 秒以内的爆点脚本，突出 nano banana pro 卖点与行动口令。",
-          "category_id": "text2video",
-          "prompt_template": "为 {{product_name}} 生成 {{duration}} 秒内的 {{platform}} 爆点脚本。开头用 {{hook}} 抢眼，核心卖点：{{key_features}}。要求包含分镜列表（时间戳 + 画面 + 旁白/字幕），结尾给出 {{cta}}。节奏 {{pacing}}，确保镜头切换清晰可执行。",
-          "placeholders": [
-            {
-              "key": "product_name",
-              "label": "产品名",
-              "type": "string",
-              "required": true,
-              "hint": "默认 nano banana pro",
-              "default": "nano banana pro",
-              "ai_fill": true
-            },
-            {
-              "key": "platform",
-              "label": "平台",
-              "type": "enum",
-              "required": true,
-              "hint": "投放平台",
-              "enum_options": [
-                "抖音",
-                "B 站",
-                "视频号",
-                "YouTube Shorts"
-              ],
-              "default": "抖音",
-              "ai_fill": true
-            },
-            {
-              "key": "duration",
-              "label": "时长秒数",
-              "type": "number",
-              "required": true,
-              "hint": "整体时长",
-              "default": 15,
-              "constraints": {
-                "min": 10,
-                "max": 30
-              },
-              "ai_fill": false
-            },
-            {
-              "key": "hook",
-              "label": "开场钩子",
-              "type": "string",
-              "required": true,
-              "hint": "3-5 秒内吸睛的句子/画面",
-              "ai_fill": true
-            },
-            {
-              "key": "key_features",
-              "label": "核心卖点",
-              "type": "textarea",
-              "required": true,
-              "hint": "列出 2-3 个亮点，用分号分隔",
-              "ai_fill": true
-            },
-            {
-              "key": "pacing",
-              "label": "节奏感",
-              "type": "enum",
-              "required": true,
-              "hint": "整体节奏",
-              "enum_options": [
-                "快节奏",
-                "稳重叙述",
-                "先快后稳"
-              ],
-              "default": "快节奏",
-              "ai_fill": true
-            },
-            {
-              "key": "cta",
-              "label": "行动号召",
-              "type": "enum",
-              "required": true,
-              "hint": "结尾希望观众做什么",
-              "enum_options": [
-                "评论 + 预约",
-                "点击购买",
-                "私信领取优惠",
-                "到店体验"
-              ],
-              "default": "评论 + 预约",
-              "ai_fill": true
-            }
-          ],
-          "controls": [
-            {
-              "key": "platform",
-              "label": "平台",
-              "type": "enum",
-              "control_type": "structure"
-            },
-            {
-              "key": "pacing",
-              "label": "节奏",
-              "type": "enum",
-              "control_type": "style"
-            },
-            {
-              "key": "duration",
-              "label": "时长",
-              "type": "number",
-              "control_type": "length"
-            }
-          ],
-          "evaluation_rules": {
-            "auto_checks": [
-              "脚本总时长不超过 duration 秒"
-            ],
-            "manual_checklist": [
-              "前 3 秒是否有强钩子？",
-              "分镜是否明确时间戳、画面与字幕/旁白？",
-              "结尾 CTA 是否呼应目标？"
-            ]
-          },
-          "tags": [
-            "短视频脚本",
-            "爆点",
-            "nano banana pro"
-          ],
-          "example_inputs": [
-            {
-              "name": "抖音快节奏脚本",
-              "placeholder_values": {
-                "product_name": "nano banana pro",
-                "platform": "抖音",
-                "duration": 15,
-                "hook": "一台能陪你连轴转 48 小时的轻薄旗舰？",
-                "key_features": "钛合金一体壳；双倍续航 48h；一键应急防摔模式",
-                "pacing": "快节奏",
-                "cta": "评论 + 预约"
-              },
-              "notes": "突出续航与耐摔，适合短视频快闪节奏"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "text2doc",
-      "name": "文生文档",
-      "description": "文本到文档的模版集合",
-      "templates": [
-        {
-          "id": "D1_nano_banana_launch_brief",
-          "name": "nano banana pro 上市作战简报",
-          "short_description": "生成针对 nano banana pro 的上市战役简报（目标、受众、信息主轴、节奏）。",
-          "category_id": "text2doc",
-          "prompt_template": "围绕 {{product_name}}，输出一份上市作战简报，包含：1) 目标受众 {{target_segment}} 画像与痛点 2) 信息主轴与独特卖点：{{unique_selling_points}} 3) 核心 offer：{{hero_offer}} 4) 渠道组合与节奏：{{channel_plan}} 5) 30 天重点里程碑：{{milestones}}。请用分级标题与要点列出，控制在 {{max_length}} 字内。",
-          "placeholders": [
-            {
-              "key": "product_name",
-              "label": "产品名",
-              "type": "string",
-              "required": true,
-              "hint": "默认 nano banana pro",
-              "default": "nano banana pro",
-              "ai_fill": true
-            },
-            {
-              "key": "target_segment",
-              "label": "目标受众",
-              "type": "textarea",
-              "required": true,
-              "hint": "目标人群画像与场景",
-              "ai_fill": true
-            },
-            {
-              "key": "unique_selling_points",
-              "label": "独特卖点",
-              "type": "textarea",
-              "required": true,
-              "hint": "列出 2-3 个 USP",
-              "ai_fill": true
-            },
-            {
-              "key": "hero_offer",
-              "label": "核心优惠/权益",
-              "type": "textarea",
-              "required": false,
-              "hint": "如预约礼、以旧换新、延保",
-              "ai_fill": true
-            },
-            {
-              "key": "channel_plan",
-              "label": "渠道组合与节奏",
-              "type": "textarea",
-              "required": true,
-              "hint": "按阶段列出投放/自有渠道",
-              "ai_fill": true
-            },
-            {
-              "key": "milestones",
-              "label": "30 天里程碑",
-              "type": "textarea",
-              "required": true,
-              "hint": "列出关键日期与交付物",
-              "ai_fill": true
-            },
-            {
-              "key": "max_length",
-              "label": "长度上限",
-              "type": "number",
-              "required": false,
-              "hint": "整体字数控制",
-              "default": 800,
-              "constraints": {
-                "min": 400,
+                "min": 200,
                 "max": 1200
               },
               "ai_fill": false
@@ -1962,46 +372,526 @@
           ],
           "controls": [
             {
-              "key": "max_length",
+              "key": "output_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "tokens_limit",
               "label": "长度",
               "type": "number",
               "control_type": "length"
             },
             {
-              "key": "channel_plan",
-              "label": "渠道节奏",
+              "key": "guardrails",
+              "label": "护栏",
               "type": "textarea",
-              "control_type": "structure"
+              "control_type": "safety"
             }
           ],
           "evaluation_rules": {
             "auto_checks": [
-              "正文不超过 max_length 字"
+              "输出包含角色/流程/拒绝/格式四部分",
+              "控制在 tokens_limit 内"
             ],
             "manual_checklist": [
-              "目标受众痛点是否明确可验证？",
-              "USP 是否可感知、可量化？",
-              "里程碑是否包含日期、负责人、产出物？"
+              "拒绝清单是否覆盖高风险输入？",
+              "流程是否明确输入解析 → 推理 → 输出？",
+              "格式示例是否可直接复制使用？"
             ]
           },
           "tags": [
-            "上市规划",
-            "战役简报",
-            "nano banana pro"
+            "系统提示",
+            "Agent",
+            "安全护栏"
           ],
           "example_inputs": [
             {
-              "name": "轻薄耐摔定位的 30 天战役",
+              "name": "代码审计 Agent",
               "placeholder_values": {
-                "product_name": "nano banana pro",
-                "target_segment": "一二线城市通勤人群，追求轻薄、耐摔、续航的日常机",
-                "unique_selling_points": "钛合金机身；48h 续航；抗摔等级通过 MIL-STD 测试",
-                "hero_offer": "前 7 天预约赠碎屏险 + 无忧换新",
-                "channel_plan": "T-7 预热：KOL 体验 + 朋友圈投放；T+0 发布会直播；T+7 开启线下体验店快闪",
-                "milestones": "T-10 完成测评素材；T-3 释出预热视频；T+0 发布会；T+10 渠道复盘",
-                "max_length": 900
+                "agent_type": "Web 安全代码巡检员",
+                "mission": "审查前端与 Node 服务的代码片段，定位安全漏洞并给出修复建议。",
+                "tools": "可读取代码片段，查询内部安全基线文档。",
+                "guardrails": "不得输出真实凭据、不得执行代码、禁止凭空编造 API。",
+                "output_style": "表格 + 要点",
+                "tokens_limit": 700
+              }
+            }
+          ]
+        },
+        {
+          "id": "P2_extreme_test_matrix",
+          "name": "极限测试矩阵",
+          "short_description": "给出高风险用例、破坏性输入与可观测信号的清晰表。",
+          "category_id": "text2artifact",
+          "prompt_template": "为功能 {{feature}} 在 {{platform}} 生成极限测试矩阵。关键流程：{{critical_flows}}。风险重心：{{risk_focus}}。限制条件：{{constraints}}。输出优先级排序的 {{case_depth}} 个用例：用例描述、破坏性输入、预期结果、可观测信号 {{success_signal}}。语气直接给出结论，不讲概念。",
+          "placeholders": [
+            {
+              "key": "feature",
+              "label": "功能",
+              "type": "string",
+              "required": true,
+              "hint": "要测试的功能或场景",
+              "ai_fill": true
+            },
+            {
+              "key": "critical_flows",
+              "label": "关键流程",
+              "type": "textarea",
+              "required": true,
+              "hint": "核心用户流程或接口调用",
+              "ai_fill": true
+            },
+            {
+              "key": "platform",
+              "label": "平台",
+              "type": "enum",
+              "required": true,
+              "hint": "运行环境",
+              "enum_options": [
+                "Web",
+                "Mobile",
+                "API",
+                "数据管道"
+              ],
+              "default": "Web",
+              "ai_fill": false
+            },
+            {
+              "key": "risk_focus",
+              "label": "风险重心",
+              "type": "enum",
+              "required": true,
+              "hint": "优先关注的风险类型",
+              "enum_options": [
+                "稳定性",
+                "安全",
+                "性能",
+                "兼容性"
+              ],
+              "default": "稳定性",
+              "ai_fill": true
+            },
+            {
+              "key": "constraints",
+              "label": "限制",
+              "type": "string",
+              "required": false,
+              "hint": "如数据不可出公网、时间有限等",
+              "ai_fill": true
+            },
+            {
+              "key": "case_depth",
+              "label": "用例数量",
+              "type": "number",
+              "required": false,
+              "hint": "需要覆盖的用例数",
+              "default": 12,
+              "constraints": {
+                "min": 6,
+                "max": 20
               },
-              "notes": "突出核心卖点 + 渠道节奏"
+              "ai_fill": false
+            },
+            {
+              "key": "success_signal",
+              "label": "可观测信号",
+              "type": "string",
+              "required": false,
+              "hint": "如何观测成功或失败",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "platform",
+              "label": "平台",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "risk_focus",
+              "label": "风险",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "case_depth",
+              "label": "深度",
+              "type": "number",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "用例数量不超过 case_depth",
+              "每条用例包含预期与可观测信号"
+            ],
+            "manual_checklist": [
+              "是否覆盖高风险与边界输入？",
+              "破坏性输入是否具体、可复现？",
+              "可观测信号是否可监控或记录？"
+            ]
+          },
+          "tags": [
+            "测试矩阵",
+            "质量",
+            "风险优先"
+          ],
+          "example_inputs": [
+            {
+              "name": "支付流程极限测试",
+              "placeholder_values": {
+                "feature": "移动端支付 + 优惠券 + 指纹支付",
+                "critical_flows": "下单 -> 优惠叠加 -> 支付网关 -> 通知回调 -> 订单落库",
+                "platform": "Mobile",
+                "risk_focus": "稳定性",
+                "constraints": "沙箱环境，无真实扣款",
+                "case_depth": 10,
+                "success_signal": "日志无错误码、订单状态一致、指标 QPS 稳定"
+              },
+              "notes": "需要破坏性输入（断网、慢请求、金额异常等）"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "text2image",
+      "name": "视觉提案",
+      "description": "低饱和、可落地的视觉提示模版",
+      "templates": [
+        {
+          "id": "I1_brand_story_triptych",
+          "name": "品牌故事三联画",
+          "short_description": "同一视觉语言下的三幅场景提示，保持风格一致。",
+          "category_id": "text2image",
+          "prompt_template": "为品牌 {{brand_name}} 生成三联画视觉提示，主主题 {{hero_story}}。统一的视觉语言：{{visual_style}}，色调 {{palette}}，镜头感 {{camera_style}}，光线 {{lighting}}，画幅 {{aspect_ratio}}。三幅场景：1) {{scene_one}} 2) {{scene_two}} 3) {{scene_three}}。强调留白，品牌标识轻量出现，整体低饱和。",
+          "placeholders": [
+            {
+              "key": "brand_name",
+              "label": "品牌名",
+              "type": "string",
+              "required": true,
+              "hint": "要呈现的品牌或产品线",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_story",
+              "label": "核心故事",
+              "type": "string",
+              "required": true,
+              "hint": "一句话概括品牌故事",
+              "ai_fill": true
+            },
+            {
+              "key": "visual_style",
+              "label": "视觉风格",
+              "type": "enum",
+              "required": true,
+              "hint": "整体艺术风格",
+              "enum_options": [
+                "日系胶片",
+                "极简北欧",
+                "柔和科技感",
+                "插画海报感"
+              ],
+              "default": "柔和科技感",
+              "ai_fill": false
+            },
+            {
+              "key": "palette",
+              "label": "色调",
+              "type": "string",
+              "required": false,
+              "hint": "低饱和主色，如：浅灰、雾蓝、淡杏",
+              "default": "浅灰、雾蓝、淡杏",
+              "ai_fill": true
+            },
+            {
+              "key": "camera_style",
+              "label": "镜头感",
+              "type": "enum",
+              "required": true,
+              "hint": "画面构图与景别",
+              "enum_options": [
+                "平视定焦",
+                "35mm 纪实",
+                "远景留白",
+                "航拍俯视"
+              ],
+              "default": "平视定焦",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "required": true,
+              "hint": "光照氛围",
+              "enum_options": [
+                "柔光无阴影",
+                "薄暮逆光",
+                "雾面环境光",
+                "晨间斜光"
+              ],
+              "default": "柔光无阴影",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅比例",
+              "type": "enum",
+              "required": false,
+              "hint": "输出画幅",
+              "enum_options": [
+                "16:9",
+                "1:1",
+                "3:4",
+                "9:16"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "scene_one",
+              "label": "场景一",
+              "type": "string",
+              "required": true,
+              "hint": "第 1 幅画面",
+              "ai_fill": true
+            },
+            {
+              "key": "scene_two",
+              "label": "场景二",
+              "type": "string",
+              "required": true,
+              "hint": "第 2 幅画面",
+              "ai_fill": true
+            },
+            {
+              "key": "scene_three",
+              "label": "场景三",
+              "type": "string",
+              "required": true,
+              "hint": "第 3 幅画面",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "visual_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "三幅场景保持同一风格与色调",
+              "画面低饱和且留白充足"
+            ],
+            "manual_checklist": [
+              "品牌元素是否低-key 而可辨识？",
+              "三幅故事是否连贯、无冲突？",
+              "光线与镜头感是否一致？"
+            ]
+          },
+          "tags": [
+            "品牌视觉",
+            "低饱和",
+            "故事化"
+          ],
+          "example_inputs": [
+            {
+              "name": "雾蓝科技生活三联画",
+              "placeholder_values": {
+                "brand_name": "Lumen Home",
+                "hero_story": "轻量科技融入日常生活",
+                "visual_style": "柔和科技感",
+                "palette": "浅灰、雾蓝、微米银",
+                "camera_style": "平视定焦",
+                "lighting": "柔光无阴影",
+                "aspect_ratio": "16:9",
+                "scene_one": "窗边办公桌，玻璃质地的音箱与笔记本，留白空间感",
+                "scene_two": "客厅一角，织物沙发旁的智能灯泡，暖冷混合光",
+                "scene_three": "夜间卧室，极简床头台灯与雾蓝墙面，品牌 logo 微弱浮现"
+              }
+            }
+          ]
+        },
+        {
+          "id": "I2_material_micro_detail",
+          "name": "材质质感特写",
+          "short_description": "低饱和、高细节的材质摄影提示，突出光影与纹理。",
+          "category_id": "text2image",
+          "prompt_template": "拍摄 {{subject}} 的材质特写，强调 {{material_focus}} 质感，环境 {{environment}}，光线 {{lighting}}，镜头 {{lens}}，背景 {{background}}，色调 {{tone_palette}}，分辨率 {{resolution}}。突出细节而不过度饱和，画面留白。",
+          "placeholders": [
+            {
+              "key": "subject",
+              "label": "拍摄主体",
+              "type": "string",
+              "required": true,
+              "hint": "要拍摄的物品或材质",
+              "ai_fill": true
+            },
+            {
+              "key": "material_focus",
+              "label": "质感重点",
+              "type": "string",
+              "required": true,
+              "hint": "例如：磨砂金属、磨砂玻璃、织物纹理",
+              "default": "磨砂金属",
+              "ai_fill": true
+            },
+            {
+              "key": "environment",
+              "label": "环境",
+              "type": "enum",
+              "required": true,
+              "hint": "拍摄环境/场景",
+              "enum_options": [
+                "纯净工作室",
+                "柔光自然光",
+                "阴天窗边",
+                "浅色桌面"
+              ],
+              "default": "纯净工作室",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "required": true,
+              "hint": "光照风格",
+              "enum_options": [
+                "漫反射柔光",
+                "侧光强调纹理",
+                "背光轮廓",
+                "顶光均匀"
+              ],
+              "default": "侧光强调纹理",
+              "ai_fill": false
+            },
+            {
+              "key": "lens",
+              "label": "镜头",
+              "type": "enum",
+              "required": true,
+              "hint": "焦段与景深",
+              "enum_options": [
+                "50mm f/2",
+                "85mm f/1.8",
+                "100mm 微距",
+                "35mm 环境特写"
+              ],
+              "default": "100mm 微距",
+              "ai_fill": false
+            },
+            {
+              "key": "background",
+              "label": "背景",
+              "type": "enum",
+              "required": true,
+              "hint": "背景处理方式",
+              "enum_options": [
+                "极简留白",
+                "浅灰磨砂板",
+                "雾面玻璃",
+                "淡色织物"
+              ],
+              "default": "极简留白",
+              "ai_fill": false
+            },
+            {
+              "key": "tone_palette",
+              "label": "色调",
+              "type": "string",
+              "required": false,
+              "hint": "建议低饱和，如：奶灰 + 雾蓝",
+              "default": "低饱和奶灰 + 雾蓝",
+              "ai_fill": true
+            },
+            {
+              "key": "resolution",
+              "label": "分辨率",
+              "type": "enum",
+              "required": false,
+              "hint": "输出尺寸",
+              "enum_options": [
+                "4K",
+                "2K",
+                "方形 1:1",
+                "竖版 9:16"
+              ],
+              "default": "4K",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "lens",
+              "label": "镜头",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "resolution",
+              "label": "分辨率",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "画面低饱和，无过曝或过度锐化",
+              "主体质感清晰，背景干净"
+            ],
+            "manual_checklist": [
+              "光线是否凸显纹理而不产生硬阴影？",
+              "焦点是否落在材质关键部位？",
+              "留白与配色是否保持轻量、克制？"
+            ]
+          },
+          "tags": [
+            "材质",
+            "低饱和",
+            "高细节"
+          ],
+          "example_inputs": [
+            {
+              "name": "钛合金设备特写",
+              "placeholder_values": {
+                "subject": "钛合金智能音箱边框",
+                "material_focus": "磨砂金属质感与切边倒角",
+                "environment": "纯净工作室",
+                "lighting": "侧光强调纹理",
+                "lens": "100mm 微距",
+                "background": "浅灰磨砂板",
+                "tone_palette": "低饱和奶灰 + 雾蓝",
+                "resolution": "4K"
+              },
+              "notes": "突出光影过渡和平滑倒角"
             }
           ]
         }
