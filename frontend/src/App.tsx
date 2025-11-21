@@ -20,13 +20,61 @@ import type { Template, Category, AIConfig } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
+const parseTemplateIdFromLocation = () => {
+    if (typeof window === 'undefined') return '';
+    const url = new URL(window.location.href);
+    const pathMatch = url.pathname.match(/\/templates\/([^/]+)/);
+    return (pathMatch && pathMatch[1]) || url.searchParams.get('template') || '';
+};
+
+const DEFAULT_DESCRIPTION =
+    '精选跨场景的 Prompt 模版，内置评价规则与示例，一键渲染与复制，帮助团队快速交付高质量的 AI 产出。';
+
+const ensureMeta = (opts: { name?: string; property?: string; content: string }) => {
+    if (typeof document === 'undefined') return;
+    const selector = opts.name ? `meta[name="${opts.name}"]` : `meta[property="${opts.property}"]`;
+    let node = document.querySelector<HTMLMetaElement>(selector);
+    if (!node) {
+        node = document.createElement('meta');
+        if (opts.name) node.setAttribute('name', opts.name);
+        if (opts.property) node.setAttribute('property', opts.property);
+        document.head.appendChild(node);
+    }
+    node.setAttribute('content', opts.content);
+};
+
+const ensureCanonical = (href: string) => {
+    if (typeof document === 'undefined') return;
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'canonical';
+        document.head.appendChild(link);
+    }
+    link.href = href;
+};
+
+const setJsonLd = (id: string, data: unknown | null) => {
+    if (typeof document === 'undefined') return;
+    const existing = document.getElementById(id) as HTMLScriptElement | null;
+    if (!data) {
+        if (existing) existing.remove();
+        return;
+    }
+    const script = existing || document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = id;
+    script.textContent = JSON.stringify(data);
+    if (!existing) document.head.appendChild(script);
+};
+
 function App() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [allTemplateCount, setAllTemplateCount] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [search, setSearch] = useState('');
-    const [selectedTemplateId, setSelectedTemplateId] = useState('');
+    const [selectedTemplateId, setSelectedTemplateId] = useState(() => parseTemplateIdFromLocation());
     const [templateDetail, setTemplateDetail] = useState<Template | null>(null);
     const [values, setValues] = useState<Record<string, unknown>>({});
     const [rendered, setRendered] = useState('');
@@ -35,6 +83,10 @@ function App() {
     const [aiFilledKeys, setAiFilledKeys] = useState<string[]>([]);
     const [isAIFilling, setIsAIFilling] = useState(false);
     const [message, setMessage] = useState('');
+    const siteUrl = useMemo(
+        () => (import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '')).replace(/\/+$/, ''),
+        [],
+    );
 
     useEffect(() => {
         api.getCategories().then((data) => setCategories(data.categories || []));
@@ -51,13 +103,17 @@ function App() {
     }, [selectedCategory]);
 
     useEffect(() => {
-        if (!selectedTemplateId && templates.length > 0) {
+        if (!templates.length) return;
+        const exists = selectedTemplateId && templates.some((tpl) => tpl.id === selectedTemplateId);
+        if (!selectedTemplateId || !exists) {
             setSelectedTemplateId(templates[0].id);
         }
     }, [templates, selectedTemplateId]);
 
     useEffect(() => {
         if (!selectedTemplateId) return;
+        if (templates.length > 0 && !templates.some((tpl) => tpl.id === selectedTemplateId)) return;
+
         api.getTemplate(selectedTemplateId).then((tpl) => {
             setTemplateDetail(tpl);
             const initial: Record<string, unknown> = {};
@@ -66,7 +122,25 @@ function App() {
             });
             setValues(initial);
         });
+    }, [selectedTemplateId, templates]);
+
+    useEffect(() => {
+        if (!selectedTemplateId) return;
+        const basePath = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '');
+        const templatePath = `${basePath}/templates/${selectedTemplateId}`;
+        const nextUrl = `${window.location.origin}${templatePath}`;
+        if (window.location.href !== nextUrl) {
+            window.history.replaceState({}, '', nextUrl);
+        }
     }, [selectedTemplateId]);
+
+    useEffect(() => {
+        if (templateDetail?.name) {
+            document.title = `${templateDetail.name} - 问题模版平台`;
+        } else {
+            document.title = '问题模版平台 · 精选 AI Prompt 模版库';
+        }
+    }, [templateDetail]);
 
     useEffect(() => {
         if (!templateDetail) return;
@@ -75,6 +149,65 @@ function App() {
             setMissing(res.missing_required || []);
         });
     }, [templateDetail, values]);
+
+    useEffect(() => {
+        const canonicalPath = templateDetail ? `/templates/${templateDetail.id}` : '/';
+        const canonicalUrl = `${siteUrl}${canonicalPath}`;
+        const desc = templateDetail?.short_description || DEFAULT_DESCRIPTION;
+        const keywords = templateDetail?.tags?.join(', ') || 'Prompt 模版,AI 提示词,AI 生产力,模板库';
+
+        ensureCanonical(canonicalUrl);
+        ensureMeta({ name: 'description', content: desc });
+        ensureMeta({ name: 'keywords', content: keywords });
+        ensureMeta({ property: 'og:title', content: templateDetail ? `${templateDetail.name} · Prompt 模版` : '问题模版平台 · 精选 AI Prompt 模版库' });
+        ensureMeta({ property: 'og:description', content: desc });
+        ensureMeta({ property: 'og:url', content: canonicalUrl });
+        ensureMeta({ name: 'twitter:title', content: templateDetail ? `${templateDetail.name} · Prompt 模版` : '问题模版平台 · 精选 AI Prompt 模版库' });
+        ensureMeta({ name: 'twitter:description', content: desc });
+        ensureMeta({ name: 'twitter:url', content: canonicalUrl });
+
+        const templateLd = templateDetail
+            ? {
+                  '@context': 'https://schema.org',
+                  '@type': 'CreativeWork',
+                  name: templateDetail.name,
+                  description: desc,
+                  inLanguage: 'zh-CN',
+                  url: canonicalUrl,
+                  genre: templateDetail.tags || [],
+                  identifier: templateDetail.id,
+                  isPartOf: {
+                      '@type': 'WebApplication',
+                      name: '问题模版平台',
+                      url: `${siteUrl}/`,
+                  },
+              }
+            : null;
+        setJsonLd('ld-template', templateLd);
+    }, [templateDetail, siteUrl]);
+
+    useEffect(() => {
+        if (!templates.length) {
+            setJsonLd('ld-itemlist', null);
+            return;
+        }
+        const items = templates.slice(0, 50).map((tpl, idx) => ({
+            '@type': 'ListItem',
+            position: idx + 1,
+            url: `${siteUrl}/templates/${tpl.id}`,
+            name: tpl.name,
+            description: tpl.short_description,
+            keywords: (tpl.tags || []).join(', '),
+        }));
+        setJsonLd('ld-itemlist', {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: 'Prompt 模版列表',
+            numberOfItems: templates.length,
+            itemListOrder: 'Descending',
+            itemListElement: items,
+        });
+    }, [templates, siteUrl]);
 
     const filteredTemplates = useMemo(() => {
         const term = search.trim().toLowerCase();

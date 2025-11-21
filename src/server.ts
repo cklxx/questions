@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { readFileSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 import { getAIConfig } from './aiFiller';
 
 const PORT = process.env.PORT || 3001;
@@ -9,8 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataPath = path.resolve(__dirname, '../data/templates.json');
 const appRoot = path.resolve(__dirname, '..');
 const isDev = process.env.NODE_ENV !== 'production';
+const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '');
 
 const data = JSON.parse(readFileSync(dataPath, 'utf8'));
+const datasetLastModified = statSync(dataPath).mtime.toISOString();
 
 // Extract all templates from categories
 const allTemplates: any[] = [];
@@ -19,6 +21,19 @@ const allTemplates: any[] = [];
     allTemplates.push(...cat.templates);
   }
 });
+
+const templatePaths = Array.from(new Set(allTemplates.map((tpl: any) => tpl.id))).map(
+  (id) => `/templates/${id}`,
+);
+
+const getSiteUrl = (req: any) => {
+  if (SITE_URL) return SITE_URL;
+  const forwardedProto = (req.get('x-forwarded-proto') || '').split(',')[0];
+  const proto = forwardedProto || req.protocol || 'http';
+  const host = req.get('x-forwarded-host') || req.get('host');
+  if (!host) return '';
+  return `${proto}://${host}`.replace(/\/+$/, '');
+};
 
 const app = express();
 app.use(express.json());
@@ -83,6 +98,35 @@ app.post('/api/templates/:id/ai-fill', async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'AI fill failed' });
   }
+});
+
+app.get('/robots.txt', (req, res) => {
+  const siteUrl = getSiteUrl(req);
+  const lines = [
+    'User-agent: *',
+    'Allow: /',
+    siteUrl ? `Sitemap: ${siteUrl}/sitemap.xml` : '',
+  ].filter(Boolean);
+  res.type('text/plain').send(lines.join('\n'));
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const siteUrl = getSiteUrl(req);
+  const base = siteUrl || `${req.protocol}://${req.get('host')}`;
+  const normalizedBase = base.replace(/\/+$/, '');
+  const urls = [`${normalizedBase}/`, ...templatePaths.map((p) => `${normalizedBase}${p}`)];
+  const lastmod = datasetLastModified;
+  const doc = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls.map(
+      (loc) =>
+        `<url><loc>${loc}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq></url>`,
+    ),
+    '</urlset>',
+  ].join('');
+
+  res.type('application/xml').send(doc);
 });
 
 // Development: Vite middleware
