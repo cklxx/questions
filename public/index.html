@@ -1,744 +1,816 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>问题模版平台</title>
-    <link rel="stylesheet" href="/vendor/modern-normalize.min.css" />
-    <style>
-      :root {
-        --bg: #0f172a;
-        --card: #111827;
-        --panel: #0b1220;
-        --text: #e2e8f0;
-        --muted: #94a3b8;
-        --accent: #7c3aed;
-        --accent-2: #22c55e;
-        --border: #1f2937;
-      }
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        margin: 0;
-        min-height: 100vh;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 24px;
-        border-bottom: 1px solid var(--border);
-        background: rgba(17, 24, 39, 0.9);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      h1 {
-        margin: 0;
-        font-size: 20px;
-        letter-spacing: 0.5px;
-      }
-      .container {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 16px;
-        padding: 16px 24px 32px;
-      }
-      .sidebar {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        height: calc(100vh - 120px);
-        position: sticky;
-        top: 88px;
-        overflow-y: auto;
-      }
-      .main {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-      }
-      .tabs {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .tab {
-        padding: 6px 10px;
-        border-radius: 20px;
-        border: 1px solid var(--border);
-        cursor: pointer;
-        color: var(--muted);
-        background: var(--panel);
-        transition: all 0.2s ease;
-      }
-      .tab.active {
-        background: var(--accent);
-        border-color: transparent;
-        color: white;
-      }
-      .search {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: var(--panel);
-        color: var(--text);
-        outline: none;
-      }
-      .template-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .template-card {
-        padding: 12px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.02);
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .template-card:hover {
-        border-color: var(--accent);
-        transform: translateY(-1px);
-      }
-      .template-card.active {
-        border-color: var(--accent);
-        box-shadow: 0 8px 16px rgba(124, 58, 237, 0.2);
-      }
-      .tag {
-        padding: 2px 8px;
-        border-radius: 12px;
-        background: rgba(124, 58, 237, 0.12);
-        color: var(--text);
-        border: 1px solid var(--border);
-        font-size: 12px;
-      }
-      .layout {
-        display: grid;
-        grid-template-columns: 1.1fr 1.1fr 0.9fr;
-        gap: 12px;
-      }
-      .panel {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        min-height: 320px;
-      }
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .field label {
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .input,
-      select,
-      textarea {
-        padding: 10px 12px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: var(--panel);
-        color: var(--text);
-        outline: none;
-      }
-      textarea {
-        min-height: 80px;
-        resize: vertical;
-      }
-      button {
-        border: none;
-        cursor: pointer;
-        border-radius: 10px;
-        padding: 10px 12px;
-        color: white;
-        background: var(--accent);
-      }
-      .ghost-btn {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text);
-      }
-      .controls-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .control-chip {
-        background: rgba(124, 58, 237, 0.12);
-        border: 1px dashed var(--accent);
-        color: var(--text);
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-      }
-      .preview-box {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 10px;
-        white-space: pre-wrap;
-        min-height: 200px;
-      }
-      .checklist {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .checklist li::before {
-        content: '• ';
-        color: var(--accent-2);
-      }
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-      }
-      .muted {
-        color: var(--muted);
-      }
-      .row {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .spinner {
-        border: 2px solid rgba(124, 58, 237, 0.2);
-        border-top: 2px solid var(--accent);
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 0.8s linear infinite;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      .status-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        border: 1px solid var(--border);
-      }
-      .status-indicator.connected {
-        background: rgba(34, 197, 94, 0.1);
-        border-color: rgba(34, 197, 94, 0.3);
-        color: #22c55e;
-      }
-      .status-indicator.disconnected {
-        background: rgba(251, 146, 60, 0.1);
-        border-color: rgba(251, 146, 60, 0.3);
-        color: #fb923c;
-      }
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: currentColor;
-      }
-      .ai-filled {
-        position: relative;
-      }
-      .ai-filled::after {
-        content: '✨';
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        font-size: 12px;
-        opacity: 0.5;
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .gradient-text {
-        background: linear-gradient(135deg, var(--accent) 0%, #22c55e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="/vendor/react.development.js"></script>
-    <script src="/vendor/react-dom.development.js"></script>
-    <script src="/vendor/babel.min.js"></script>
-    <script type="text/babel" data-presets="env,react">
-      const { useState, useEffect, useMemo } = React;
 
-      const api = {
-        async getCategories() {
-          const res = await fetch('/api/templates/categories');
-          return res.json();
-        },
-        async getTemplates(category) {
-          const query = category ? `?category=${encodeURIComponent(category)}` : '';
-          const res = await fetch(`/api/templates${query}`);
-          return res.json();
-        },
-        async getTemplate(id) {
-          const res = await fetch(`/api/templates/${id}`);
-          return res.json();
-        },
-        async render(id, placeholderValues) {
-          const res = await fetch(`/api/templates/${id}/render`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ placeholderValues }),
-          });
-          return res.json();
-        },
-        async aiFill(id, placeholderValues, targetKey) {
-          const res = await fetch(`/api/templates/${id}/ai-fill`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ placeholderValues, target_key: targetKey }),
-          });
-          return res.json();
-        },
-        async getConfig() {
-          const res = await fetch('/api/config');
-          return res.json();
-        },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>问题模版平台</title>
+  <link rel="stylesheet" href="/vendor/modern-normalize.min.css" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --panel: #0b1220;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #7c3aed;
+      --accent-2: #22c55e;
+      --border: #1f2937;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.9);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      padding: 16px 24px 32px;
+    }
+
+    .sidebar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: calc(100vh - 120px);
+      position: sticky;
+      top: 88px;
+      overflow-y: auto;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 6px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--muted);
+      background: var(--panel);
+      transition: all 0.2s ease;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: transparent;
+      color: white;
+    }
+
+    .search {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      outline: none;
+    }
+
+    .template-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .template-card {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .template-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .template-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 8px 16px rgba(124, 58, 237, 0.2);
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(124, 58, 237, 0.12);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1.1fr 0.9fr;
+      gap: 12px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 320px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .input,
+    select,
+    textarea {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: white;
+      background: var(--accent);
+    }
+
+    .ghost-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .control-chip {
+      background: rgba(124, 58, 237, 0.12);
+      border: 1px dashed var(--accent);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .preview-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      white-space: pre-wrap;
+      min-height: 200px;
+    }
+
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .checklist li::before {
+      content: '• ';
+      color: var(--accent-2);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .spinner {
+      border: 2px solid rgba(124, 58, 237, 0.2);
+      border-top: 2px solid var(--accent);
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+    }
+
+    .status-indicator.connected {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #22c55e;
+    }
+
+    .status-indicator.disconnected {
+      background: rgba(251, 146, 60, 0.1);
+      border-color: rgba(251, 146, 60, 0.3);
+      color: #fb923c;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .ai-filled {
+      position: relative;
+    }
+
+    .ai-filled::after {
+      content: '✨';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 12px;
+      opacity: 0.5;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent) 0%, #22c55e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script src="/vendor/react.development.js"></script>
+  <script src="/vendor/react-dom.development.js"></script>
+  <script src="/vendor/babel.min.js"></script>
+  <script type="text/babel" data-presets="env,react">
+    const { useState, useEffect, useMemo } = React;
+
+    const api = {
+      async getCategories() {
+        const res = await fetch('/api/templates/categories');
+        return res.json();
+      },
+      async getTemplates(category) {
+        const query = category ? `?category=${encodeURIComponent(category)}` : '';
+        const res = await fetch(`/api/templates${query}`);
+        return res.json();
+      },
+      async getTemplate(id) {
+        const res = await fetch(`/api/templates/${id}`);
+        return res.json();
+      },
+      async render(id, placeholderValues) {
+        const res = await fetch(`/api/templates/${id}/render`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ placeholderValues }),
+        });
+        return res.json();
+      },
+      async aiFill(id, placeholderValues, targetKey) {
+        const res = await fetch(`/api/templates/${id}/ai-fill`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ placeholderValues, target_key: targetKey }),
+        });
+        return res.json();
+      },
+      async getConfig() {
+        const res = await fetch('/api/config');
+        return res.json();
+      },
+    };
+
+    function PlaceholderField({ placeholder, value, onChange, onAIFill, aiFilledKeys, isAIFilling }) {
+      const { key, label, type, hint, required, enum_options, ai_fill } = placeholder;
+      const isAIFilled = aiFilledKeys.includes(key);
+      const handleChange = (e) => {
+        let val = e.target.value;
+        if (type === 'number') {
+          val = e.target.value === '' ? '' : Number(e.target.value);
+        }
+        if (type === 'boolean') {
+          val = e.target.checked;
+        }
+        onChange(key, val);
       };
 
-      function PlaceholderField({ placeholder, value, onChange, onAIFill, aiFilledKeys, isAIFilling }) {
-        const { key, label, type, hint, required, enum_options, ai_fill } = placeholder;
-        const isAIFilled = aiFilledKeys.includes(key);
-        const handleChange = (e) => {
-          let val = e.target.value;
-          if (type === 'number') {
-            val = e.target.value === '' ? '' : Number(e.target.value);
-          }
-          if (type === 'boolean') {
-            val = e.target.checked;
-          }
-          onChange(key, val);
-        };
-
-        let control;
-        const commonClass = isAIFilled ? 'ai-filled' : '';
-        if (type === 'textarea') {
-          control = (
-            <textarea
-              className={commonClass}
-              value={value ?? ''}
-              placeholder={hint || ''}
-              onChange={handleChange}
-            />
-          );
-        } else if (type === 'enum') {
-          control = (
-            <select className={commonClass} value={value ?? ''} onChange={handleChange}>
-              <option value="" disabled>
-                请选择
+      let control;
+      const commonClass = isAIFilled ? 'ai-filled' : '';
+      if (type === 'textarea') {
+        control = (
+          <textarea
+            className={commonClass}
+            value={value ?? ''}
+            placeholder={hint || ''}
+            onChange={handleChange}
+          />
+        );
+      } else if (type === 'enum') {
+        control = (
+          <select className={commonClass} value={value ?? ''} onChange={handleChange}>
+            <option value="" disabled>
+              请选择
+            </option>
+            {(enum_options || []).map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
               </option>
-              {(enum_options || []).map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          );
-        } else if (type === 'number') {
-          control = (
-            <input
-              className={`input ${commonClass}`}
-              type="number"
-              value={value ?? ''}
-              placeholder={hint || ''}
-              onChange={handleChange}
-            />
-          );
-        } else if (type === 'boolean') {
-          control = (
-            <div className="row">
-              <input type="checkbox" checked={!!value} onChange={handleChange} />
-              <span className="muted">{hint}</span>
-            </div>
-          );
-        } else {
-          control = (
-            <input
-              className={`input ${commonClass}`}
-              value={value ?? ''}
-              placeholder={hint || ''}
-              onChange={handleChange}
-            />
-          );
-        }
-
-        return (
-          <div className="field">
-            <div className="row" style={{ justifyContent: 'space-between' }}>
-              <label>
-                {label} {required && <span style={{ color: '#f43f5e' }}>*</span>}
-              </label>
-              {ai_fill && (
-                <button 
-                  className="ghost-btn" 
-                  onClick={() => onAIFill(key)} 
-                  style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                  disabled={isAIFilling}
-                >
-                  {isAIFilling ? <div className="spinner" /> : '✨'}
-                  AI 填写
-                </button>
-              )}
-            </div>
-            {control}
+            ))}
+          </select>
+        );
+      } else if (type === 'number') {
+        control = (
+          <input
+            className={`input ${commonClass}`}
+            type="number"
+            value={value ?? ''}
+            placeholder={hint || ''}
+            onChange={handleChange}
+          />
+        );
+      } else if (type === 'boolean') {
+        control = (
+          <div className="row">
+            <input type="checkbox" checked={!!value} onChange={handleChange} />
+            <span className="muted">{hint}</span>
           </div>
+        );
+      } else {
+        control = (
+          <input
+            className={`input ${commonClass}`}
+            value={value ?? ''}
+            placeholder={hint || ''}
+            onChange={handleChange}
+          />
         );
       }
 
-      function PanelTitle({ title, subtitle, actions }) {
-        return (
+      return (
+        <div className="field">
           <div className="row" style={{ justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontWeight: 700 }}>{title}</div>
-              {subtitle && <div className="muted" style={{ fontSize: 12 }}>{subtitle}</div>}
-            </div>
-            <div className="row">{actions}</div>
+            <label>
+              {label} {required && <span style={{ color: '#f43f5e' }}>*</span>}
+            </label>
+            {ai_fill && (
+              <button
+                className="ghost-btn"
+                onClick={() => onAIFill(key)}
+                style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                disabled={isAIFilling}
+              >
+                {isAIFilling ? <div className="spinner" /> : '✨'}
+                AI 填写
+              </button>
+            )}
           </div>
-        );
+          {control}
+        </div>
+      );
+    }
+
+    function PanelTitle({ title, subtitle, actions }) {
+      return (
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontWeight: 700 }}>{title}</div>
+            {subtitle && <div className="muted" style={{ fontSize: 12 }}>{subtitle}</div>}
+          </div>
+          <div className="row">{actions}</div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [categories, setCategories] = useState([]);
+      const [templates, setTemplates] = useState([]);
+      const [selectedCategory, setSelectedCategory] = useState('');
+      const [search, setSearch] = useState('');
+      const [selectedTemplateId, setSelectedTemplateId] = useState('');
+      const [templateDetail, setTemplateDetail] = useState(null);
+      const [values, setValues] = useState({});
+      const [rendered, setRendered] = useState('');
+      const [missing, setMissing] = useState([]);
+      const [loading, setLoading] = useState(false);
+      const [isRaw, setIsRaw] = useState(false);
+      const [message, setMessage] = useState('');
+      const [aiConfig, setAiConfig] = useState(null);
+      const [aiFilledKeys, setAiFilledKeys] = useState([]);
+      const [isAIFilling, setIsAIFilling] = useState(false);
+
+      useEffect(() => {
+        api.getCategories().then((data) => {
+          setCategories(data.categories || []);
+        });
+        api.getConfig().then((config) => {
+          setAiConfig(config);
+        });
+      }, []);
+
+      useEffect(() => {
+        api.getTemplates(selectedCategory).then((data) => {
+          setTemplates(data.templates || []);
+        });
+      }, [selectedCategory]);
+
+      useEffect(() => {
+        if (!selectedTemplateId && templates.length > 0) {
+          setSelectedTemplateId(templates[0].id);
+        }
+      }, [templates, selectedTemplateId]);
+
+      useEffect(() => {
+        if (!selectedTemplateId) return;
+        setLoading(true);
+        api.getTemplate(selectedTemplateId).then((tpl) => {
+          setTemplateDetail(tpl);
+          const initial = {};
+          (tpl.placeholders || []).forEach((p) => {
+            initial[p.key] = p.default ?? '';
+          });
+          setValues(initial);
+          setLoading(false);
+        });
+      }, [selectedTemplateId]);
+
+      useEffect(() => {
+        if (!templateDetail) return;
+        api.render(templateDetail.id, values).then((res) => {
+          setRendered(res.rendered_prompt || '');
+          setMissing(res.missing_required || []);
+        });
+      }, [templateDetail, values]);
+
+      const filteredTemplates = useMemo(() => {
+        const term = search.trim().toLowerCase();
+        return templates.filter((tpl) => {
+          if (!term) return true;
+          return (
+            tpl.name.toLowerCase().includes(term) ||
+            (tpl.short_description || '').toLowerCase().includes(term) ||
+            (tpl.tags || []).some((t) => t.toLowerCase().includes(term))
+          );
+        });
+      }, [templates, search]);
+
+      const applyValues = (updates) => {
+        setValues((prev) => ({ ...prev, ...updates }));
+      };
+
+      const handleAIFill = async (targetKey) => {
+        if (!templateDetail) return;
+        setIsAIFilling(true);
+        try {
+          const res = await api.aiFill(templateDetail.id, values, targetKey);
+          const incoming = res.suggested_values || {};
+          const merged = { ...values };
+          const filledKeys = [];
+          Object.entries(incoming).forEach(([k, v]) => {
+            if (targetKey) {
+              merged[k] = v;
+              filledKeys.push(k);
+            } else if (merged[k] === undefined || merged[k] === null || merged[k] === '') {
+              merged[k] = v;
+              filledKeys.push(k);
+            }
+          });
+          setValues(merged);
+          setAiFilledKeys((prev) => [...new Set([...prev, ...filledKeys])]);
+          const reasoning = res.reasoning || 'AI 填充完成';
+          setMessage(targetKey ? `✨ ${reasoning}` : `✨ ${reasoning}`);
+        } catch (error) {
+          setMessage(`❌ AI 填充失败: ${error.message}`);
+        } finally {
+          setIsAIFilling(false);
+          setTimeout(() => setMessage(''), 3500);
+        }
+      };
+
+      const copyPrompt = async () => {
+        try {
+          await navigator.clipboard.writeText(rendered || '');
+          setMessage('已复制 Prompt');
+        } catch (err) {
+          const helper = document.createElement('textarea');
+          helper.value = rendered || '';
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand('copy');
+          document.body.removeChild(helper);
+          setMessage('已复制 Prompt（使用回退）');
+          console.error('Clipboard write failed, used fallback:', err);
+        }
+        setTimeout(() => setMessage(''), 2500);
+      };
+
+      const goToGemini = () => {
+        if (!rendered) {
+          setMessage('⚠️ 请先填写模板生成 Prompt');
+          setTimeout(() => setMessage(''), 2500);
+          return;
+        }
+        // Open Gemini with the prompt pre-filled
+        const geminiUrl = `https://gemini.google.com/app?hl=zh-CN&prompt=${encodeURIComponent(rendered)}`;
+        window.open(geminiUrl, '_blank');
+        setMessage('🚀 已打开 Gemini');
+        setTimeout(() => setMessage(''), 2500);
+      };
+
+      if (!templateDetail) {
+        return <div style={{ padding: 24 }}>加载中...</div>;
       }
 
-      function App() {
-        const [categories, setCategories] = useState([]);
-        const [templates, setTemplates] = useState([]);
-        const [selectedCategory, setSelectedCategory] = useState('');
-        const [search, setSearch] = useState('');
-        const [selectedTemplateId, setSelectedTemplateId] = useState('');
-        const [templateDetail, setTemplateDetail] = useState(null);
-        const [values, setValues] = useState({});
-        const [rendered, setRendered] = useState('');
-        const [missing, setMissing] = useState([]);
-        const [loading, setLoading] = useState(false);
-        const [isRaw, setIsRaw] = useState(false);
-        const [message, setMessage] = useState('');
-        const [aiConfig, setAiConfig] = useState(null);
-        const [aiFilledKeys, setAiFilledKeys] = useState([]);
-        const [isAIFilling, setIsAIFilling] = useState(false);
+      return (
+        <div>
+          <header>
+            <h1 className="gradient-text">问题模版平台</h1>
+            <div className="row">
+              {aiConfig && (
+                <div className={`status-indicator ${aiConfig.configured ? 'connected' : 'disconnected'}`}>
+                  <div className="status-dot" />
+                  {aiConfig.configured ? `AI: ${aiConfig.model}` : 'AI 未配置'}
+                </div>
+              )}
+              {message && <span className="pill">{message}</span>}
+              <button className="ghost-btn" onClick={() => window.location.reload()}>刷新</button>
+            </div>
+          </header>
 
-        useEffect(() => {
-          api.getCategories().then((data) => {
-            setCategories(data.categories || []);
-          });
-          api.getConfig().then((config) => {
-            setAiConfig(config);
-          });
-        }, []);
-
-        useEffect(() => {
-          api.getTemplates(selectedCategory).then((data) => {
-            setTemplates(data.templates || []);
-          });
-        }, [selectedCategory]);
-
-        useEffect(() => {
-          if (!selectedTemplateId && templates.length > 0) {
-            setSelectedTemplateId(templates[0].id);
-          }
-        }, [templates, selectedTemplateId]);
-
-        useEffect(() => {
-          if (!selectedTemplateId) return;
-          setLoading(true);
-          api.getTemplate(selectedTemplateId).then((tpl) => {
-            setTemplateDetail(tpl);
-            const initial = {};
-            (tpl.placeholders || []).forEach((p) => {
-              initial[p.key] = p.default ?? '';
-            });
-            setValues(initial);
-            setLoading(false);
-          });
-        }, [selectedTemplateId]);
-
-        useEffect(() => {
-          if (!templateDetail) return;
-          api.render(templateDetail.id, values).then((res) => {
-            setRendered(res.rendered_prompt || '');
-            setMissing(res.missing_required || []);
-          });
-        }, [templateDetail, values]);
-
-        const filteredTemplates = useMemo(() => {
-          const term = search.trim().toLowerCase();
-          return templates.filter((tpl) => {
-            if (!term) return true;
-            return (
-              tpl.name.toLowerCase().includes(term) ||
-              (tpl.short_description || '').toLowerCase().includes(term) ||
-              (tpl.tags || []).some((t) => t.toLowerCase().includes(term))
-            );
-          });
-        }, [templates, search]);
-
-        const applyValues = (updates) => {
-          setValues((prev) => ({ ...prev, ...updates }));
-        };
-
-        const handleAIFill = async (targetKey) => {
-          if (!templateDetail) return;
-          setIsAIFilling(true);
-          try {
-            const res = await api.aiFill(templateDetail.id, values, targetKey);
-            const incoming = res.suggested_values || {};
-            const merged = { ...values };
-            const filledKeys = [];
-            Object.entries(incoming).forEach(([k, v]) => {
-              if (targetKey) {
-                merged[k] = v;
-                filledKeys.push(k);
-              } else if (merged[k] === undefined || merged[k] === null || merged[k] === '') {
-                merged[k] = v;
-                filledKeys.push(k);
-              }
-            });
-            setValues(merged);
-            setAiFilledKeys((prev) => [...new Set([...prev, ...filledKeys])]);
-            const reasoning = res.reasoning || 'AI 填充完成';
-            setMessage(targetKey ? `✨ ${reasoning}` : `✨ ${reasoning}`);
-          } catch (error) {
-            setMessage(`❌ AI 填充失败: ${error.message}`);
-          } finally {
-            setIsAIFilling(false);
-            setTimeout(() => setMessage(''), 3500);
-          }
-        };
-
-        const copyPrompt = async () => {
-          try {
-            await navigator.clipboard.writeText(rendered || '');
-            setMessage('已复制 Prompt');
-          } catch (err) {
-            const helper = document.createElement('textarea');
-            helper.value = rendered || '';
-            document.body.appendChild(helper);
-            helper.select();
-            document.execCommand('copy');
-            document.body.removeChild(helper);
-            setMessage('已复制 Prompt（使用回退）');
-            console.error('Clipboard write failed, used fallback:', err);
-          }
-          setTimeout(() => setMessage(''), 2500);
-        };
-
-        if (!templateDetail) {
-          return <div style={{ padding: 24 }}>加载中...</div>;
-        }
-
-        return (
-          <div>
-            <header>
-              <h1 className="gradient-text">问题模版平台</h1>
-              <div className="row">
-                {aiConfig && (
-                  <div className={`status-indicator ${aiConfig.configured ? 'connected' : 'disconnected'}`}>
-                    <div className="status-dot" />
-                    {aiConfig.configured ? `AI: ${aiConfig.model}` : 'AI 未配置'}
+          <div className="container">
+            <aside className="sidebar">
+              <div>
+                <div className="muted" style={{ marginBottom: 6 }}>分类</div>
+                <div className="tabs">
+                  <div
+                    className={`tab ${selectedCategory === '' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('')}
+                  >
+                    全部
+                  </div>
+                  {categories.map((cat) => (
+                    <div
+                      key={cat.id}
+                      className={`tab ${selectedCategory === cat.id ? 'active' : ''}`}
+                      onClick={() => setSelectedCategory(cat.id)}
+                    >
+                      {cat.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <input
+                className="search"
+                placeholder="搜索模版名称/标签"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <div className="muted" style={{ fontSize: 12 }}>
+                共 {filteredTemplates.length} 个模版
+              </div>
+              <div className="template-list">
+                {filteredTemplates.map((tpl) => (
+                  <div
+                    key={tpl.id}
+                    className={`template-card ${selectedTemplateId === tpl.id ? 'active' : ''}`}
+                    onClick={() => setSelectedTemplateId(tpl.id)}
+                  >
+                    <div style={{ fontWeight: 700 }}>{tpl.name}</div>
+                    <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+                      {tpl.short_description}
+                    </div>
+                    <div className="row" style={{ marginTop: 8 }}>
+                      {(tpl.tags || []).slice(0, 3).map((tag) => (
+                        <span key={tag} className="tag">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {filteredTemplates.length === 0 && (
+                  <div className="muted" style={{ textAlign: 'center' }}>
+                    未找到模版
                   </div>
                 )}
-                {message && <span className="pill">{message}</span>}
-                <button className="ghost-btn" onClick={() => window.location.reload()}>刷新</button>
               </div>
-            </header>
+            </aside>
 
-            <div className="container">
-              <aside className="sidebar">
-                <div>
-                  <div className="muted" style={{ marginBottom: 6 }}>分类</div>
-                  <div className="tabs">
-                    <div
-                      className={`tab ${selectedCategory === '' ? 'active' : ''}`}
-                      onClick={() => setSelectedCategory('')}
-                    >
-                      全部
+            <main className="main">
+              {loading ? (
+                <div className="card">加载模板详情...</div>
+              ) : (
+                <div className="layout">
+                  <div className="panel">
+                    <PanelTitle
+                      title={templateDetail.name}
+                      subtitle={templateDetail.short_description}
+                      actions={[
+                        <button
+                          key="ai"
+                          onClick={() => handleAIFill()}
+                          disabled={isAIFilling || !aiConfig?.configured}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          {isAIFilling ? <div className="spinner" /> : '✨'}
+                          {isAIFilling ? 'AI 填充中...' : '一键 AI 补全'}
+                        </button>,
+                      ]}
+                    />
+                    <div className="controls-row">
+                      {templateDetail.controls?.map((c) => (
+                        <span key={c.key} className="control-chip">
+                          {c.label} · {c.control_type || 'control'}
+                        </span>
+                      ))}
                     </div>
-                    {categories.map((cat) => (
-                      <div
-                        key={cat.id}
-                        className={`tab ${selectedCategory === cat.id ? 'active' : ''}`}
-                        onClick={() => setSelectedCategory(cat.id)}
-                      >
-                        {cat.name}
-                      </div>
-                    ))}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {(templateDetail.placeholders || []).map((p) => (
+                        <PlaceholderField
+                          key={p.key}
+                          placeholder={p}
+                          value={values[p.key]}
+                          onChange={(k, v) => applyValues({ [k]: v })}
+                          onAIFill={handleAIFill}
+                          aiFilledKeys={aiFilledKeys}
+                          isAIFilling={isAIFilling}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <input
-                  className="search"
-                  placeholder="搜索模版名称/标签"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <div className="muted" style={{ fontSize: 12 }}>
-                  共 {filteredTemplates.length} 个模版
-                </div>
-                <div className="template-list">
-                  {filteredTemplates.map((tpl) => (
-                    <div
-                      key={tpl.id}
-                      className={`template-card ${selectedTemplateId === tpl.id ? 'active' : ''}`}
-                      onClick={() => setSelectedTemplateId(tpl.id)}
-                    >
-                      <div style={{ fontWeight: 700 }}>{tpl.name}</div>
-                      <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
-                        {tpl.short_description}
-                      </div>
-                      <div className="row" style={{ marginTop: 8 }}>
-                        {(tpl.tags || []).slice(0, 3).map((tag) => (
+
+                  <div className="panel">
+                    <PanelTitle
+                      title="Prompt 预览"
+                      subtitle={missing.length ? `缺少必填字段：${missing.join(', ')}` : '实时渲染，可直接复制'}
+                      actions={[
+                        templateDetail.category_id === 'text2image' && (
+                          <button
+                            key="gemini"
+                            onClick={goToGemini}
+                            style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)' }}
+                          >
+                            🎨 Gemini 生图
+                          </button>
+                        ),
+                        <button key="copy" onClick={copyPrompt}>📋 复制</button>,
+                        <button
+                          key="toggle"
+                          className="ghost-btn"
+                          onClick={() => setIsRaw((s) => !s)}
+                        >
+                          {isRaw ? '可读' : '原始'}
+                        </button>,
+                      ]}
+                    />
+                    <div className="preview-box" style={{ fontFamily: isRaw ? 'monospace' : 'inherit' }}>
+                      {rendered || '尚未渲染 Prompt'}
+                    </div>
+                  </div>
+
+                  <div className="panel">
+                    <PanelTitle
+                      title="规则 & 说明"
+                      subtitle="生成后按清单自查，确保输出质量"
+                    />
+                    <div>
+                      <div className="muted" style={{ marginBottom: 6 }}>人工检查清单</div>
+                      <ul className="checklist">
+                        {(templateDetail.evaluation_rules?.manual_checklist || []).map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="muted" style={{ marginBottom: 6 }}>自动可检规则（占位）</div>
+                      <ul className="checklist">
+                        {(templateDetail.evaluation_rules?.auto_checks || []).map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="muted" style={{ marginBottom: 6 }}>标签</div>
+                      <div className="row">
+                        {(templateDetail.tags || []).map((tag) => (
                           <span key={tag} className="tag">
                             {tag}
                           </span>
                         ))}
                       </div>
                     </div>
-                  ))}
-                  {filteredTemplates.length === 0 && (
-                    <div className="muted" style={{ textAlign: 'center' }}>
-                      未找到模版
-                    </div>
-                  )}
-                </div>
-              </aside>
-
-              <main className="main">
-                {loading ? (
-                  <div className="card">加载模板详情...</div>
-                ) : (
-                  <div className="layout">
-                    <div className="panel">
-                      <PanelTitle
-                        title={templateDetail.name}
-                        subtitle={templateDetail.short_description}
-                        actions={[
-                          <button 
-                            key="ai" 
-                            onClick={() => handleAIFill()}
-                            disabled={isAIFilling || !aiConfig?.configured}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                          >
-                            {isAIFilling ? <div className="spinner" /> : '✨'}
-                            {isAIFilling ? 'AI 填充中...' : '一键 AI 补全'}
-                          </button>,
-                        ]}
-                      />
-                      <div className="controls-row">
-                        {templateDetail.controls?.map((c) => (
-                          <span key={c.key} className="control-chip">
-                            {c.label} · {c.control_type || 'control'}
-                          </span>
-                        ))}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {(templateDetail.placeholders || []).map((p) => (
-                          <PlaceholderField
-                            key={p.key}
-                            placeholder={p}
-                            value={values[p.key]}
-                            onChange={(k, v) => applyValues({ [k]: v })}
-                            onAIFill={handleAIFill}
-                            aiFilledKeys={aiFilledKeys}
-                            isAIFilling={isAIFilling}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="panel">
-                      <PanelTitle
-                        title="Prompt 预览"
-                        subtitle={missing.length ? `缺少必填字段：${missing.join(', ')}` : '实时渲染，可直接复制'}
-                        actions={[
-                          <button key="copy" onClick={copyPrompt}>📋 复制 Prompt</button>,
-                          <button
-                            key="toggle"
-                            className="ghost-btn"
-                            onClick={() => setIsRaw((s) => !s)}
-                          >
-                            {isRaw ? '切换为可读视图' : '切换为原始视图'}
-                          </button>,
-                        ]}
-                      />
-                      <div className="preview-box" style={{ fontFamily: isRaw ? 'monospace' : 'inherit' }}>
-                        {rendered || '尚未渲染 Prompt'}
-                      </div>
-                    </div>
-
-                    <div className="panel">
-                      <PanelTitle
-                        title="规则 & 说明"
-                        subtitle="生成后按清单自查，确保输出质量"
-                      />
-                      <div>
-                        <div className="muted" style={{ marginBottom: 6 }}>人工检查清单</div>
-                        <ul className="checklist">
-                          {(templateDetail.evaluation_rules?.manual_checklist || []).map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <div className="muted" style={{ marginBottom: 6 }}>自动可检规则（占位）</div>
-                        <ul className="checklist">
-                          {(templateDetail.evaluation_rules?.auto_checks || []).map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <div className="muted" style={{ marginBottom: 6 }}>标签</div>
-                        <div className="row">
-                          {(templateDetail.tags || []).map((tag) => (
-                            <span key={tag} className="tag">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                )}
-              </main>
-            </div>
+                </div>
+              )}
+            </main>
           </div>
-        );
-      }
+        </div>
+      );
+    }
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<App />);
-    </script>
-  </body>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+
 </html>
