@@ -124,17 +124,68 @@ ${Object.keys(examples).length > 0 ? `Example values:\n${JSON.stringify(examples
 ${targetKey ? `Focus on filling ONLY the field: "${targetKey}"` : 'Fill in all missing required fields and suggest values for optional fields when appropriate.'}
 
 Rules:
-1. Return ONLY valid JSON with the structure: {"suggested_values": {"field_key": "value"}}
-2. Respect field types (string, number, boolean, enum)
-3. For enum fields, choose from the provided options only
-4. Follow constraints (min, max) for number fields
-5. Use hints and examples as guidance
-6. Keep values concise and relevant to the template purpose
-7. For Chinese templates, provide Chinese values
+1. Return ONLY valid XML, no markdown fences. Root element: <response>
+2. Inside <response>, include <suggested_values> with multiple <field key="...">value</field> entries
+3. Also include a <reasoning> brief justification </reasoning>
+4. Respect field types (string, number, boolean, enum)
+5. For enum fields, choose from the provided options only
+6. Follow constraints (min, max) for number fields
+7. Use hints and examples as guidance; keep values concise; Chinese templates返回中文值
 
-Return your response now:`.trim();
+Example format (do not add extra text):
+<response>
+  <suggested_values>
+    <field key="audience">新入职 PM</field>
+    <field key="style">类比驱动</field>
+  </suggested_values>
+  <reasoning>简要填写理由</reasoning>
+</response>
+
+Return the XML now:`.trim();
 
   return prompt;
+}
+
+function stripCodeFence(text: string): string {
+  return text.replace(/```[\s\S]*?```/g, (block) =>
+    block.replace(/```(xml)?\n?/gi, '').replace(/```$/, '').trim(),
+  );
+}
+
+function parseXMLSuggestion(
+  xmlRaw: string,
+  template: Template,
+): { suggested_values: Record<string, unknown>; reasoning: string } {
+  const xml = stripCodeFence(xmlRaw).trim();
+  const typeMap = new Map((template.placeholders || []).map((p) => [p.key, p.type]));
+
+  const suggested: Record<string, unknown> = {};
+  const fieldRegex = /<field\s+key="([^"]+)"\s*>([\s\S]*?)<\/field>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = fieldRegex.exec(xml)) !== null) {
+    const key = match[1];
+    let value: unknown = match[2].trim();
+    const type = typeMap.get(key);
+    if (type === 'number') {
+      const num = Number(value);
+      if (!Number.isNaN(num)) value = num;
+    } else if (type === 'boolean') {
+      const lower = String(value).toLowerCase();
+      if (lower === 'true' || lower === 'false') {
+        value = lower === 'true';
+      }
+    }
+    suggested[key] = value;
+  }
+
+  if (Object.keys(suggested).length === 0) {
+    throw new Error('未在 XML 中解析到字段');
+  }
+
+  const reasoningMatch = /<reasoning>([\s\S]*?)<\/reasoning>/i.exec(xml);
+  const reasoning = reasoningMatch ? reasoningMatch[1].trim() : `AI 填充 (${AI_CONFIG.model})`;
+
+  return { suggested_values: suggested, reasoning };
 }
 
 export async function suggestValues(
@@ -162,12 +213,11 @@ export async function suggestValues(
         {
           role: 'system',
           content:
-            'You are a helpful assistant that fills in template placeholders. Always respond with valid JSON only, no additional text.',
+            'You are a helpful assistant that fills in template placeholders. Always respond with valid XML only (no code fences, no extra prose), following the requested format.',
         },
         { role: 'user', content: prompt },
       ],
       temperature: AI_CONFIG.temperature,
-      response_format: { type: 'json_object' },
     });
 
     const content = completion.choices[0]?.message?.content;
@@ -176,12 +226,10 @@ export async function suggestValues(
       throw new Error('No content in LLM response');
     }
 
-    const parsed = JSON.parse(content);
-    const suggested = parsed.suggested_values || {};
-
+    const parsed = parseXMLSuggestion(content, template);
     return {
-      suggested_values: suggested,
-      reasoning: `AI 填充 (${AI_CONFIG.model})`,
+      suggested_values: parsed.suggested_values,
+      reasoning: parsed.reasoning,
     };
   } catch (error) {
     console.error('AI fill error, falling back to rule-based:', error);
