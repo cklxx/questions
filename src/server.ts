@@ -55,11 +55,16 @@ const datasetLastModified = defaultDataset.lastModified;
 const normalizeLanguage = (candidate?: string): Language =>
   supportedLanguages.includes(candidate as Language) ? (candidate as Language) : defaultLanguage;
 
-const getLanguageFromQuery = (req: express.Request): Language =>
-  normalizeLanguage(typeof req.query.lang === 'string' ? req.query.lang.toLowerCase() : undefined);
+const getLanguageForRequest = (req: express.Request): Language => {
+  if (typeof req.query.lang === 'string') {
+    return normalizeLanguage(req.query.lang.toLowerCase());
+  }
+  const detected = detectLanguage(req).language;
+  return normalizeLanguage(detected);
+};
 
 const getDatasetForRequest = (req: express.Request) => {
-  const lang = getLanguageFromQuery(req);
+  const lang = getLanguageForRequest(req);
   return { lang, ...datasets[lang] };
 };
 

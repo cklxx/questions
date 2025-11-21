@@ -11,6 +11,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextArea
     isAIFilling?: boolean;
     showAIButton?: boolean;
     rows?: number;
+    filledLabel?: string;
+    aiFillTooltip?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -23,6 +25,8 @@ export const Input: React.FC<InputProps> = ({
     isAIFilling,
     showAIButton,
     className = '',
+    filledLabel = '已补全',
+    aiFillTooltip = 'AI 自动填充',
     ...props
 }) => {
     const baseStyles =
@@ -38,7 +42,7 @@ export const Input: React.FC<InputProps> = ({
                     {isAIFilled && (
                         <span className="text-xs text-green-600 flex items-center gap-1">
                             <Sparkles className="w-3 h-3" />
-                            已补全
+                            {filledLabel}
                         </span>
                     )}
                 </div>
@@ -58,7 +62,7 @@ export const Input: React.FC<InputProps> = ({
                                 ? 'text-green-600 bg-green-50 border-green-100 hover:bg-green-100'
                                 : 'text-primary/80 hover:text-primary hover:bg-primary/10 border-transparent'
                         }`}
-                        title="AI 自动填充"
+                        title={aiFillTooltip}
                     >
                         {isAIFilling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
                     </button>

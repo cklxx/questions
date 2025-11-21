@@ -217,6 +217,7 @@ function App() {
                 initial[p.key] = p.default ?? '';
             });
             setValues(initial);
+            setAiFilledKeys([]);
         });
     }, [language, selectedTemplateId, templates]);
 
@@ -467,6 +468,23 @@ function App() {
                                 {aiConfig.configured ? aiConfig.model : t.aiNotConfigured}
                             </div>
                         )}
+                        <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-600 shadow-sm">
+                            {(['zh', 'en'] as Language[]).map((lng) => (
+                                <button
+                                    key={lng}
+                                    onClick={() => applyLanguage(lng, true)}
+                                    className={`px-2 py-1 rounded-lg font-medium transition ${
+                                        language === lng
+                                            ? 'bg-primary/10 text-primary border border-primary/30'
+                                            : 'text-slate-600 hover:text-primary border border-transparent'
+                                    }`}
+                                    aria-label={t.languageToggle[lng]}
+                                    title={t.languageToggle[lng]}
+                                >
+                                    {t.languageToggle[lng]}
+                                </button>
+                            ))}
+                        </div>
                         {message && (
                             <div className="animate-in fade-in slide-in-from-top-2 px-4 py-1.5 bg-white shadow-lg border border-slate-200 rounded-full text-sm text-slate-700 flex items-center gap-2">
                                 <Sparkles className="w-3.5 h-3.5 text-primary" />
@@ -641,35 +659,23 @@ function App() {
                                                 </p>
                                                 <h3 className="font-semibold text-sm text-slate-900 mt-1">{tpl.name}</h3>
                                             </div>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5">
                                                 <div className="flex items-center gap-1 text-[11px] text-slate-500">
                                                     <Clock3 className="w-3.5 h-3.5" />
                                                     <span>
                                                         {(tpl.placeholders || []).length} {t.fieldsLabel}
                                                     </span>
                                                 </div>
-                                                <div className="flex items-center gap-1">
-                                                    <button
-                                                        className="px-2 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 bg-white hover:border-primary/40 hover:text-primary transition-colors"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            copyTemplateFromList(tpl, 'skeleton');
-                                                        }}
-                                                        title={t.card.variableTitle}
-                                                    >
-                                                        {t.card.variable}
-                                                    </button>
-                                                    <button
-                                                        className="px-2 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 bg-white hover:border-primary/40 hover:text-primary transition-colors"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            copyTemplateFromList(tpl, 'prefilled');
-                                                        }}
-                                                        title={t.card.defaultsTitle}
-                                                    >
-                                                        {t.card.defaults}
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    className="px-2.5 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 bg-white hover:border-primary/40 hover:text-primary transition-colors"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        copyTemplateFromList(tpl, 'prefilled');
+                                                    }}
+                                                    title={t.card.defaultsTitle}
+                                                >
+                                                    {t.card.defaults}
+                                                </button>
                                                 {selectedTemplateId === tpl.id && <ChevronRight className="w-4 h-4 text-primary" />}
                                             </div>
                                         </div>
@@ -816,6 +822,8 @@ function App() {
                                                 isAIFilled={aiFilledKeys.includes(p.key)}
                                                 isAIFilling={isAIFilling}
                                                 rows={4}
+                                                filledLabel={t.aiFill.badge}
+                                                aiFillTooltip={t.aiFill.tooltip}
                                                 className="bg-white border-slate-200"
                                             />
                                         );
@@ -834,7 +842,7 @@ function App() {
                                                         value={(values[p.key] as string) ?? ''}
                                                         onChange={(e) => setValues({ ...values, [p.key]: e.target.value })}
                                                     >
-                                                        <option value="">请选择...</option>
+                                                        <option value="">{t.placeholders.select}</option>
                                                         {(p.enum_options || []).map((opt) => (
                                                             <option key={opt} value={opt}>
                                                                 {opt}
@@ -863,6 +871,8 @@ function App() {
                                             showAIButton={p.ai_fill}
                                             isAIFilled={aiFilledKeys.includes(p.key)}
                                             isAIFilling={isAIFilling}
+                                            filledLabel={t.aiFill.badge}
+                                            aiFillTooltip={t.aiFill.tooltip}
                                             className="bg-white border-slate-200"
                                         />
                                     );
@@ -872,7 +882,8 @@ function App() {
 
                         {missing.length > 0 && (
                             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                                缺少必填字段：{missing.join(', ')}
+                                {t.placeholders.missingPrefix}
+                                {missing.join(', ')}
                             </div>
                         )}
                     </section>
@@ -883,7 +894,7 @@ function App() {
                             <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-2">
                                     <FileText className="w-4 h-4 text-primary" />
-                                    <h3 className="font-semibold text-sm text-slate-800">Prompt 预览</h3>
+                                    <h3 className="font-semibold text-sm text-slate-800">{t.sections.preview}</h3>
                                 </div>
                                 <div className="flex gap-2">
                                     {templateDetail.category_id === 'text2image' && (
@@ -891,8 +902,8 @@ function App() {
                                             onClick={goToGemini}
                                             size="sm"
                                             className="h-9 w-9 rounded-full !px-0"
-                                            aria-label="复制并前往 Gemini"
-                                            title="复制并前往 Gemini"
+                                            aria-label={t.buttons.gemini}
+                                            title={t.buttons.gemini}
                                         >
                                             <ImageIcon className="w-4 h-4" />
                                         </Button>
@@ -902,27 +913,27 @@ function App() {
                                         onClick={() => copyTemplateFromList(templateDetail, 'skeleton')}
                                         size="sm"
                                         className="h-9 rounded-full px-3 gap-1"
-                                        aria-label="复制模板（含变量）"
-                                        title="复制模板（含变量）"
+                                        aria-label={t.previewActions.templateTitle}
+                                        title={t.previewActions.templateTitle}
                                     >
                                         <Copy className="w-4 h-4" />
-                                        模板
+                                        {t.previewActions.template}
                                     </Button>
                                     <Button
                                         onClick={copyFilledPrompt}
                                         size="sm"
                                         className="h-9 rounded-full px-3 gap-1"
-                                        aria-label="复制填充值 Prompt"
-                                        title="复制填充值 Prompt"
+                                        aria-label={t.previewActions.filledTitle}
+                                        title={t.previewActions.filledTitle}
                                     >
                                         <Copy className="w-4 h-4" />
-                                        已填
+                                        {t.previewActions.filled}
                                     </Button>
                                 </div>
                             </div>
                             <div className="p-5 bg-slate-50 max-h-[55vh] overflow-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                                 <pre className="text-sm whitespace-pre-wrap font-mono text-slate-800 leading-relaxed">
-                                    {rendered || <span className="text-slate-400 italic">等待输入...</span>}
+                                    {rendered || <span className="text-slate-400 italic">{t.placeholders.waiting}</span>}
                                 </pre>
                             </div>
                         </div>
@@ -930,12 +941,14 @@ function App() {
                         <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-[0_24px_70px_-55px_rgba(0,0,0,0.3)]">
                             <div className="px-5 py-4 border-b border-slate-200 flex items-center gap-2">
                                 <Layout className="w-4 h-4 text-primary" />
-                                <h3 className="font-semibold text-sm text-slate-800">规则</h3>
+                                <h3 className="font-semibold text-sm text-slate-800">{t.sections.rules}</h3>
                             </div>
                             <div className="p-5 space-y-5 max-h-[40vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                                 {(templateDetail.evaluation_rules?.manual_checklist || []).length > 0 && (
                                     <div>
-                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">检查</div>
+                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+                                            {t.sections.checklist}
+                                        </div>
                                         <ul className="space-y-2">
                                             {(templateDetail.evaluation_rules?.manual_checklist || []).map((item, idx) => (
                                                 <li key={idx} className="flex gap-3 text-sm text-slate-700 group">
@@ -951,7 +964,9 @@ function App() {
 
                                 {(templateDetail.tags || []).length > 0 && (
                                     <div>
-                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">标签</div>
+                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+                                            {t.sections.tags}
+                                        </div>
                                         <div className="flex flex-wrap gap-2">
                                             {(templateDetail.tags || []).map((tag) => (
                                                 <span
@@ -967,7 +982,9 @@ function App() {
 
                                 {hasExamples && (
                                     <div>
-                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">示例</div>
+                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+                                            {t.sections.examples}
+                                        </div>
                                         <div className="space-y-3">
                                             {(templateDetail.example_inputs || []).slice(0, 2).map((ex) => (
                                                 <div
@@ -981,7 +998,7 @@ function App() {
                                                             .map(([k, v]) => `${k}: ${String(v)}`)
                                                             .join(' · ')}
                                                     </div>
-                                                    {ex.notes && <div className="text-xs text-slate-500 mt-1">备注：{ex.notes}</div>}
+                                                    {ex.notes && <div className="text-xs text-slate-500 mt-1">{t.placeholders.note}{ex.notes}</div>}
                                                 </div>
                                             ))}
                                         </div>

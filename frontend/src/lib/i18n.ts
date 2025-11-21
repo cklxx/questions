@@ -36,6 +36,8 @@ interface Translation {
     gemini: {
         missing: string;
         opened: string;
+        copying: string;
+        copyFailed: string;
     };
     placeholders: {
         select: string;
@@ -130,6 +132,8 @@ export const translations: Record<Language, Translation> = {
         gemini: {
             missing: '⚠️ 请先填写模板生成 Prompt',
             opened: '🚀 已打开 Gemini',
+            copying: '📋 已复制 Prompt，正在打开 Gemini',
+            copyFailed: '⚠️ 复制失败，但已打开 Gemini',
         },
         placeholders: {
             select: '请选择...',
@@ -222,6 +226,8 @@ export const translations: Record<Language, Translation> = {
         gemini: {
             missing: '⚠️ Please generate a prompt first',
             opened: '🚀 Gemini opened',
+            copying: '📋 Copied prompt and opening Gemini',
+            copyFailed: '⚠️ Copy failed, opening Gemini anyway',
         },
         placeholders: {
             select: 'Please select...',
