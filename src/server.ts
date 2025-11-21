@@ -12,6 +12,14 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 const data = JSON.parse(readFileSync(dataPath, 'utf8'));
 
+// Extract all templates from categories
+const allTemplates: any[] = [];
+(data.categories || []).forEach((cat: any) => {
+  if (cat.templates && Array.isArray(cat.templates)) {
+    allTemplates.push(...cat.templates);
+  }
+});
+
 const app = express();
 app.use(express.json());
 
@@ -26,15 +34,15 @@ app.get('/api/config', (req, res) => {
 
 app.get('/api/templates', (req, res) => {
   const { category } = req.query;
-  let templates = data.templates || [];
+  let templates = allTemplates;
   if (category && typeof category === 'string') {
-    templates = templates.filter((t: any) => t.category_id === category);
+    templates = allTemplates.filter((t: any) => t.category_id === category);
   }
   res.json({ templates });
 });
 
 app.get('/api/templates/:id', (req, res) => {
-  const template = (data.templates || []).find((t: any) => t.id === req.params.id);
+  const template = allTemplates.find((t: any) => t.id === req.params.id);
   if (!template) {
     return res.status(404).json({ error: 'Template not found' });
   }
@@ -42,7 +50,7 @@ app.get('/api/templates/:id', (req, res) => {
 });
 
 app.post('/api/templates/:id/render', (req, res) => {
-  const template = (data.templates || []).find((t: any) => t.id === req.params.id);
+  const template = allTemplates.find((t: any) => t.id === req.params.id);
   if (!template) return res.status(404).json({ error: 'Template not found' });
 
   const { placeholderValues = {} } = req.body;
@@ -63,7 +71,7 @@ app.post('/api/templates/:id/render', (req, res) => {
 });
 
 app.post('/api/templates/:id/ai-fill', async (req, res) => {
-  const template = (data.templates || []).find((t: any) => t.id === req.params.id);
+  const template = allTemplates.find((t: any) => t.id === req.params.id);
   if (!template) return res.status(404).json({ error: 'Template not found' });
 
   const { placeholderValues = {}, target_key } = req.body;
@@ -96,9 +104,7 @@ else {
   });
 }
 
-const templates = data.templates || [];
-const categories = data.categories || [];
-console.log(`Loaded ${templates.length} templates across ${categories.length} categories.`);
+console.log(`Loaded ${allTemplates.length} templates across ${data.categories.length} categories.`);
 
 app.listen(PORT, () => {
   console.log(`Template server running at http://localhost:${PORT}`);
