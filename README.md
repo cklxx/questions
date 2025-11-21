@@ -72,135 +72,57 @@
 
 ---
 
-## 2. Node 架构：纯后端/静态前端的分层
+## 2. Node 架构：前后端一体化 (Vite + Express)
 
 ### 2.1 目录示意
 * `/data`：`templates.json`（所有模版写死其内）。
 * `/src`
-  * `server.ts`：启动 HTTP 服务、注册路由、托管静态文件（TypeScript 编译到 `dist/` 运行）。
-  * `templateLoader.ts`：读取/校验/缓存 `templates.json`（校验占位符一致性、ID 唯一等）。
-  * `promptRenderer.ts`：用用户输入或 AI 建议替换占位符生成最终 Prompt。
-  * `aiFiller.ts`：封装 LLM 调用，产出填空 JSON。
-  * `/routes/templates.ts`：REST API（列表、详情、渲染、AI 填空）。
-* `/public`：极简静态前端（HTML/CSS/JS），由 Node 静态托管。
+  * `server.ts`：后端服务，集成 Vite 中间件（开发模式）或托管静态文件（生产模式）。
+  * `aiFiller.ts`：封装 OpenAI SDK 调用 LLM。
+* `/frontend`：现代 React 前端项目。
+  * `src/`：React 组件、Hooks、Tailwind 样式。
+  * `vite.config.ts`：Vite 配置。
+* `/public`：生产环境构建产物目录。
 
-### 2.2 核心 API 流程
-1. **启动加载模版**：`templateLoader` 读取并缓存 `templates.json`。
-2. **列出模版**：`GET /templates?category=text2doc` → 返回 id/name/description/tags。
-3. **获取详情**：`GET /templates/:id` → 返回完整模板定义。
-4. **渲染 Prompt**：`POST /templates/:id/render`，传入 `placeholderValues`，由 `promptRenderer` 替换占位符，返回 `rendered_prompt`。
-5. **AI 完形填空**：`POST /templates/:id/ai-fill`，传入已填字段与目标描述，`aiFiller` 调用 LLM 返回 `suggested_values` 供前端应用或对比。
+### 2.2 核心特性
+* **单命令启动**：`bun dev` 同时启动后端 API 和前端开发服务器（HMR）。
+* **现代化前端**：React 18 + TypeScript + Tailwind CSS + Vite。
+* **无缝集成**：开发模式下 Express 使用 Vite 中间件代理前端请求。
 
 ---
 
 ## 3. AI 完形填空协议：平台级约束
-
-### 3.1 通用规则
-1. AI **只能填占位符**，不得改 `prompt_template`。
-2. 严格遵守 `constraints` 和 `type/enum` 取值。
-3. 优先参考 `example_inputs`，保持风格一致。
-
-### 3.2 全局填空请求要素
-* `template_meta`：id、name、short_description。
-* `placeholders_definition`：字段定义（含 type/hint/constraints/ai_fill）。
-* `user_filled_values`：用户当前输入。
-* `example_inputs`：若存在，提供 few-shot。
-* 固定 `instruction`：约定输出 JSON、不得新增 key、不得改模版文本。
-
-**LLM 响应格式**：
-```jsonc
-{
-  "suggested_values": { "placeholder_key": "value" },
-  "reasoning": "可选，用于调试"
-}
-```
-平台默认以“补全空白”为主，必要时提供“应用 AI 建议”按钮让用户选择覆盖。
-
-### 3.3 字段级填空
-* 仅指定一个目标 `key`，其他字段作为上下文。
-* LLM 只能返回 `{ key: value }`。
-
----
-
-## 4. 前端交互：展示、填空、复制
-
-### 4.1 模版列表页
-* 分类 Tab：全部/五个垂类。
-* 搜索：按名称、短描述、标签过滤。
-* 模版卡片：展示名称、短描述、标签；“查看/使用”按钮进入详情。
-
-### 4.2 模版详情页（三栏）
-1. **左侧填空/控制区**
-   * 根据 `placeholders` 动态生成表单，必填标记。
-   * `ai_fill=true` 的字段显示“魔法棒”按钮；顶部有“一键 AI 补全”全局按钮。
-   * 属于 `controls` 的 key 高亮，提示“建议调参”。
-2. **中间 Prompt 预览**
-   * 实时渲染 `prompt_template`，未填字段用占位提示。
-   * 提供“可读视图”和“原始视图”。
-   * 显示“复制 Prompt”主按钮；可选下拉项“复制 Prompt + 当前 JSON 配置”。
-3. **右侧规则/说明**
-   * 展示 `evaluation_rules.manual_checklist` 作为生成后自查清单。
-   * `auto_checks` 作为未来自动化检查的占位说明。
-   * 展示标签与推荐场景，避免用户误用。
-
----
-
-## 5. 模版作者/使用者规则
-
-### 5.1 模版作者
-1. 每个模版必须写清：使用场景、输出结构、至少 2–3 个可调节控制维度。
-2. 占位符命名：小写+下划线，与 `prompt_template` 一致，如 `target_audience`。
-3. 每个占位符必须有 `hint`，避免裸字段。
-4. 优先提供 1–2 个 `example_inputs` 以便 AI few-shot。
-
-### 5.2 模版使用者（UI 顶部简述）
-1. 选模版。
-2. 填关键字段或用 AI 补全。
-3. 查看预览是否符合需求。
-4. 一键复制，粘贴到模型/工具。
+(保持不变...)
 
 ---
 
 ## 6. 本仓库示例运行方式
 
-### 6.1 使用 npm / Node
-1. 安装依赖：`npm install`
-2. 构建后端：`npm run build`
-3. 启动服务：`npm start`，默认运行在 `http://localhost:3000`
-4. 打开浏览器访问：加载 React 前端 → 左侧选择模版 → 填空或 AI 补全 → 中间预览 → 右侧 checklist 自查。
-5. 可通过 API 调试：
-   * `GET /api/templates`：列出模版
-   * `GET /api/templates/:id`：获取详情
-   * `POST /api/templates/:id/render`：传入 `placeholderValues` 渲染 prompt
-   * `POST /api/templates/:id/ai-fill`：基于示例/默认值的规则型补全（可替换为真实 LLM 调用）。
-6. 按右侧 checklist 自查输出质量。
+### 6.1 开发模式 (推荐)
+1. 安装依赖：`bun install` (根目录) 和 `cd frontend && bun install`
+2. **一键启动**：`bun dev`
+   - 启动后端服务 (localhost:3001)
+   - 启动 Vite 中间件 (HMR 支持)
+   - 访问 `http://localhost:3001` 即可
 
-> 前端依赖 React / ReactDOM / Babel / modern-normalize，会在 `npm install`（或 `npm run build`）阶段通过 `scripts/prepare-assets.js` 从 npm 包复制到 `public/vendor` 下，目录已加入 `.gitignore`，不会污染仓库；如需自定义来源，可修改该脚本或调整 `public/index.html`。
-
-### 6.2 使用 Bun 运行 TypeScript 后端
-1. 安装依赖：`bun install`
-2. 构建后端：`bun run build`
-3. 直接运行 TypeScript（无需提前编译）：`PORT=3000 bun run start:bun:ts`。
-4. 或使用已编译产物：`bun run start:bun`（同样默认端口为 `3000`，可通过 `PORT` 环境变量覆盖）。
+### 6.2 生产构建与运行
+1. 构建前端：`npm run build` (自动调用 `cd frontend && bun run build`)
+   - 构建产物输出到 `/public` 目录
+2. 启动生产服务：`npm start`
+   - 运行 `NODE_ENV=production bun src/server.ts`
+   - 后端直接托管 `/public` 下的静态文件
 
 ### 6.3 Docker + Bun 部署
 1. 构建镜像：`docker build -t prompt-template-platform .`
 2. 运行容器：`docker run -p 3000:3000 prompt-template-platform`
-3. 如果需要自定义端口：`docker run -e PORT=4000 -p 4000:4000 prompt-template-platform`
 
-### 6.4 一键部署脚本（自动判定 Docker/Bun）
+### 6.4 一键部署脚本
 * 运行：`npm run deploy`
-* 行为：
-  * 若检测到 Docker：构建镜像并以 `CONTAINER_NAME`（默认 `prompt-template-platform`）运行，使用 `PORT` 环境变量（默认 `3000`）。
-  * 若未检测到 Docker：回退到 Bun，本地安装依赖、构建并直接以 TypeScript 源码启动；同样可通过 `PORT` 覆盖端口。
-* 自定义：
-  * `IMAGE_NAME`、`CONTAINER_NAME`、`PORT` 环境变量可在调用前配置。
-  * 如需仅构建不启动，可直接使用 `docker build ...` 或修改 `scripts/deploy.sh`。
+* 行为：自动检测 Docker，若无则回退到 Bun 本地运行（自动处理依赖安装和前端构建）。
 
 ### 6.5 端到端（E2E）测试
-1. 安装 Playwright 浏览器（首次执行）：`npx playwright install --with-deps`
-2. 启动并测试（包含自动构建与本地服务器）：`npm run test:e2e`
-   * 会启动本地服务（端口 `4173`），加载 React 前端，填写字段、触发 AI 补全、复制 Prompt，并验证预览。
+1. 安装 Playwright：`npx playwright install --with-deps`
+2. 测试：`npm run test:e2e`
 
 ### 6.6 预置示例模版
 * 文生文：

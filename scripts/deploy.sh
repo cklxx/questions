@@ -30,13 +30,21 @@ start_with_bun() {
   fi
 
   echo "[deploy] Docker not found; falling back to Bun local run."
-  echo "[deploy] Installing dependencies..."
+  
+  echo "[deploy] Installing root dependencies..."
   bun install
 
+  echo "[deploy] Installing frontend dependencies..."
+  cd frontend && bun install && cd ..
+
+  echo "[deploy] Building frontend..."
+  cd frontend && bun run build && cd ..
+  
   echo "[deploy] Preparing assets..."
   PORT="$PORT" bun run prepare-assets
 
   echo "[deploy] Starting server directly from TypeScript via Bun (Ctrl+C to stop)..."
+  # start script is: NODE_ENV=production bun src/server.ts
   PORT="$PORT" bun run start
 }
 
