@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     Layout,
     Search,
@@ -14,9 +14,11 @@ import {
     Tag,
     Layers,
     Clock3,
+    Filter,
 } from 'lucide-react';
 import { api } from '@/lib/api';
-import type { Template, Category, AIConfig } from '@/types';
+import type { Template, Category, AIConfig, Language } from '@/types';
+import { getTranslations } from '@/lib/i18n';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
@@ -26,9 +28,6 @@ const parseTemplateIdFromLocation = () => {
     const pathMatch = url.pathname.match(/\/templates\/([^/]+)/);
     return (pathMatch && pathMatch[1]) || url.searchParams.get('template') || '';
 };
-
-const DEFAULT_DESCRIPTION =
-    '精选跨场景的 Prompt 模版，内置评价规则与示例，一键渲染与复制，帮助团队快速交付高质量的 AI 产出。';
 
 const ensureMeta = (opts: { name?: string; property?: string; content: string }) => {
     if (typeof document === 'undefined') return;
@@ -68,7 +67,34 @@ const setJsonLd = (id: string, data: unknown | null) => {
     if (!existing) document.head.appendChild(script);
 };
 
+const deriveTemplateMeta = (tpl: Template) => {
+    const medium =
+        tpl.category_id === 'text2image'
+            ? 'image'
+            : tpl.category_id === 'text2artifact'
+              ? 'artifact'
+              : 'text';
+    const model = medium === 'image' ? 'midjourney-sd' : 'gpt-claude';
+
+    return { medium, model };
+};
+
+const renderTemplateLocally = (tpl: Template, placeholderValues?: Record<string, unknown>) => {
+    let rendered = tpl.prompt_template || '';
+    (tpl.placeholders || []).forEach((p) => {
+        const incomingVal = placeholderValues?.[p.key];
+        const val = incomingVal !== undefined ? incomingVal : p.default;
+        const filled = val !== undefined && val !== null && val !== '';
+        const pattern = new RegExp(`\\{\\{\\s*${p.key}\\s*\\}\\}`, 'g');
+        rendered = rendered.replace(pattern, filled ? String(val) : `{{${p.key}}}`);
+    });
+    return rendered;
+};
+
 function App() {
+    const [language, setLanguage] = useState<Language>('zh');
+    const userSelectedLanguage = useRef(false);
+    const t = useMemo(() => getTranslations(language), [language]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [allTemplateCount, setAllTemplateCount] = useState(0);
@@ -83,24 +109,94 @@ function App() {
     const [aiFilledKeys, setAiFilledKeys] = useState<string[]>([]);
     const [isAIFilling, setIsAIFilling] = useState(false);
     const [message, setMessage] = useState('');
+    const [selectedModels, setSelectedModels] = useState<string[]>([]);
+    const [selectedMediums, setSelectedMediums] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const siteUrl = useMemo(
         () => (import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '')).replace(/\/+$/, ''),
         [],
     );
+    const applyLanguage = (lang: Language, markUserChoice = false) => {
+        if (markUserChoice) {
+            userSelectedLanguage.current = true;
+        }
+        setLanguage(lang);
+        if (typeof window !== 'undefined') {
+            window.localStorage.setItem('language', lang);
+        }
+    };
 
     useEffect(() => {
-        api.getCategories().then((data) => setCategories(data.categories || []));
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem('language') : null;
+        if (stored === 'zh' || stored === 'en') {
+            applyLanguage(stored as Language);
+            return;
+        }
+
+        api.getLocale()
+            .then((res) => {
+                if (userSelectedLanguage.current) return;
+                const lang: Language = res?.language === 'en' ? 'en' : 'zh';
+                applyLanguage(lang);
+            })
+            .catch(() => {
+                if (userSelectedLanguage.current) return;
+                const nav = typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : '';
+                const lang: Language = nav.includes('zh') ? 'zh' : 'en';
+                applyLanguage(lang);
+            });
+    }, []);
+    const toggleSelection = (value: string, setter: (updater: (prev: string[]) => string[]) => void) =>
+        setter((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
+    const modelOptions = [
+        { value: 'gpt-claude', label: 'GPT / Claude' },
+        { value: 'midjourney-sd', label: 'Midjourney / SD' },
+    ];
+    const mediumOptions = useMemo(
+        () => [
+            { value: 'text', label: t.mediumOptions.text },
+            { value: 'artifact', label: t.mediumOptions.artifact },
+            { value: 'image', label: t.mediumOptions.image },
+        ],
+        [t.mediumOptions.artifact, t.mediumOptions.image, t.mediumOptions.text],
+    );
+    const tagOptions = useMemo(() => {
+        const counts = new Map<string, number>();
+        templates.forEach((tpl) => {
+            (tpl.tags || []).forEach((tag) => counts.set(tag, (counts.get(tag) || 0) + 1));
+        });
+        return Array.from(counts.entries())
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .slice(0, 12)
+            .map(([tag]) => tag);
+    }, [templates]);
+    const clearFilters = () => {
+        setSelectedModels([]);
+        setSelectedMediums([]);
+        setSelectedTags([]);
+        setSearch('');
+    };
+
+    useEffect(() => {
         api.getConfig().then(setAiConfig);
     }, []);
 
     useEffect(() => {
-        api.getTemplates(selectedCategory).then((data) => {
+        api.getCategories(language).then((data) => setCategories(data.categories || []));
+    }, [language]);
+
+    useEffect(() => {
+        api.getTemplates(selectedCategory, language).then((data) => {
             setTemplates(data.templates || []);
             if (!selectedCategory) {
                 setAllTemplateCount((data.templates || []).length);
             }
         });
-    }, [selectedCategory]);
+    }, [language, selectedCategory]);
+
+    useEffect(() => {
+        setSelectedTags((prev) => prev.filter((tag) => tagOptions.includes(tag)));
+    }, [tagOptions]);
 
     useEffect(() => {
         if (!templates.length) return;
@@ -114,7 +210,7 @@ function App() {
         if (!selectedTemplateId) return;
         if (templates.length > 0 && !templates.some((tpl) => tpl.id === selectedTemplateId)) return;
 
-        api.getTemplate(selectedTemplateId).then((tpl) => {
+        api.getTemplate(selectedTemplateId, language).then((tpl) => {
             setTemplateDetail(tpl);
             const initial: Record<string, unknown> = {};
             (tpl.placeholders || []).forEach((p) => {
@@ -122,7 +218,7 @@ function App() {
             });
             setValues(initial);
         });
-    }, [selectedTemplateId, templates]);
+    }, [language, selectedTemplateId, templates]);
 
     useEffect(() => {
         if (!selectedTemplateId) return;
@@ -136,33 +232,34 @@ function App() {
 
     useEffect(() => {
         if (templateDetail?.name) {
-            document.title = `${templateDetail.name} - 问题模版平台`;
+            document.title = `${templateDetail.name} - ${t.siteName}`;
         } else {
-            document.title = '问题模版平台 · 精选 AI Prompt 模版库';
+            document.title = t.siteTitle;
         }
-    }, [templateDetail]);
+    }, [t.siteName, t.siteTitle, templateDetail]);
 
     useEffect(() => {
         if (!templateDetail) return;
-        api.render(templateDetail.id, values).then((res) => {
+        api.render(templateDetail.id, values, language).then((res) => {
             setRendered(res.rendered_prompt || '');
             setMissing(res.missing_required || []);
         });
-    }, [templateDetail, values]);
+    }, [language, templateDetail, values]);
 
     useEffect(() => {
         const canonicalPath = templateDetail ? `/templates/${templateDetail.id}` : '/';
         const canonicalUrl = `${siteUrl}${canonicalPath}`;
-        const desc = templateDetail?.short_description || DEFAULT_DESCRIPTION;
-        const keywords = templateDetail?.tags?.join(', ') || 'Prompt 模版,AI 提示词,AI 生产力,模板库';
+        const desc = templateDetail?.short_description || t.siteDescription;
+        const keywords = templateDetail?.tags?.join(', ') || t.keywords;
+        const metaTitle = templateDetail ? `${templateDetail.name} · ${t.siteName}` : t.siteTitle;
 
         ensureCanonical(canonicalUrl);
         ensureMeta({ name: 'description', content: desc });
         ensureMeta({ name: 'keywords', content: keywords });
-        ensureMeta({ property: 'og:title', content: templateDetail ? `${templateDetail.name} · Prompt 模版` : '问题模版平台 · 精选 AI Prompt 模版库' });
+        ensureMeta({ property: 'og:title', content: metaTitle });
         ensureMeta({ property: 'og:description', content: desc });
         ensureMeta({ property: 'og:url', content: canonicalUrl });
-        ensureMeta({ name: 'twitter:title', content: templateDetail ? `${templateDetail.name} · Prompt 模版` : '问题模版平台 · 精选 AI Prompt 模版库' });
+        ensureMeta({ name: 'twitter:title', content: metaTitle });
         ensureMeta({ name: 'twitter:description', content: desc });
         ensureMeta({ name: 'twitter:url', content: canonicalUrl });
 
@@ -172,19 +269,19 @@ function App() {
                   '@type': 'CreativeWork',
                   name: templateDetail.name,
                   description: desc,
-                  inLanguage: 'zh-CN',
+                  inLanguage: t.jsonLdLanguage,
                   url: canonicalUrl,
                   genre: templateDetail.tags || [],
                   identifier: templateDetail.id,
                   isPartOf: {
                       '@type': 'WebApplication',
-                      name: '问题模版平台',
+                      name: t.siteName,
                       url: `${siteUrl}/`,
                   },
               }
             : null;
         setJsonLd('ld-template', templateLd);
-    }, [templateDetail, siteUrl]);
+    }, [siteUrl, t.jsonLdLanguage, t.keywords, t.siteDescription, t.siteName, t.siteTitle, templateDetail]);
 
     useEffect(() => {
         if (!templates.length) {
@@ -202,16 +299,20 @@ function App() {
         setJsonLd('ld-itemlist', {
             '@context': 'https://schema.org',
             '@type': 'ItemList',
-            name: 'Prompt 模版列表',
+            name: t.listTitle,
             numberOfItems: templates.length,
             itemListOrder: 'Descending',
             itemListElement: items,
         });
-    }, [templates, siteUrl]);
+    }, [siteUrl, t.listTitle, templates]);
 
     const filteredTemplates = useMemo(() => {
         const term = search.trim().toLowerCase();
         return templates.filter((tpl) => {
+            const meta = deriveTemplateMeta(tpl);
+            if (selectedModels.length && !selectedModels.includes(meta.model)) return false;
+            if (selectedMediums.length && !selectedMediums.includes(meta.medium)) return false;
+            if (selectedTags.length && !selectedTags.every((t) => (tpl.tags || []).includes(t))) return false;
             if (!term) return true;
             return (
                 tpl.name.toLowerCase().includes(term) ||
@@ -219,13 +320,13 @@ function App() {
                 (tpl.tags || []).some((t) => t.toLowerCase().includes(term))
             );
         });
-    }, [templates, search]);
+    }, [templates, search, selectedModels, selectedMediums, selectedTags]);
 
     const handleAIFill = async (targetKey?: string) => {
         if (!templateDetail) return;
         setIsAIFilling(true);
         try {
-            const res = await api.aiFill(templateDetail.id, values, targetKey);
+            const res = await api.aiFill(templateDetail.id, values, targetKey, language);
             const incoming = res.suggested_values || {};
             const merged = { ...values };
             const filledKeys: string[] = [];
@@ -240,42 +341,83 @@ function App() {
             });
             setValues(merged);
             setAiFilledKeys((prev) => [...new Set([...prev, ...filledKeys])]);
-            setMessage(`✨ ${res.reasoning || 'AI 填充完成'} `);
+            setMessage(`✨ ${res.reasoning || t.aiFill.successFallback}`);
         } catch (error: any) {
-            setMessage(`❌ AI 填充失败: ${error.message} `);
+            setMessage(`❌ ${t.aiFill.failedPrefix}: ${error.message} `);
         } finally {
             setIsAIFilling(false);
             setTimeout(() => setMessage(''), 3500);
         }
     };
 
-    const copyPrompt = async () => {
+    const copyText = async (text: string, successMessage: string) => {
+        if (!text) {
+            setMessage(t.copy.empty);
+            setTimeout(() => setMessage(''), 2200);
+            return;
+        }
         try {
-            await navigator.clipboard.writeText(rendered || '');
-            setMessage('📋 已复制 Prompt');
+            await navigator.clipboard.writeText(text);
+            setMessage(successMessage);
         } catch {
-            setMessage('❌ 复制失败');
+            setMessage(t.copy.failed);
         }
         setTimeout(() => setMessage(''), 2500);
     };
 
+    const copyFilledPrompt = async () => {
+        if (!templateDetail) return;
+        const text = renderTemplateLocally(templateDetail, values);
+        copyText(text, t.copy.filledPrompt);
+    };
+
+    const copyTemplateFromList = async (tpl: Template, mode: 'skeleton' | 'prefilled') => {
+        const text = mode === 'skeleton' ? tpl.prompt_template || '' : renderTemplateLocally(tpl);
+        const label = mode === 'skeleton' ? t.copy.templateSkeleton : t.copy.templateDefaults;
+        copyText(text, label);
+    };
+
+    const isRecent = (updated?: string) => {
+        if (!updated) return false;
+        const updatedTime = new Date(updated).getTime();
+        if (Number.isNaN(updatedTime)) return false;
+        const diffDays = (Date.now() - updatedTime) / (1000 * 60 * 60 * 24);
+        return diffDays <= 14;
+    };
+
+    const formatUpdated = (updated?: string) => {
+        if (!updated) return '';
+        const date = new Date(updated);
+        if (Number.isNaN(date.getTime())) return '';
+        return new Intl.DateTimeFormat(t.dateLocale, { month: 'numeric', day: 'numeric' }).format(date);
+    };
+
     const goToGemini = () => {
         if (!rendered) {
-            setMessage('⚠️ 请先填写模板生成 Prompt');
+            setMessage(t.gemini.missing);
             setTimeout(() => setMessage(''), 2500);
             return;
         }
-        const geminiUrl = `https://gemini.google.com/app?hl=zh-CN&prompt=${encodeURIComponent(rendered)}`;
+        const geminiLang = language === 'zh' ? 'zh-CN' : 'en';
+        const geminiUrl = `https://gemini.google.com/app?hl=${geminiLang}&prompt=${encodeURIComponent(rendered)}`;
+        try {
+            navigator.clipboard
+                .writeText(rendered)
+                .then(() => setMessage(t.gemini.copying))
+                .catch(() => setMessage(t.gemini.copyFailed))
+                .finally(() => setTimeout(() => setMessage(''), 2500));
+        } catch {
+            setMessage(t.gemini.copyFailed);
+            setTimeout(() => setMessage(''), 2500);
+        }
         window.open(geminiUrl, '_blank');
-        setMessage('🚀 已打开 Gemini');
-        setTimeout(() => setMessage(''), 2500);
     };
 
     if (!templateDetail) {
         return (
             <div className="min-h-screen flex items-center justify-center text-slate-500 gap-2 bg-[#f6f7fb]">
                 <RefreshCw className="w-5 h-5 animate-spin text-primary" />
-                正在加载模版...
+                {t.loadingTemplates}
             </div>
         );
     }
@@ -292,7 +434,7 @@ function App() {
                             <Terminal className="w-6 h-6 text-primary" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="text-lg font-semibold tracking-tight">精选模版</div>
+                            <div className="text-lg font-semibold tracking-tight">{t.headerTitle}</div>
                             <Sparkles className="w-4 h-4 text-primary" />
                         </div>
                     </div>
@@ -300,10 +442,14 @@ function App() {
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-600 shadow-sm">
                             <Layers className="w-4 h-4 text-primary" />
-                            <span className="font-medium text-slate-800">{categories.length} 类</span>
+                            <span className="font-medium text-slate-800">
+                                {categories.length} {t.stats.categories}
+                            </span>
                             <span className="text-slate-400">/</span>
-                            <span className="text-slate-600">{allTemplateCount || templates.length} 模版</span>
-                            <span className="text-slate-400">· {visibleTemplates} 当前</span>
+                            <span className="text-slate-600">
+                                {allTemplateCount || templates.length} {t.stats.templates}
+                            </span>
+                            <span className="text-slate-400">· {visibleTemplates} {t.stats.current}</span>
                         </div>
                         {aiConfig && (
                             <div
@@ -318,7 +464,7 @@ function App() {
                                         aiConfig.configured ? 'bg-green-500 animate-pulse' : 'bg-amber-500'
                                     }`}
                                 />
-                                {aiConfig.configured ? aiConfig.model : 'AI 未配置'}
+                                {aiConfig.configured ? aiConfig.model : t.aiNotConfigured}
                             </div>
                         )}
                         {message && (
@@ -332,8 +478,8 @@ function App() {
                             onClick={() => window.location.reload()}
                             size="sm"
                             className="rounded-full"
-                            aria-label="刷新"
-                            title="刷新"
+                            aria-label={t.refreshLabel}
+                            title={t.refreshLabel}
                         >
                             <RefreshCw className="w-4 h-4" />
                         </Button>
@@ -345,82 +491,232 @@ function App() {
                 <div className="grid gap-6 lg:grid-cols-[320px_1.1fr_0.95fr]">
                     {/* Sidebar */}
                     <aside className="flex flex-col gap-4">
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.55)]">
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-4 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.55)]">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <input
                                     type="text"
-                                    placeholder="搜索模版名称 / 标签"
+                                    placeholder={t.searchPlaceholder}
                                     className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary/60 focus:ring-1 focus:ring-primary/30 outline-none transition-all"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
                             </div>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex items-center justify-between text-xs text-slate-500">
+                                <div className="flex items-center gap-2 font-medium text-slate-700">
+                                    <Filter className="w-4 h-4 text-primary" />
+                                    {t.filtersLabel}
+                                </div>
                                 <button
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                                        selectedCategory === ''
-                                            ? 'bg-primary/10 border-primary/40 text-primary'
-                                            : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
-                                    }`}
-                                    onClick={() => setSelectedCategory('')}
+                                    className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80"
+                                    onClick={clearFilters}
                                 >
-                                    全部
+                                    <RefreshCw className="w-3.5 h-3.5" />
+                                    {t.clearLabel}
                                 </button>
-                                {categories.map((cat) => (
-                                    <button
-                                        key={cat.id}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                                            selectedCategory === cat.id
-                                                ? 'bg-primary/10 border-primary/40 text-primary'
-                                                : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
-                                        }`}
-                                        onClick={() => setSelectedCategory(cat.id)}
-                                    >
-                                        {cat.name}
-                                    </button>
-                                ))}
+                            </div>
+
+                            <div className="space-y-3">
+                                <div>
+                                    <div className="text-[11px] uppercase tracking-wide text-slate-500">{t.filterSections.category}</div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        <button
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                                                selectedCategory === ''
+                                                    ? 'bg-primary/10 border-primary/40 text-primary'
+                                                    : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+                                            }`}
+                                            onClick={() => setSelectedCategory('')}
+                                        >
+                                            {t.allLabel}
+                                        </button>
+                                        {categories.map((cat) => (
+                                            <button
+                                                key={cat.id}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                                                    selectedCategory === cat.id
+                                                        ? 'bg-primary/10 border-primary/40 text-primary'
+                                                        : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+                                                }`}
+                                                onClick={() => setSelectedCategory(cat.id)}
+                                            >
+                                                {cat.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="text-[11px] uppercase tracking-wide text-slate-500">{t.filterSections.model}</div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {modelOptions.map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                                                    selectedModels.includes(opt.value)
+                                                        ? 'bg-primary/10 border-primary/40 text-primary'
+                                                        : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+                                                }`}
+                                                onClick={() => toggleSelection(opt.value, setSelectedModels)}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="text-[11px] uppercase tracking-wide text-slate-500">{t.filterSections.medium}</div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {mediumOptions.map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                                                    selectedMediums.includes(opt.value)
+                                                        ? 'bg-primary/10 border-primary/40 text-primary'
+                                                        : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+                                                }`}
+                                                onClick={() => toggleSelection(opt.value, setSelectedMediums)}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {tagOptions.length > 0 && (
+                                    <div>
+                                        <div className="text-[11px] uppercase tracking-wide text-slate-500">{t.filterSections.tags}</div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {tagOptions.map((tag) => (
+                                                <button
+                                                    key={tag}
+                                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                                                        selectedTags.includes(tag)
+                                                            ? 'bg-primary/10 border-primary/40 text-primary'
+                                                            : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+                                                    }`}
+                                                    onClick={() => toggleSelection(tag, setSelectedTags)}
+                                                >
+                                                    {tag}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         <div className="rounded-2xl border border-slate-200 bg-white/80 p-3 h-[calc(100vh-220px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent space-y-3 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.4)]">
-                            {filteredTemplates.map((tpl) => (
-                                <div
-                                    key={tpl.id}
-                                    onClick={() => setSelectedTemplateId(tpl.id)}
-                                    className={`group p-3 rounded-xl cursor-pointer border transition-all duration-200 ${
-                                        selectedTemplateId === tpl.id
-                                            ? 'bg-primary/5 border-primary/30 shadow-[0_18px_60px_-40px_rgba(107,127,184,0.7)]'
-                                            : 'bg-white border-slate-200 hover:border-primary/25 hover:shadow-[0_18px_60px_-50px_rgba(0,0,0,0.45)]'
-                                    }`}
-                                >
-                                    <div className="flex justify-between items-start gap-2">
-                                        <div>
-                                            <p className="text-[11px] uppercase tracking-wide text-slate-400 flex items-center gap-2">
-                                                <Layers className="w-3 h-3" />
-                                                {tpl.category_id}
-                                            </p>
-                                            <h3 className="font-semibold text-sm text-slate-900 mt-1">{tpl.name}</h3>
+                            {filteredTemplates.map((tpl) => {
+                                const requiredCount = (tpl.placeholders || []).filter((p) => p.required).length;
+                                const exampleCount = (tpl.example_inputs || []).length;
+                                const meta = deriveTemplateMeta(tpl);
+                                const modelLabel = meta.model === 'midjourney-sd' ? 'Midjourney / SD' : 'GPT / Claude';
+                                const mediumLabel =
+                                    meta.medium === 'image'
+                                        ? t.mediumOptions.image
+                                        : meta.medium === 'artifact'
+                                          ? t.mediumOptions.artifact
+                                          : t.mediumOptions.text;
+                                const recent = isRecent(tpl.updated_at);
+                                const updatedLabel = formatUpdated(tpl.updated_at);
+                                const updatedText = updatedLabel ? `${t.card.updatedPrefix} ${updatedLabel}` : t.card.datasetSynced;
+
+                                return (
+                                    <div
+                                        key={tpl.id}
+                                        onClick={() => setSelectedTemplateId(tpl.id)}
+                                        className={`group p-3 rounded-xl cursor-pointer border transition-all duration-200 ${
+                                            selectedTemplateId === tpl.id
+                                                ? 'bg-primary/5 border-primary/30 shadow-[0_18px_60px_-40px_rgba(107,127,184,0.7)]'
+                                                : 'bg-white border-slate-200 hover:border-primary/25 hover:shadow-[0_18px_60px_-50px_rgba(0,0,0,0.45)]'
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-start gap-2">
+                                            <div>
+                                                <p className="text-[11px] uppercase tracking-wide text-slate-400 flex items-center gap-2">
+                                                    <Layers className="w-3 h-3" />
+                                                    {tpl.category_id}
+                                                </p>
+                                                <h3 className="font-semibold text-sm text-slate-900 mt-1">{tpl.name}</h3>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                                                    <Clock3 className="w-3.5 h-3.5" />
+                                                    <span>
+                                                        {(tpl.placeholders || []).length} {t.fieldsLabel}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        className="px-2 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 bg-white hover:border-primary/40 hover:text-primary transition-colors"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            copyTemplateFromList(tpl, 'skeleton');
+                                                        }}
+                                                        title={t.card.variableTitle}
+                                                    >
+                                                        {t.card.variable}
+                                                    </button>
+                                                    <button
+                                                        className="px-2 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 bg-white hover:border-primary/40 hover:text-primary transition-colors"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            copyTemplateFromList(tpl, 'prefilled');
+                                                        }}
+                                                        title={t.card.defaultsTitle}
+                                                    >
+                                                        {t.card.defaults}
+                                                    </button>
+                                                </div>
+                                                {selectedTemplateId === tpl.id && <ChevronRight className="w-4 h-4 text-primary" />}
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs text-slate-400">
-                                            <Clock3 className="w-3.5 h-3.5" />
-                                            <span>{(tpl.placeholders || []).length} 字段</span>
-                                            {selectedTemplateId === tpl.id && <ChevronRight className="w-4 h-4 text-primary" />}
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">{tpl.short_description}</p>
-                                    <div className="flex flex-wrap gap-1.5 mt-2">
-                                        {(tpl.tags || []).slice(0, 3).map((tag) => (
-                                            <span
-                                                key={tag}
-                                                className="text-[10px] px-2 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600"
-                                            >
-                                                {tag}
+                                        <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">{tpl.short_description}</p>
+                                        <div className="flex flex-wrap gap-2 text-[11px] text-slate-600 mt-2">
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 border border-slate-200">
+                                                <Sparkles className="w-3 h-3 text-primary" />
+                                                {modelLabel}
                                             </span>
-                                        ))}
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 border border-slate-200">
+                                                <Layout className="w-3 h-3 text-primary" />
+                                                {mediumLabel}
+                                            </span>
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 border border-slate-200">
+                                                <FileText className="w-3 h-3 text-primary" />
+                                                {t.card.examples} {exampleCount}
+                                            </span>
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 border border-slate-200">
+                                                <Check className="w-3 h-3 text-primary" />
+                                                {t.card.required} {requiredCount}
+                                            </span>
+                                            {tpl.updated_at && (
+                                                <span
+                                                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-md border ${
+                                                        recent
+                                                            ? 'bg-green-50 border-green-200 text-green-700'
+                                                            : 'bg-slate-100 border-slate-200 text-slate-600'
+                                                    }`}
+                                                >
+                                                    <Clock3 className="w-3 h-3 text-primary" />
+                                                    {recent ? t.card.recent : updatedText}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-wrap gap-1.5 mt-2">
+                                            {(tpl.tags || []).slice(0, 3).map((tag) => (
+                                                <span
+                                                    key={tag}
+                                                    className="text-[10px] px-2 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600"
+                                                >
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </aside>
 
@@ -439,6 +735,17 @@ function App() {
                                     </div>
                                     <h2 className="text-xl font-semibold text-slate-900 mt-2 leading-tight">{templateDetail.name}</h2>
                                     <p className="text-sm text-slate-500 mt-1 leading-relaxed">{templateDetail.short_description}</p>
+                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
+                                        <Clock3 className="w-3.5 h-3.5 text-primary" />
+                                        <span>
+                                            {t.card.updatedPrefix} {formatUpdated(templateDetail.updated_at) || t.card.datasetSynced}
+                                        </span>
+                                        {isRecent(templateDetail.updated_at) && (
+                                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-green-50 text-green-700 border border-green-200">
+                                                {t.card.recent}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Button
@@ -447,8 +754,8 @@ function App() {
                                         isLoading={isAIFilling}
                                         size="sm"
                                         className="h-9 w-9 rounded-full !px-0"
-                                        aria-label="AI 补全"
-                                        title="AI 补全"
+                                        aria-label={t.aiFill.buttonLabel}
+                                        title={t.aiFill.buttonLabel}
                                     >
                                         <Sparkles className="w-4 h-4" />
                                     </Button>
@@ -464,8 +771,8 @@ function App() {
                                             )
                                         }
                                         className="h-9 w-9 rounded-full !px-0"
-                                        aria-label="重置"
-                                        title="重置"
+                                        aria-label={t.buttons.reset}
+                                        title={t.buttons.reset}
                                     >
                                         <RefreshCw className="w-4 h-4" />
                                     </Button>
@@ -584,21 +891,32 @@ function App() {
                                             onClick={goToGemini}
                                             size="sm"
                                             className="h-9 w-9 rounded-full !px-0"
-                                            aria-label="Gemini"
-                                            title="Gemini"
+                                            aria-label="复制并前往 Gemini"
+                                            title="复制并前往 Gemini"
                                         >
                                             <ImageIcon className="w-4 h-4" />
                                         </Button>
                                     )}
                                     <Button
                                         variant="secondary"
-                                        onClick={copyPrompt}
+                                        onClick={() => copyTemplateFromList(templateDetail, 'skeleton')}
                                         size="sm"
-                                        className="h-9 w-9 rounded-full !px-0"
-                                        aria-label="复制"
-                                        title="复制"
+                                        className="h-9 rounded-full px-3 gap-1"
+                                        aria-label="复制模板（含变量）"
+                                        title="复制模板（含变量）"
                                     >
                                         <Copy className="w-4 h-4" />
+                                        模板
+                                    </Button>
+                                    <Button
+                                        onClick={copyFilledPrompt}
+                                        size="sm"
+                                        className="h-9 rounded-full px-3 gap-1"
+                                        aria-label="复制填充值 Prompt"
+                                        title="复制填充值 Prompt"
+                                    >
+                                        <Copy className="w-4 h-4" />
+                                        已填
                                     </Button>
                                 </div>
                             </div>

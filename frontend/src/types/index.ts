@@ -9,6 +9,7 @@ export interface Template {
     evaluation_rules?: EvaluationRules;
     tags?: string[];
     example_inputs?: ExampleInput[];
+    updated_at?: string;
 }
 
 export interface Placeholder {
@@ -64,4 +65,12 @@ export interface RenderResponse {
 export interface AIFillResponse {
     suggested_values: Record<string, unknown>;
     reasoning: string;
+}
+
+export type Language = 'zh' | 'en';
+
+export interface LocaleDetection {
+    language: Language;
+    source: string;
+    country?: string;
 }

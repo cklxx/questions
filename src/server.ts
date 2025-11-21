@@ -2,29 +2,66 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync, statSync } from 'fs';
+import geoip from 'geoip-lite';
 import { getAIConfig } from './aiFiller';
+
+type Language = 'zh' | 'en';
 
 const PORT = process.env.PORT || 3001;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataPath = path.resolve(__dirname, '../data/templates.json');
+const dataPathEn = path.resolve(__dirname, '../data/templates_en.json');
 const appRoot = path.resolve(__dirname, '..');
 const isDev = process.env.NODE_ENV !== 'production';
 const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '');
 
-const data = JSON.parse(readFileSync(dataPath, 'utf8'));
-const datasetLastModified = statSync(dataPath).mtime.toISOString();
+const supportedLanguages: Language[] = ['zh', 'en'];
+const defaultLanguage: Language = 'zh';
 
-// Extract all templates from categories
-const allTemplates: any[] = [];
-(data.categories || []).forEach((cat: any) => {
-  if (cat.templates && Array.isArray(cat.templates)) {
-    allTemplates.push(...cat.templates);
-  }
+const addTemplateMeta = (tpl: any, fallbackUpdatedAt: string) => ({
+  ...tpl,
+  updated_at: tpl.updated_at || fallbackUpdatedAt,
 });
 
-const templatePaths = Array.from(new Set(allTemplates.map((tpl: any) => tpl.id))).map(
-  (id) => `/templates/${id}`,
-);
+const loadDataset = (lang: Language, filePath: string) => {
+  const lastModified = statSync(filePath).mtime.toISOString();
+  const parsed = JSON.parse(readFileSync(filePath, 'utf8'));
+  const allTemplates: any[] = [];
+  (parsed.categories || []).forEach((cat: any) => {
+    if (cat.templates && Array.isArray(cat.templates)) {
+      allTemplates.push(...cat.templates.map((tpl: any) => addTemplateMeta(tpl, lastModified)));
+    }
+  });
+
+  return {
+    data: parsed,
+    allTemplates,
+    lastModified,
+  };
+};
+
+const datasets: Record<Language, ReturnType<typeof loadDataset>> = {
+  zh: loadDataset('zh', dataPath),
+  en: loadDataset('en', dataPathEn),
+};
+
+const defaultDataset = datasets[defaultLanguage];
+const datasetLastModified = defaultDataset.lastModified;
+
+const normalizeLanguage = (candidate?: string): Language =>
+  supportedLanguages.includes(candidate as Language) ? (candidate as Language) : defaultLanguage;
+
+const getLanguageFromQuery = (req: express.Request): Language =>
+  normalizeLanguage(typeof req.query.lang === 'string' ? req.query.lang.toLowerCase() : undefined);
+
+const getDatasetForRequest = (req: express.Request) => {
+  const lang = getLanguageFromQuery(req);
+  return { lang, ...datasets[lang] };
+};
+
+const templatePaths = Array.from(
+  new Set(datasets[defaultLanguage].allTemplates.map((tpl: any) => tpl.id)),
+).map((id) => `/templates/${id}`);
 
 const getSiteUrl = (req: any) => {
   if (SITE_URL) return SITE_URL;
@@ -38,9 +75,41 @@ const getSiteUrl = (req: any) => {
 const app = express();
 app.use(express.json());
 
+const getClientIp = (req: express.Request) => {
+  const forwarded = req.get('x-forwarded-for');
+  if (forwarded) {
+    const first = forwarded.split(',')[0].trim();
+    if (first) return first;
+  }
+  const rawIp = req.socket.remoteAddress || req.ip || '';
+  return rawIp.replace(/^::ffff:/, '');
+};
+
+const detectLanguage = (req: express.Request): { language: Language; source: string; country?: string } => {
+  const acceptLang = (req.get('accept-language') || '').toLowerCase();
+  if (acceptLang.includes('zh')) {
+    return { language: 'zh', source: 'accept-language' };
+  }
+
+  const ip = getClientIp(req);
+  const geo = ip ? geoip.lookup(ip) : null;
+  const country = geo?.country || '';
+  if (country === 'CN') {
+    return { language: 'zh', source: 'geoip', country };
+  }
+
+  const englishCountries = new Set(['US', 'GB', 'AU', 'CA', 'NZ', 'IE', 'SG', 'IN']);
+  if (englishCountries.has(country)) {
+    return { language: 'en', source: 'geoip', country };
+  }
+
+  return { language: 'en', source: 'default', country: country || undefined };
+};
+
 // API routes
 app.get('/api/templates/categories', (req, res) => {
-  res.json({ categories: data.categories || [] });
+  const { data: dataset } = getDatasetForRequest(req);
+  res.json({ categories: dataset.categories || [] });
 });
 
 app.get('/api/config', (req, res) => {
@@ -48,6 +117,7 @@ app.get('/api/config', (req, res) => {
 });
 
 app.get('/api/templates', (req, res) => {
+  const { data: dataset, allTemplates } = getDatasetForRequest(req);
   const { category } = req.query;
   let templates = allTemplates;
   if (category && typeof category === 'string') {
@@ -57,6 +127,7 @@ app.get('/api/templates', (req, res) => {
 });
 
 app.get('/api/templates/:id', (req, res) => {
+  const { allTemplates } = getDatasetForRequest(req);
   const template = allTemplates.find((t: any) => t.id === req.params.id);
   if (!template) {
     return res.status(404).json({ error: 'Template not found' });
@@ -65,6 +136,7 @@ app.get('/api/templates/:id', (req, res) => {
 });
 
 app.post('/api/templates/:id/render', (req, res) => {
+  const { allTemplates } = getDatasetForRequest(req);
   const template = allTemplates.find((t: any) => t.id === req.params.id);
   if (!template) return res.status(404).json({ error: 'Template not found' });
 
@@ -86,6 +158,7 @@ app.post('/api/templates/:id/render', (req, res) => {
 });
 
 app.post('/api/templates/:id/ai-fill', async (req, res) => {
+  const { allTemplates } = getDatasetForRequest(req);
   const template = allTemplates.find((t: any) => t.id === req.params.id);
   if (!template) return res.status(404).json({ error: 'Template not found' });
 
@@ -98,6 +171,11 @@ app.post('/api/templates/:id/ai-fill', async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'AI fill failed' });
   }
+});
+
+app.get('/api/locale', (req, res) => {
+  const result = detectLanguage(req);
+  res.json(result);
 });
 
 app.get('/robots.txt', (req, res) => {
@@ -148,7 +226,9 @@ else {
   });
 }
 
-console.log(`Loaded ${allTemplates.length} templates across ${data.categories.length} categories.`);
+console.log(
+  `Loaded ${defaultDataset.allTemplates.length} templates across ${defaultDataset.data.categories.length} categories.`,
+);
 
 app.listen(PORT, () => {
   console.log(`Template server running at http://localhost:${PORT}`);
