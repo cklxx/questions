@@ -894,6 +894,4950 @@
               "notes": "突出光影过渡和平滑倒角"
             }
           ]
+        },
+        {
+          "id": "I3_kv_style_transfer",
+          "name": "旧 KV 改主题",
+          "short_description": "保持原画风与排版，快速换新主题并保留时间信息。",
+          "category_id": "text2image",
+          "prompt_template": "基于原 KV {{source_kv}} 重生为主题 {{new_theme}} 的头图，保留原有画风、质感、排版与品牌元素 {{must_keep_elements}}，活动时间沿用或推测 {{event_dates}}，光线 {{lighting}}，版式 {{layout_style}}，画幅 {{aspect_ratio}}。保持低噪点、留白与可读性。",
+          "placeholders": [
+            {
+              "key": "source_kv",
+              "label": "原 KV 描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "原头图的场景、风格、颜色、主体",
+              "ai_fill": true
+            },
+            {
+              "key": "new_theme",
+              "label": "新主题",
+              "type": "string",
+              "required": true,
+              "hint": "新的活动或产品主题",
+              "ai_fill": true
+            },
+            {
+              "key": "must_keep_elements",
+              "label": "必须保留元素",
+              "type": "string",
+              "required": false,
+              "hint": "Logo、口号、构图骨架等",
+              "ai_fill": true
+            },
+            {
+              "key": "event_dates",
+              "label": "活动时间",
+              "type": "string",
+              "required": false,
+              "hint": "如 3.18-3.20，留空则自动沿用",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "required": true,
+              "hint": "画面照明与氛围",
+              "enum_options": [
+                "柔光",
+                "金色斜光",
+                "夜间霓虹",
+                "白天自然光"
+              ],
+              "default": "柔光",
+              "ai_fill": false
+            },
+            {
+              "key": "layout_style",
+              "label": "版式",
+              "type": "enum",
+              "required": true,
+              "hint": "构图结构",
+              "enum_options": [
+                "中心构图",
+                "左右分栏",
+                "极简留白",
+                "对角线动势"
+              ],
+              "default": "中心构图",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅比例",
+              "type": "enum",
+              "required": false,
+              "hint": "输出尺寸",
+              "enum_options": [
+                "16:9",
+                "4:5",
+                "1:1",
+                "9:16"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "layout_style",
+              "label": "版式",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "保留原风格与主体比例",
+              "活动时间与新主题同屏可读"
+            ],
+            "manual_checklist": [
+              "原有品牌资产是否完整？",
+              "新主题元素是否与原画风兼容？",
+              "文本/时间对比度是否足够？"
+            ]
+          },
+          "tags": [
+            "KV 复刻",
+            "活动海报",
+            "风格一致"
+          ]
+        },
+        {
+          "id": "I4_storyboard_multi_shot",
+          "name": "单帧扩展分镜",
+          "short_description": "从一个画面扩展多镜头分镜，保持叙事连贯与画风一致。",
+          "category_id": "text2image",
+          "prompt_template": "从基准画面 {{anchor_frame}} 延展 {{shot_count}} 个分镜，故事线 {{storyline}}，需保留元素 {{continuity_notes}}。镜头运动 {{camera_movement}}，色调 {{color_mood}}，画幅 {{aspect_ratio}}。每格标注镜头角度与动作。",
+          "placeholders": [
+            {
+              "key": "anchor_frame",
+              "label": "基准画面",
+              "type": "textarea",
+              "required": true,
+              "hint": "原始帧的主体、环境、光线、风格",
+              "ai_fill": true
+            },
+            {
+              "key": "storyline",
+              "label": "故事线",
+              "type": "string",
+              "required": true,
+              "hint": "分镜叙事主线或主题",
+              "ai_fill": true
+            },
+            {
+              "key": "shot_count",
+              "label": "分镜数量",
+              "type": "number",
+              "required": true,
+              "hint": "生成多少格分镜",
+              "default": 6,
+              "constraints": {
+                "min": 3,
+                "max": 12
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "camera_movement",
+              "label": "镜头运动",
+              "type": "enum",
+              "required": true,
+              "hint": "运动方式与节奏",
+              "enum_options": [
+                "平移跟拍",
+                "推进/拉远",
+                "手持抖动",
+                "航拍俯视"
+              ],
+              "default": "平移跟拍",
+              "ai_fill": false
+            },
+            {
+              "key": "color_mood",
+              "label": "色调",
+              "type": "enum",
+              "required": true,
+              "hint": "整体色彩氛围",
+              "enum_options": [
+                "电影冷暖对比",
+                "高饱和霓虹",
+                "低饱和柔和",
+                "暖色夕阳"
+              ],
+              "default": "电影冷暖对比",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "分镜比例",
+              "enum_options": [
+                "16:9",
+                "21:9",
+                "9:16",
+                "1:1"
+              ],
+              "default": "9:16",
+              "ai_fill": false
+            },
+            {
+              "key": "continuity_notes",
+              "label": "连续性要求",
+              "type": "string",
+              "required": false,
+              "hint": "必须保持的道具/光线/服饰",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "camera_movement",
+              "label": "镜头运动",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "color_mood",
+              "label": "色调",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "分镜数量等于 shot_count",
+              "色调与风格在各帧保持一致"
+            ],
+            "manual_checklist": [
+              "叙事是否流畅且镜头运动合理？",
+              "关键元素是否在各帧连贯出现？",
+              "每格构图是否清晰，无信息拥挤？"
+            ]
+          },
+          "tags": [
+            "分镜",
+            "电影化",
+            "连贯性"
+          ]
+        },
+        {
+          "id": "I5_product_ingredient_poster",
+          "name": "成分解析海报",
+          "short_description": "自动识别产品特征与原料，生成海报并强化卖点。",
+          "category_id": "text2image",
+          "prompt_template": "为产品 {{product_name}} 制作成分解析海报，核心原料 {{ingredients}}，主要卖点 {{benefit}}，可突出物件 {{hero_object}}，品牌风格 {{brand_style}}，光线 {{lighting}}，构图 {{composition}}，色调 {{tone_palette}}。可加入文案 {{copy_line}}，保持低饱和与高质感。",
+          "placeholders": [
+            {
+              "key": "product_name",
+              "label": "产品名",
+              "type": "string",
+              "required": true,
+              "hint": "品牌+产品型号",
+              "ai_fill": true
+            },
+            {
+              "key": "ingredients",
+              "label": "核心成分",
+              "type": "textarea",
+              "required": true,
+              "hint": "香调/配料/材料",
+              "ai_fill": true
+            },
+            {
+              "key": "benefit",
+              "label": "卖点",
+              "type": "string",
+              "required": true,
+              "hint": "功效或特色",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_object",
+              "label": "主体物件",
+              "type": "string",
+              "required": false,
+              "hint": "瓶身、包装或主要视觉物",
+              "ai_fill": true
+            },
+            {
+              "key": "brand_style",
+              "label": "品牌风格",
+              "type": "enum",
+              "required": true,
+              "hint": "整体调性",
+              "enum_options": [
+                "极简奢华",
+                "复古文艺",
+                "科技未来",
+                "自然有机"
+              ],
+              "default": "极简奢华",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "required": true,
+              "hint": "画面光影风格",
+              "enum_options": [
+                "柔和侧光",
+                "逆光高光",
+                "漫射无阴影",
+                "高对比硬光"
+              ],
+              "default": "柔和侧光",
+              "ai_fill": false
+            },
+            {
+              "key": "composition",
+              "label": "构图",
+              "type": "enum",
+              "required": false,
+              "hint": "画面布局",
+              "enum_options": [
+                "居中留白",
+                "对称架构",
+                "三分法",
+                "对角线"
+              ],
+              "default": "居中留白",
+              "ai_fill": false
+            },
+            {
+              "key": "tone_palette",
+              "label": "色调",
+              "type": "string",
+              "required": false,
+              "hint": "如：雾粉/米白/浅金",
+              "default": "低饱和雾粉 + 米白",
+              "ai_fill": true
+            },
+            {
+              "key": "copy_line",
+              "label": "文案",
+              "type": "string",
+              "required": false,
+              "hint": "一句卖点文案",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "brand_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "composition",
+              "label": "构图",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "主体成分与卖点可读",
+              "色调低饱和无过曝"
+            ],
+            "manual_checklist": [
+              "原料/香调是否与卖点匹配？",
+              "品牌调性与字体是否一致？",
+              "主体与装饰比例是否平衡？"
+            ]
+          },
+          "tags": [
+            "产品海报",
+            "成分解析",
+            "商业视觉"
+          ]
+        },
+        {
+          "id": "I6_ui_hi_fi_spec",
+          "name": "高保真 UI 画面",
+          "short_description": "思考需求，输出高保真界面与版式，适配多端。",
+          "category_id": "text2image",
+          "prompt_template": "针对 {{product_type}}，面向 {{platform}}，生成高保真 UI 画面，包含关键动作 {{key_actions}} 与展示数据 {{data_to_show}}。参考风格 {{style_reference}}，色彩 {{colorway}}，版式密度 {{layout_density}}，组件 {{components}}。输出需有真实感光影与可用性。",
+          "placeholders": [
+            {
+              "key": "product_type",
+              "label": "产品类型",
+              "type": "string",
+              "required": true,
+              "hint": "功能或行业：SaaS、交易、教育等",
+              "ai_fill": true
+            },
+            {
+              "key": "platform",
+              "label": "平台",
+              "type": "enum",
+              "required": true,
+              "hint": "目标设备",
+              "enum_options": [
+                "Web",
+                "Mobile",
+                "Tablet",
+                "Desktop"
+              ],
+              "default": "Mobile",
+              "ai_fill": false
+            },
+            {
+              "key": "key_actions",
+              "label": "关键动作",
+              "type": "textarea",
+              "required": true,
+              "hint": "用户要完成的动作或任务流",
+              "ai_fill": true
+            },
+            {
+              "key": "data_to_show",
+              "label": "主要数据",
+              "type": "textarea",
+              "required": false,
+              "hint": "图表、列表、状态等核心信息",
+              "ai_fill": true
+            },
+            {
+              "key": "style_reference",
+              "label": "风格参考",
+              "type": "string",
+              "required": false,
+              "hint": "品牌/Dribbble 链接/关键词",
+              "ai_fill": true
+            },
+            {
+              "key": "colorway",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "如：低饱和中性色 + 强调色",
+              "default": "低饱和中性色 + 强调色",
+              "ai_fill": true
+            },
+            {
+              "key": "layout_density",
+              "label": "版式密度",
+              "type": "enum",
+              "required": true,
+              "hint": "留白与信息密度",
+              "enum_options": [
+                "宽松留白",
+                "中等留白",
+                "高密度信息"
+              ],
+              "default": "中等留白",
+              "ai_fill": false
+            },
+            {
+              "key": "components",
+              "label": "组件清单",
+              "type": "textarea",
+              "required": false,
+              "hint": "卡片、按钮、列表、图表等",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "platform",
+              "label": "平台",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "layout_density",
+              "label": "密度",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "colorway",
+              "label": "配色",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "界面符合平台尺寸与比例",
+              "关键动作元素清晰可见"
+            ],
+            "manual_checklist": [
+              "信息层级是否一眼可读？",
+              "品牌风格与配色是否统一？",
+              "交互控件是否具备可点击/可滑动暗示？"
+            ]
+          },
+          "tags": [
+            "UI",
+            "高保真",
+            "多端适配"
+          ]
+        },
+        {
+          "id": "I7_ui_style_reskin",
+          "name": "沿用画风的 UI 变体",
+          "short_description": "保留交互与 IA，按新主题重绘界面风格。",
+          "category_id": "text2image",
+          "prompt_template": "基于现有界面 {{source_ui}}，保持信息架构与布局，重绘为主题 {{new_theme}}。配色 {{brand_palette}}，字体 {{typography}}，需保留 {{keep_flows}}，限制 {{constraints}}，设备 {{device}}，保真度 {{fidelity_level}}。输出保持同款画风、光影与组件比例。",
+          "placeholders": [
+            {
+              "key": "source_ui",
+              "label": "原界面描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "现有界面元素与风格关键词",
+              "ai_fill": true
+            },
+            {
+              "key": "new_theme",
+              "label": "新主题",
+              "type": "string",
+              "required": true,
+              "hint": "如「暗夜赛博」「春日限定」",
+              "ai_fill": true
+            },
+            {
+              "key": "brand_palette",
+              "label": "品牌配色",
+              "type": "string",
+              "required": false,
+              "hint": "主色/辅色/背景",
+              "default": "品牌主色 + 中性色",
+              "ai_fill": true
+            },
+            {
+              "key": "typography",
+              "label": "字体",
+              "type": "string",
+              "required": false,
+              "hint": "标题/正文字体、字重",
+              "ai_fill": true
+            },
+            {
+              "key": "keep_flows",
+              "label": "保留要素",
+              "type": "string",
+              "required": false,
+              "hint": "信息结构、组件位置或交互节奏",
+              "default": "信息架构与交互节奏",
+              "ai_fill": true
+            },
+            {
+              "key": "constraints",
+              "label": "限制",
+              "type": "string",
+              "required": false,
+              "hint": "禁止元素/保留比例/留白",
+              "ai_fill": true
+            },
+            {
+              "key": "device",
+              "label": "设备",
+              "type": "enum",
+              "required": false,
+              "hint": "目标设备",
+              "enum_options": [
+                "Mobile",
+                "Web",
+                "Tablet",
+                "Desktop"
+              ],
+              "default": "Mobile",
+              "ai_fill": false
+            },
+            {
+              "key": "fidelity_level",
+              "label": "保真度",
+              "type": "enum",
+              "required": true,
+              "hint": "视觉渲染程度",
+              "enum_options": [
+                "中保真",
+                "高保真",
+                "写实渲染"
+              ],
+              "default": "高保真",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "device",
+              "label": "设备",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "fidelity_level",
+              "label": "保真度",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "brand_palette",
+              "label": "配色",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "布局与交互区域未漂移",
+              "保真度符合选择"
+            ],
+            "manual_checklist": [
+              "主题元素是否融入且不遮挡关键信息？",
+              "字体/配色是否符合品牌？",
+              "交互可用性是否被装饰影响？"
+            ]
+          },
+          "tags": [
+            "UI 重绘",
+            "保持风格",
+            "主题换肤"
+          ]
+        },
+        {
+          "id": "I8_vocab_flashcard_set",
+          "name": "英语词汇插画卡",
+          "short_description": "分析主题生成插画 + 单词标注，辅助英语学习。",
+          "category_id": "text2image",
+          "prompt_template": "围绕学习主题 {{learning_topic}}，为单词 {{target_words}} 生成插画学习卡，适用年龄 {{age_range}}。插画风格 {{illustration_style}}，排版 {{layout}}，配色 {{color_palette}}，可标注发音或中文提示 {{overlay_notes}}。保持清晰、友好与高对比。",
+          "placeholders": [
+            {
+              "key": "learning_topic",
+              "label": "学习主题",
+              "type": "string",
+              "required": true,
+              "hint": "如水果、运动、实验室",
+              "ai_fill": true
+            },
+            {
+              "key": "target_words",
+              "label": "目标单词",
+              "type": "string",
+              "required": true,
+              "hint": "逗号分隔的英文单词列表",
+              "ai_fill": true
+            },
+            {
+              "key": "age_range",
+              "label": "年龄段",
+              "type": "enum",
+              "required": true,
+              "hint": "学习者年龄",
+              "enum_options": [
+                "少儿",
+                "青少年",
+                "成人"
+              ],
+              "default": "青少年",
+              "ai_fill": false
+            },
+            {
+              "key": "illustration_style",
+              "label": "插画风格",
+              "type": "enum",
+              "required": true,
+              "hint": "画面表现方式",
+              "enum_options": [
+                "扁平插画",
+                "线框简笔",
+                "3D 软萌",
+                "写实摄影"
+              ],
+              "default": "扁平插画",
+              "ai_fill": false
+            },
+            {
+              "key": "layout",
+              "label": "排版",
+              "type": "enum",
+              "required": true,
+              "hint": "单卡布局形式",
+              "enum_options": [
+                "单词+图示",
+                "九宫格",
+                "分步场景"
+              ],
+              "default": "单词+图示",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "高对比/柔和方案",
+              "default": "高对比暖色",
+              "ai_fill": true
+            },
+            {
+              "key": "overlay_notes",
+              "label": "标注提示",
+              "type": "string",
+              "required": false,
+              "hint": "是否显示音标/中文释义/例句",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "illustration_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "layout",
+              "label": "排版",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "age_range",
+              "label": "年龄",
+              "type": "enum",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "每个单词均有对应图示",
+              "文字与插画对比清晰"
+            ],
+            "manual_checklist": [
+              "插画是否准确表达单词含义？",
+              "配色是否适合年龄群体？",
+              "标注信息是否简洁可读？"
+            ]
+          },
+          "tags": [
+            "教育",
+            "英语",
+            "插画卡片"
+          ]
+        },
+        {
+          "id": "I9_research_infocard",
+          "name": "自动研究信息卡",
+          "short_description": "聚合检索内容为信息卡，突出关键事实与结论。",
+          "category_id": "text2image",
+          "prompt_template": "针对主题 {{topic}}（时间范围 {{timeframe}}），生成信息卡，包含事实 {{facts}} 与可信度 {{credibility}}。视觉风格 {{visual_style}}，色调 {{palette}}，画幅 {{aspect_ratio}}，可添加标注 {{callouts}}。强调层级、对比度与引用清晰度。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "研究/问题/事件名称",
+              "ai_fill": true
+            },
+            {
+              "key": "timeframe",
+              "label": "时间范围",
+              "type": "string",
+              "required": false,
+              "hint": "如 近 12 个月/2024-2025",
+              "default": "近 12 个月",
+              "ai_fill": true
+            },
+            {
+              "key": "facts",
+              "label": "关键事实",
+              "type": "textarea",
+              "required": false,
+              "hint": "数字、结论、来源摘要",
+              "ai_fill": true
+            },
+            {
+              "key": "credibility",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "输出语气与风险提示",
+              "enum_options": [
+                "保守",
+                "中性",
+                "大胆"
+              ],
+              "default": "中性",
+              "ai_fill": false
+            },
+            {
+              "key": "visual_style",
+              "label": "视觉风格",
+              "type": "enum",
+              "required": true,
+              "hint": "版式类型",
+              "enum_options": [
+                "信息图",
+                "数据卡片",
+                "年鉴摘要",
+                "科普手册"
+              ],
+              "default": "信息图",
+              "ai_fill": false
+            },
+            {
+              "key": "palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "如冷色科技/暖色科普",
+              "default": "冷色科技感",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "4:5",
+                "16:9",
+                "1:1",
+                "9:16"
+              ],
+              "default": "4:5",
+              "ai_fill": false
+            },
+            {
+              "key": "callouts",
+              "label": "重点标注",
+              "type": "string",
+              "required": false,
+              "hint": "需强调的数据或结论",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "visual_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "credibility",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "safety"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "信息卡包含至少 3 个要点",
+              "文字对比度足够且易读"
+            ],
+            "manual_checklist": [
+              "事实是否有来源/可信度提示？",
+              "版式是否突出主结论？",
+              "色彩是否支持信息层级？"
+            ]
+          },
+          "tags": [
+            "信息图",
+            "研究综述",
+            "数据摘要"
+          ]
+        },
+        {
+          "id": "I10_ppt_slide_auto",
+          "name": "自动 PPT 单页",
+          "short_description": "按结构生成 PPT 单页，兼顾故事线与品牌调性。",
+          "category_id": "text2image",
+          "prompt_template": "为目标 {{audience}} 输出 PPT 单页，核心目标 {{slide_goal}}，大纲 {{sections}}。视觉风格 {{visual_style}}，图表类型 {{chart_type}}，画幅 {{aspect_ratio}}，Logo 位置 {{logo_position}}。体现品牌感、留白与演示可读性。",
+          "placeholders": [
+            {
+              "key": "slide_goal",
+              "label": "核心目标",
+              "type": "string",
+              "required": true,
+              "hint": "这页要传达的关键信息",
+              "ai_fill": true
+            },
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "required": true,
+              "hint": "面向人群",
+              "enum_options": [
+                "管理层",
+                "业务团队",
+                "技术团队",
+                "外部客户"
+              ],
+              "default": "管理层",
+              "ai_fill": false
+            },
+            {
+              "key": "sections",
+              "label": "大纲",
+              "type": "textarea",
+              "required": true,
+              "hint": "要点/章节，用分号分隔",
+              "ai_fill": true
+            },
+            {
+              "key": "visual_style",
+              "label": "视觉风格",
+              "type": "enum",
+              "required": true,
+              "hint": "版式主题",
+              "enum_options": [
+                "企业蓝",
+                "极简灰",
+                "活力橙",
+                "雅致墨绿"
+              ],
+              "default": "极简灰",
+              "ai_fill": false
+            },
+            {
+              "key": "chart_type",
+              "label": "可视化类型",
+              "type": "enum",
+              "required": false,
+              "hint": "主要数据呈现方式",
+              "enum_options": [
+                "对比条形",
+                "时间线",
+                "流程图",
+                "要点卡片"
+              ],
+              "default": "要点卡片",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "PPT 画幅比例",
+              "enum_options": [
+                "16:9",
+                "4:3",
+                "竖版 9:16"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "logo_position",
+              "label": "Logo 位置",
+              "type": "enum",
+              "required": false,
+              "hint": "品牌标识放置",
+              "enum_options": [
+                "左上",
+                "右上",
+                "底部居中"
+              ],
+              "default": "右上",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "visual_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "control_type": "audience"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "大纲要点完整呈现",
+              "留白与字号适合演示阅读"
+            ],
+            "manual_checklist": [
+              "品牌元素是否规范放置？",
+              "图表与要点是否呼应？",
+              "演示层级是否清晰可讲？"
+            ]
+          },
+          "tags": [
+            "PPT",
+            "汇报",
+            "品牌化"
+          ]
+        },
+        {
+          "id": "I11_news_summary_brief",
+          "name": "新闻摘要视觉卡",
+          "short_description": "将新闻自动摘要成视觉卡片，突出时间与结论。",
+          "category_id": "text2image",
+          "prompt_template": "生成新闻摘要卡，主题 {{news_topic}}，日期 {{news_date}}，要点 {{key_points}}，来源地区 {{source_region}}，立场 {{stance}}。风格 {{illustration_style}}，色温 {{color_temperature}}，可包含免责声明 {{disclaimer}}。确保标题醒目、时间可读、信息分层。",
+          "placeholders": [
+            {
+              "key": "news_topic",
+              "label": "新闻主题",
+              "type": "string",
+              "required": true,
+              "hint": "新闻标题或事件名称",
+              "ai_fill": true
+            },
+            {
+              "key": "news_date",
+              "label": "新闻日期",
+              "type": "string",
+              "required": false,
+              "hint": "YYYY-MM-DD，未填则留出时间位",
+              "default": "YYYY-MM-DD",
+              "ai_fill": true
+            },
+            {
+              "key": "key_points",
+              "label": "关键要点",
+              "type": "textarea",
+              "required": true,
+              "hint": "3-5 条事实或结论",
+              "ai_fill": true
+            },
+            {
+              "key": "source_region",
+              "label": "地区",
+              "type": "enum",
+              "required": false,
+              "hint": "新闻来源区域",
+              "enum_options": [
+                "全球",
+                "本地",
+                "行业"
+              ],
+              "default": "全球",
+              "ai_fill": false
+            },
+            {
+              "key": "stance",
+              "label": "立场",
+              "type": "enum",
+              "required": true,
+              "hint": "表达语气",
+              "enum_options": [
+                "中立陈述",
+                "乐观解读",
+                "风险提示"
+              ],
+              "default": "中立陈述",
+              "ai_fill": false
+            },
+            {
+              "key": "color_temperature",
+              "label": "色温",
+              "type": "enum",
+              "required": true,
+              "hint": "整体色感",
+              "enum_options": [
+                "冷色",
+                "中性",
+                "暖色"
+              ],
+              "default": "中性",
+              "ai_fill": false
+            },
+            {
+              "key": "illustration_style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "视觉形式",
+              "enum_options": [
+                "信息图",
+                "报纸质感",
+                "数字屏幕",
+                "手绘速写"
+              ],
+              "default": "信息图",
+              "ai_fill": false
+            },
+            {
+              "key": "disclaimer",
+              "label": "免责声明",
+              "type": "string",
+              "required": false,
+              "hint": "如“信息需核验、可能有滞后”",
+              "default": "信息需核验，可能存在滞后",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "stance",
+              "label": "立场",
+              "type": "enum",
+              "control_type": "safety"
+            },
+            {
+              "key": "illustration_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "color_temperature",
+              "label": "色温",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "日期/主题清晰可见",
+              "包含 3 条以上要点"
+            ],
+            "manual_checklist": [
+              "表达是否保持中立或符合立场选择？",
+              "是否标注时间与来源？",
+              "图文层级是否一眼抓住重点？"
+            ]
+          },
+          "tags": [
+            "新闻摘要",
+            "信息图",
+            "时事"
+          ]
+        },
+        {
+          "id": "I12_motion_trail_viz",
+          "name": "运动轨迹可视化",
+          "short_description": "分析运动关键帧，生成轨迹与速度可视化画面。",
+          "category_id": "text2image",
+          "prompt_template": "针对 {{sport}} 的运动，依据关键帧 {{key_frames}}，绘制轨迹与速度标注 {{metrics}}，视角 {{camera_view}}，背景 {{background_style}}，色彩 {{color_palette}}，画幅 {{aspect_ratio}}，可添加文字提示 {{overlay_notes}}。强调轨迹连贯、节点清晰。",
+          "placeholders": [
+            {
+              "key": "sport",
+              "label": "运动类型",
+              "type": "enum",
+              "required": true,
+              "hint": "运动场景",
+              "enum_options": [
+                "篮球",
+                "足球",
+                "网球",
+                "跑步",
+                "骑行",
+                "滑雪"
+              ],
+              "default": "篮球",
+              "ai_fill": false
+            },
+            {
+              "key": "key_frames",
+              "label": "关键帧描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "起点/终点/转折/时间戳",
+              "ai_fill": true
+            },
+            {
+              "key": "metrics",
+              "label": "指标",
+              "type": "string",
+              "required": false,
+              "hint": "速度/方向/时间/距离",
+              "default": "速度/方向/时间戳",
+              "ai_fill": true
+            },
+            {
+              "key": "camera_view",
+              "label": "视角",
+              "type": "enum",
+              "required": true,
+              "hint": "画面视角",
+              "enum_options": [
+                "俯视战术板",
+                "侧视",
+                "第一视角",
+                "等距"
+              ],
+              "default": "俯视战术板",
+              "ai_fill": false
+            },
+            {
+              "key": "background_style",
+              "label": "背景",
+              "type": "enum",
+              "required": true,
+              "hint": "场地图层风格",
+              "enum_options": [
+                "干净白板",
+                "暗色科技",
+                "草地质感",
+                "室内木地板"
+              ],
+              "default": "干净白板",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "红蓝/渐变等区分方案",
+              "default": "高对比红蓝配色",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "16:9",
+                "4:3",
+                "1:1",
+                "9:16"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "overlay_notes",
+              "label": "文字提示",
+              "type": "string",
+              "required": false,
+              "hint": "动作名称或战术说明",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "camera_view",
+              "label": "视角",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "background_style",
+              "label": "背景",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "sport",
+              "label": "运动",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "轨迹连贯且标注齐全",
+              "背景与配色不遮挡轨迹"
+            ],
+            "manual_checklist": [
+              "关键帧比例与方向是否准确？",
+              "指标标注位置是否清晰？",
+              "运动场景是否易辨识？"
+            ]
+          },
+          "tags": [
+            "运动分析",
+            "轨迹",
+            "战术板"
+          ]
+        },
+        {
+          "id": "I13_font_specimen",
+          "name": "字体生成设定卡",
+          "short_description": "为字体创意给出风格、笔画与应用场景的生成提示。",
+          "category_id": "text2image",
+          "prompt_template": "基于氛围 {{base_font_mood}} 设计字体，应用场景 {{use_case}}，展示文案 {{display_text}}，字重/对比度 {{contrast_level}}，质感 {{texture}}，语言支持 {{language_support}}，排版 {{alignment}}。输出包含样张与字形特征说明。",
+          "placeholders": [
+            {
+              "key": "base_font_mood",
+              "label": "字体氛围",
+              "type": "string",
+              "required": true,
+              "hint": "关键词：科技、优雅、童趣等",
+              "ai_fill": true
+            },
+            {
+              "key": "use_case",
+              "label": "使用场景",
+              "type": "enum",
+              "required": true,
+              "hint": "字体主要用途",
+              "enum_options": [
+                "标题",
+                "正文",
+                "Logo 字形",
+                "副标题"
+              ],
+              "default": "标题",
+              "ai_fill": false
+            },
+            {
+              "key": "display_text",
+              "label": "展示文案",
+              "type": "string",
+              "required": true,
+              "hint": "要渲染的文字内容",
+              "default": "Nano Banana Pro",
+              "ai_fill": true
+            },
+            {
+              "key": "contrast_level",
+              "label": "字重/对比",
+              "type": "enum",
+              "required": true,
+              "hint": "笔画粗细与对比度",
+              "enum_options": [
+                "极细",
+                "常规",
+                "粗黑",
+                "可变字重"
+              ],
+              "default": "常规",
+              "ai_fill": false
+            },
+            {
+              "key": "texture",
+              "label": "质感",
+              "type": "enum",
+              "required": false,
+              "hint": "视觉质地",
+              "enum_options": [
+                "纯净矢量",
+                "颗粒噪点",
+                "墨迹刷痕",
+                "霓虹发光"
+              ],
+              "default": "纯净矢量",
+              "ai_fill": false
+            },
+            {
+              "key": "language_support",
+              "label": "语言支持",
+              "type": "enum",
+              "required": false,
+              "hint": "需呈现的字符集",
+              "enum_options": [
+                "中英双语",
+                "仅英文",
+                "仅中文"
+              ],
+              "default": "中英双语",
+              "ai_fill": false
+            },
+            {
+              "key": "alignment",
+              "label": "排版方式",
+              "type": "enum",
+              "required": false,
+              "hint": "样张布局",
+              "enum_options": [
+                "居中",
+                "左对齐",
+                "环形排版",
+                "斜切排版"
+              ],
+              "default": "居中",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "use_case",
+              "label": "场景",
+              "type": "enum",
+              "control_type": "audience"
+            },
+            {
+              "key": "contrast_level",
+              "label": "字重",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "texture",
+              "label": "质感",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "样张展示 display_text 完整",
+              "风格与 base_font_mood 对应"
+            ],
+            "manual_checklist": [
+              "字重与用例是否匹配？",
+              "质感是否影响可读性？",
+              "语言支持是否覆盖需展示字符？"
+            ]
+          },
+          "tags": [
+            "字体",
+            "品牌",
+            "字形设计"
+          ]
+        },
+        {
+          "id": "I14_event_countdown_kv",
+          "name": "倒计时活动 KV",
+          "short_description": "自动生成带倒计时的活动头图，强化紧迫感。",
+          "category_id": "text2image",
+          "prompt_template": "为活动 {{event_name}} 生成倒计时 KV，结束日期 {{end_date}}，主视觉 {{hero_visual}}，紧迫程度 {{urgency_level}}，倒计时样式 {{countdown_style}}，配色 {{color_palette}}，品牌露出 {{brand_logo_presence}}，画幅 {{aspect_ratio}}。保持主体清晰，倒计时聚焦。",
+          "placeholders": [
+            {
+              "key": "event_name",
+              "label": "活动名称",
+              "type": "string",
+              "required": true,
+              "hint": "促销/发布/直播等",
+              "ai_fill": true
+            },
+            {
+              "key": "end_date",
+              "label": "结束日期",
+              "type": "string",
+              "required": true,
+              "hint": "截止日期或时间",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_visual",
+              "label": "主视觉",
+              "type": "string",
+              "required": true,
+              "hint": "核心产品或情景",
+              "ai_fill": true
+            },
+            {
+              "key": "urgency_level",
+              "label": "紧迫度",
+              "type": "enum",
+              "required": true,
+              "hint": "情绪与行动力强度",
+              "enum_options": [
+                "温和提醒",
+                "强行动",
+                "抢购警报"
+              ],
+              "default": "强行动",
+              "ai_fill": false
+            },
+            {
+              "key": "countdown_style",
+              "label": "倒计时形式",
+              "type": "enum",
+              "required": true,
+              "hint": "呈现样式",
+              "enum_options": [
+                "翻牌器数字",
+                "霓虹数字",
+                "手写笔刷",
+                "极简线条"
+              ],
+              "default": "翻牌器数字",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "如 黑/白/品牌色",
+              "default": "黑/白/品牌色",
+              "ai_fill": true
+            },
+            {
+              "key": "brand_logo_presence",
+              "label": "品牌露出",
+              "type": "enum",
+              "required": false,
+              "hint": "Logo 强度",
+              "enum_options": [
+                "弱化",
+                "中等",
+                "强化"
+              ],
+              "default": "中等",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "9:16",
+                "16:9",
+                "1:1",
+                "3:4"
+              ],
+              "default": "9:16",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "urgency_level",
+              "label": "紧迫度",
+              "type": "enum",
+              "control_type": "safety"
+            },
+            {
+              "key": "countdown_style",
+              "label": "倒计时",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "倒计时信息清晰突出",
+              "主视觉未被数字遮挡"
+            ],
+            "manual_checklist": [
+              "紧迫感是否符合品牌语气？",
+              "日期与时间是否易读无歧义？",
+              "配色是否保证对比与可读性？"
+            ]
+          },
+          "tags": [
+            "倒计时",
+            "活动 KV",
+            "行动导向"
+          ]
+        },
+        {
+          "id": "I15_multi_channel_suite",
+          "name": "多端套图生成",
+          "short_description": "同一主题自动生成多尺寸套图，保持画风一致。",
+          "category_id": "text2image",
+          "prompt_template": "围绕主题 {{theme}} 与核心信息 {{main_message}}，输出渠道 {{channel_list}} 套图。画风参考 {{style_reference}}，配色 {{palette}}，产品元素 {{product_elements}}，一致性级别 {{consistency_level}}，画幅列表 {{aspect_ratios}}。保持每端排版适配且视觉统一。",
+          "placeholders": [
+            {
+              "key": "theme",
+              "label": "主主题",
+              "type": "string",
+              "required": true,
+              "hint": "活动/产品/节日",
+              "ai_fill": true
+            },
+            {
+              "key": "main_message",
+              "label": "核心信息",
+              "type": "string",
+              "required": true,
+              "hint": "一句口号或卖点",
+              "ai_fill": true
+            },
+            {
+              "key": "channel_list",
+              "label": "渠道列表",
+              "type": "string",
+              "required": true,
+              "hint": "如 微信/抖音/官网 Banner/户外",
+              "ai_fill": true
+            },
+            {
+              "key": "style_reference",
+              "label": "风格参考",
+              "type": "string",
+              "required": false,
+              "hint": "参考 KV/品牌手册/关键词",
+              "ai_fill": true
+            },
+            {
+              "key": "palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "主色+辅色+背景",
+              "default": "品牌主色 + 中性色",
+              "ai_fill": true
+            },
+            {
+              "key": "product_elements",
+              "label": "产品元素",
+              "type": "string",
+              "required": false,
+              "hint": "需出现的包装/实物/图标",
+              "ai_fill": true
+            },
+            {
+              "key": "consistency_level",
+              "label": "一致性",
+              "type": "enum",
+              "required": true,
+              "hint": "各尺寸统一程度",
+              "enum_options": [
+                "严格一致",
+                "轻度适配",
+                "自由演绎"
+              ],
+              "default": "轻度适配",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratios",
+              "label": "画幅列表",
+              "type": "string",
+              "required": false,
+              "hint": "如 1:1, 9:16, 16:9",
+              "default": "1:1, 9:16, 16:9",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "consistency_level",
+              "label": "一致性",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "palette",
+              "label": "配色",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "channel_list",
+              "label": "渠道",
+              "type": "string",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "各尺寸包含核心信息与品牌",
+              "风格与色调在套图内一致"
+            ],
+            "manual_checklist": [
+              "排版是否针对渠道优化？",
+              "裁切位置是否安全不遮挡主信息？",
+              "视觉重量是否在主信息聚焦？"
+            ]
+          },
+          "tags": [
+            "多尺寸",
+            "渠道适配",
+            "品牌一致"
+          ]
+        },
+        {
+          "id": "I16_character_lineup",
+          "name": "角色阵列与立绘",
+          "short_description": "多角色同画风立绘阵列，保持设定连贯。",
+          "category_id": "text2image",
+          "prompt_template": "基于世界观 {{world_setting}}，为角色 {{characters}} 绘制阵列，姿态 {{pose_variation}}，服饰 {{attire_style}}，色调 {{color_mood}}，背景 {{background_style}}，画幅 {{aspect_ratio}}。保持五官、比例与风格统一，可微调表情。",
+          "placeholders": [
+            {
+              "key": "world_setting",
+              "label": "世界观",
+              "type": "string",
+              "required": true,
+              "hint": "时代/场景/题材",
+              "ai_fill": true
+            },
+            {
+              "key": "characters",
+              "label": "角色设定",
+              "type": "textarea",
+              "required": true,
+              "hint": "角色名 + 特征列表",
+              "ai_fill": true
+            },
+            {
+              "key": "pose_variation",
+              "label": "姿态",
+              "type": "enum",
+              "required": true,
+              "hint": "姿势或表情变化",
+              "enum_options": [
+                "站姿合集",
+                "动作序列",
+                "情绪梯度",
+                "转身视角"
+              ],
+              "default": "站姿合集",
+              "ai_fill": false
+            },
+            {
+              "key": "attire_style",
+              "label": "服饰风格",
+              "type": "enum",
+              "required": true,
+              "hint": "服装与配饰",
+              "enum_options": [
+                "现代街头",
+                "科幻机能",
+                "中世纪",
+                "校园日常"
+              ],
+              "default": "科幻机能",
+              "ai_fill": false
+            },
+            {
+              "key": "color_mood",
+              "label": "色调",
+              "type": "enum",
+              "required": true,
+              "hint": "整体色彩感觉",
+              "enum_options": [
+                "低饱和",
+                "明亮暖色",
+                "冷峻",
+                "霓虹"
+              ],
+              "default": "低饱和",
+              "ai_fill": false
+            },
+            {
+              "key": "background_style",
+              "label": "背景",
+              "type": "enum",
+              "required": false,
+              "hint": "背景处理",
+              "enum_options": [
+                "纯色渐变",
+                "场景淡化",
+                "留白",
+                "手绘网格"
+              ],
+              "default": "留白",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "整体比例",
+              "enum_options": [
+                "16:9",
+                "1:1",
+                "5:2",
+                "9:16"
+              ],
+              "default": "5:2",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "attire_style",
+              "label": "服饰",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "color_mood",
+              "label": "色调",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "pose_variation",
+              "label": "姿态",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "所有角色风格一致",
+              "姿态符合 pose_variation"
+            ],
+            "manual_checklist": [
+              "关键特征是否在各角色保留？",
+              "阵列排版是否平衡且不拥挤？",
+              "背景处理是否突出角色？"
+            ]
+          },
+          "tags": [
+            "角色设定",
+            "立绘",
+            "阵列"
+          ]
+        },
+        {
+          "id": "I17_environment_variants",
+          "name": "同场景多时段",
+          "short_description": "同一场景输出多光影/天气版本，保持建筑与布景一致。",
+          "category_id": "text2image",
+          "prompt_template": "基于场景 {{environment_desc}}，生成 {{variants_count}} 个版本，时段 {{times_of_day}}，天气 {{weather}}，机位 {{camera_angle}}，细节层级 {{detail_level}}。保持主体结构一致，仅变化光影/氛围。",
+          "placeholders": [
+            {
+              "key": "environment_desc",
+              "label": "场景描述",
+              "type": "string",
+              "required": true,
+              "hint": "建筑/街区/房间/景观",
+              "ai_fill": true
+            },
+            {
+              "key": "variants_count",
+              "label": "版本数量",
+              "type": "number",
+              "required": true,
+              "hint": "生成多少个时段版本",
+              "default": 4,
+              "constraints": {
+                "min": 3,
+                "max": 8
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "times_of_day",
+              "label": "时段",
+              "type": "string",
+              "required": true,
+              "hint": "晨/午/暮/夜，用逗号分隔",
+              "ai_fill": true
+            },
+            {
+              "key": "weather",
+              "label": "天气",
+              "type": "enum",
+              "required": false,
+              "hint": "光影/气候",
+              "enum_options": [
+                "晴",
+                "雾",
+                "雨",
+                "雪",
+                "夜间"
+              ],
+              "default": "雾",
+              "ai_fill": false
+            },
+            {
+              "key": "camera_angle",
+              "label": "机位",
+              "type": "enum",
+              "required": true,
+              "hint": "观察角度",
+              "enum_options": [
+                "平视",
+                "俯视",
+                "仰视",
+                "航拍"
+              ],
+              "default": "平视",
+              "ai_fill": false
+            },
+            {
+              "key": "detail_level",
+              "label": "细节层级",
+              "type": "enum",
+              "required": true,
+              "hint": "写实程度",
+              "enum_options": [
+                "写实",
+                "半写实",
+                "插画",
+                "线稿"
+              ],
+              "default": "半写实",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "camera_angle",
+              "label": "机位",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "weather",
+              "label": "天气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "detail_level",
+              "label": "细节",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "主体结构在各版本一致",
+              "时段/光影差异清晰"
+            ],
+            "manual_checklist": [
+              "天气/时段变化是否自然？",
+              "色温与光向是否符合时段？",
+              "细节层级是否与设定匹配？"
+            ]
+          },
+          "tags": [
+            "场景变体",
+            "光影",
+            "一致性"
+          ]
+        },
+        {
+          "id": "I18_material_palette_board",
+          "name": "材质色板情绪板",
+          "short_description": "生成材质+色彩情绪板，兼顾用例场景与标签。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{product_type}} 输出情绪板，材质关键词 {{material_keywords}}，色彩 {{color_keywords}}，使用场景 {{usage_scene}}，版式 {{layout_style}}，标签语言 {{label_language}}，氛围 {{tone}}。以网格/拼贴形式展现材质块与配色。",
+          "placeholders": [
+            {
+              "key": "product_type",
+              "label": "产品类型",
+              "type": "string",
+              "required": true,
+              "hint": "如家电/家具/可穿戴/车载",
+              "ai_fill": true
+            },
+            {
+              "key": "material_keywords",
+              "label": "材质关键词",
+              "type": "string",
+              "required": true,
+              "hint": "如磨砂金属/玻璃/织物/木纹",
+              "ai_fill": true
+            },
+            {
+              "key": "color_keywords",
+              "label": "色彩关键词",
+              "type": "string",
+              "required": true,
+              "hint": "主色/辅色/点缀",
+              "ai_fill": true
+            },
+            {
+              "key": "usage_scene",
+              "label": "使用场景",
+              "type": "string",
+              "required": false,
+              "hint": "室内/户外/办公/运动等",
+              "ai_fill": true
+            },
+            {
+              "key": "layout_style",
+              "label": "版式",
+              "type": "enum",
+              "required": true,
+              "hint": "情绪板布局",
+              "enum_options": [
+                "网格板",
+                "垂直胶片",
+                "横向画册",
+                "卡片拼贴"
+              ],
+              "default": "网格板",
+              "ai_fill": false
+            },
+            {
+              "key": "label_language",
+              "label": "标签语言",
+              "type": "enum",
+              "required": false,
+              "hint": "标注文字语言",
+              "enum_options": [
+                "中英双语",
+                "仅中文",
+                "仅英文"
+              ],
+              "default": "中英双语",
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "氛围",
+              "type": "enum",
+              "required": false,
+              "hint": "整体情绪",
+              "enum_options": [
+                "低饱和",
+                "高对比",
+                "金属冷感",
+                "柔软织物感"
+              ],
+              "default": "低饱和",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "layout_style",
+              "label": "版式",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "tone",
+              "label": "氛围",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "label_language",
+              "label": "语言",
+              "type": "enum",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "材质与色彩块数量覆盖关键词",
+              "文字标签清晰不遮挡素材"
+            ],
+            "manual_checklist": [
+              "配色是否与材质协调？",
+              "版式是否平衡、留白适当？",
+              "情绪板是否体现场景使用感？"
+            ]
+          },
+          "tags": [
+            "情绪板",
+            "配色",
+            "材质"
+          ]
+        },
+        {
+          "id": "I19_packaging_flat_mock",
+          "name": "包装展开与样机",
+          "short_description": "生成包装展开图与样机，包含工艺与信息位。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{packaging_type}} 设计包装展开与样机，口味/香型 {{flavor}}，刀模比例 {{dieline_ratio}}，工艺 {{surface_finish}}，主图案 {{hero_pattern}}，必备信息 {{mandatory_info}}，品牌风格 {{brand_style}}，配色 {{color_palette}}。保证信息位清晰，展开与立体一致。",
+          "placeholders": [
+            {
+              "key": "packaging_type",
+              "label": "包装类型",
+              "type": "enum",
+              "required": true,
+              "hint": "包装形态",
+              "enum_options": [
+                "盒装",
+                "袋装",
+                "瓶装",
+                "管状",
+                "卡纸吊牌"
+              ],
+              "default": "盒装",
+              "ai_fill": false
+            },
+            {
+              "key": "flavor",
+              "label": "口味/香型",
+              "type": "string",
+              "required": true,
+              "hint": "主口味或气味",
+              "ai_fill": true
+            },
+            {
+              "key": "dieline_ratio",
+              "label": "刀模比例",
+              "type": "enum",
+              "required": false,
+              "hint": "展开图比例",
+              "enum_options": [
+                "1:1",
+                "2:3",
+                "3:4",
+                "展开长条"
+              ],
+              "default": "2:3",
+              "ai_fill": false
+            },
+            {
+              "key": "surface_finish",
+              "label": "工艺",
+              "type": "enum",
+              "required": false,
+              "hint": "表面处理",
+              "enum_options": [
+                "哑光",
+                "亮光",
+                "磨砂",
+                "局部 UV"
+              ],
+              "default": "哑光",
+              "ai_fill": false
+            },
+            {
+              "key": "hero_pattern",
+              "label": "主图案",
+              "type": "string",
+              "required": false,
+              "hint": "图腾/纹理/插画",
+              "ai_fill": true
+            },
+            {
+              "key": "mandatory_info",
+              "label": "必备信息",
+              "type": "textarea",
+              "required": false,
+              "hint": "成分/净含量/条码/警示",
+              "ai_fill": true
+            },
+            {
+              "key": "brand_style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "品牌视觉调性",
+              "enum_options": [
+                "极简",
+                "复古",
+                "科技",
+                "手绘"
+              ],
+              "default": "极简",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "主色/辅色",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "packaging_type",
+              "label": "包装",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "surface_finish",
+              "label": "工艺",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "brand_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "展开图与样机纹理一致",
+              "必备信息位可读不缺失"
+            ],
+            "manual_checklist": [
+              "工艺与配色是否匹配品牌？",
+              "刀模比例是否合理可生产？",
+              "主体与信息层级是否清晰？"
+            ]
+          },
+          "tags": [
+            "包装",
+            "样机",
+            "品牌设计"
+          ]
+        },
+        {
+          "id": "I20_social_grid_campaign",
+          "name": "社媒矩阵九宫格",
+          "short_description": "生成社媒矩阵九宫格或多帖，统一调性与 CTA。",
+          "category_id": "text2image",
+          "prompt_template": "为主题 {{theme}} 与产品 {{hero_product}} 生成社媒矩阵，帖子数量 {{posts_count}}，标签 {{hashtags}}，风格 {{style}}，配色 {{palette}}，CTA 变体 {{cta_variants}}，基础画幅 {{aspect_ratio}}。保持九宫格对齐与品牌一致性。",
+          "placeholders": [
+            {
+              "key": "theme",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "活动/产品/故事",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_product",
+              "label": "主产品",
+              "type": "string",
+              "required": true,
+              "hint": "核心 SKU 或主视觉物",
+              "ai_fill": true
+            },
+            {
+              "key": "posts_count",
+              "label": "帖子数量",
+              "type": "number",
+              "required": false,
+              "hint": "需要的贴数",
+              "default": 9,
+              "constraints": {
+                "min": 6,
+                "max": 12
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "hashtags",
+              "label": "话题标签",
+              "type": "string",
+              "required": false,
+              "hint": "社媒标签，逗号分隔",
+              "ai_fill": true
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "画风与质感",
+              "enum_options": [
+                "杂志拼贴",
+                "暗黑质感",
+                "明快插画",
+                "极简留白"
+              ],
+              "default": "明快插画",
+              "ai_fill": false
+            },
+            {
+              "key": "palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "主色/辅色",
+              "ai_fill": true
+            },
+            {
+              "key": "cta_variants",
+              "label": "CTA 变体",
+              "type": "string",
+              "required": false,
+              "hint": "不同贴子的 CTA 句式",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "默认 1:1，可扩展",
+              "enum_options": [
+                "1:1",
+                "4:5",
+                "9:16"
+              ],
+              "default": "1:1",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "posts_count",
+              "label": "贴数",
+              "type": "number",
+              "control_type": "length"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "九宫格对齐不变形",
+              "主产品在至少三格突出呈现"
+            ],
+            "manual_checklist": [
+              "色彩与字体是否一致？",
+              "CTA 是否多样且不遮挡主体？",
+              "构图是否适合社媒裁切？"
+            ]
+          },
+          "tags": [
+            "社交媒体",
+            "矩阵",
+            "品牌一致"
+          ]
+        },
+        {
+          "id": "I21_icon_grid",
+          "name": "一致性图标集",
+          "short_description": "生成一组风格统一的图标网格，便于 UI 落地。",
+          "category_id": "text2image",
+          "prompt_template": "围绕清单 {{icon_list}} 生成图标集，风格 {{style}}，描边 {{stroke_weight}}，圆角 {{corner}}，网格 {{grid_size}}，颜色 {{color}}。保持线条一致、笔触统一，输出网格式排布。",
+          "placeholders": [
+            {
+              "key": "icon_list",
+              "label": "图标列表",
+              "type": "string",
+              "required": true,
+              "hint": "逗号分隔的图标名称",
+              "ai_fill": true
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "填充方式",
+              "enum_options": [
+                "线性",
+                "填充",
+                "双色",
+                "扁平"
+              ],
+              "default": "线性",
+              "ai_fill": false
+            },
+            {
+              "key": "stroke_weight",
+              "label": "描边",
+              "type": "enum",
+              "required": true,
+              "hint": "线条粗细",
+              "enum_options": [
+                "1px",
+                "1.5px",
+                "2px",
+                "可变"
+              ],
+              "default": "1.5px",
+              "ai_fill": false
+            },
+            {
+              "key": "corner",
+              "label": "圆角",
+              "type": "enum",
+              "required": false,
+              "hint": "端点与拐角处理",
+              "enum_options": [
+                "直角",
+                "圆角",
+                "删角"
+              ],
+              "default": "圆角",
+              "ai_fill": false
+            },
+            {
+              "key": "grid_size",
+              "label": "网格尺寸",
+              "type": "enum",
+              "required": false,
+              "hint": "图标对齐基准",
+              "enum_options": [
+                "24px",
+                "32px",
+                "48px",
+                "64px"
+              ],
+              "default": "32px",
+              "ai_fill": false
+            },
+            {
+              "key": "color",
+              "label": "颜色",
+              "type": "string",
+              "required": false,
+              "hint": "单色或双色方案",
+              "default": "单色或双色",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "stroke_weight",
+              "label": "描边",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "grid_size",
+              "label": "网格",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "图标对齐统一网格",
+              "线宽/圆角一致"
+            ],
+            "manual_checklist": [
+              "语义是否清晰易辨？",
+              "负空间与笔画是否平衡？",
+              "双色/填充是否保持统一风格？"
+            ]
+          },
+          "tags": [
+            "图标",
+            "UI 资产",
+            "一致性"
+          ]
+        },
+        {
+          "id": "I22_3d_product_turntable",
+          "name": "3D 产品转台帧",
+          "short_description": "生成 360° 转台帧序列，保持材质一致与环境稳定。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{product_desc}} 生成 360° 转台帧，角度步进 {{angle_step}} 度，材质 {{material}}，光线 {{lighting}}，背景 {{background}}，风格 {{output_style}}，分辨率 {{resolution}}。保持各帧一致，便于合成转台动画。",
+          "placeholders": [
+            {
+              "key": "product_desc",
+              "label": "产品描述",
+              "type": "string",
+              "required": true,
+              "hint": "形态、尺寸、颜色",
+              "ai_fill": true
+            },
+            {
+              "key": "angle_step",
+              "label": "角度步进",
+              "type": "number",
+              "required": true,
+              "hint": "每帧旋转角度",
+              "default": 45,
+              "constraints": {
+                "min": 15,
+                "max": 90
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "material",
+              "label": "材质",
+              "type": "string",
+              "required": true,
+              "hint": "金属/玻璃/塑料/木质等",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "required": true,
+              "hint": "3D 打光",
+              "enum_options": [
+                "工作室三点光",
+                "HDRI 软光",
+                "高对比戏剧光",
+                "户外正午"
+              ],
+              "default": "HDRI 软光",
+              "ai_fill": false
+            },
+            {
+              "key": "background",
+              "label": "背景",
+              "type": "enum",
+              "required": false,
+              "hint": "场景背景",
+              "enum_options": [
+                "纯色",
+                "渐变",
+                "无缝纸",
+                "环境房间"
+              ],
+              "default": "纯色",
+              "ai_fill": false
+            },
+            {
+              "key": "output_style",
+              "label": "风格",
+              "type": "enum",
+              "required": false,
+              "hint": "渲染风格",
+              "enum_options": [
+                "写实 3D",
+                "卡通 3D",
+                "粘土感",
+                "赛博金属"
+              ],
+              "default": "写实 3D",
+              "ai_fill": false
+            },
+            {
+              "key": "resolution",
+              "label": "分辨率",
+              "type": "enum",
+              "required": false,
+              "hint": "输出尺寸",
+              "enum_options": [
+                "4K",
+                "2K",
+                "方形 1:1",
+                "竖版 9:16"
+              ],
+              "default": "4K",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "output_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "angle_step",
+              "label": "角度",
+              "type": "number",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "各帧材质与光线一致",
+              "角度步进均匀"
+            ],
+            "manual_checklist": [
+              "背景是否稳定无抖动？",
+              "产品细节是否清晰无噪点？",
+              "反射/阴影是否与角度匹配？"
+            ]
+          },
+          "tags": [
+            "3D",
+            "转台",
+            "产品渲染"
+          ]
+        },
+        {
+          "id": "I23_ar_story_frames",
+          "name": "AR 故事滤镜",
+          "short_description": "生成互动 AR 滤镜画面，含覆盖元素与交互提示。",
+          "category_id": "text2image",
+          "prompt_template": "针对主题 {{theme}} / 品牌 {{brand}}，生成 AR 滤镜画面，叠加元素 {{overlay_elements}}，交互模式 {{interaction}}，风格 {{style}}，配色 {{palette}}，CTA {{call_to_action}}，画幅 {{aspect_ratio}}。突出面部/场景识别区域与安全留白。",
+          "placeholders": [
+            {
+              "key": "theme",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "滤镜主题/故事线",
+              "ai_fill": true
+            },
+            {
+              "key": "brand",
+              "label": "品牌",
+              "type": "string",
+              "required": false,
+              "hint": "品牌露出或合作方",
+              "ai_fill": true
+            },
+            {
+              "key": "overlay_elements",
+              "label": "叠加元素",
+              "type": "string",
+              "required": true,
+              "hint": "贴纸、HUD、粒子等",
+              "ai_fill": true
+            },
+            {
+              "key": "interaction",
+              "label": "交互",
+              "type": "enum",
+              "required": true,
+              "hint": "驱动方式",
+              "enum_options": [
+                "表情驱动",
+                "手势驱动",
+                "位置 AR",
+                "语音触发"
+              ],
+              "default": "表情驱动",
+              "ai_fill": false
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "视觉质感",
+              "enum_options": [
+                "梦幻滤镜",
+                "科幻 HUD",
+                "笔刷手绘",
+                "极简线框"
+              ],
+              "default": "科幻 HUD",
+              "ai_fill": false
+            },
+            {
+              "key": "palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "主色方案或渐变",
+              "ai_fill": true
+            },
+            {
+              "key": "call_to_action",
+              "label": "CTA",
+              "type": "string",
+              "required": false,
+              "hint": "引导用户拍摄/分享",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "滤镜画面比例",
+              "enum_options": [
+                "9:16",
+                "3:4",
+                "1:1"
+              ],
+              "default": "9:16",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "interaction",
+              "label": "交互",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "面部/手势区域留白安全",
+              "交互提示清晰可见"
+            ],
+            "manual_checklist": [
+              "叠加元素是否遮挡关键区域？",
+              "品牌露出是否自然不过度？",
+              "风格是否符合主题与平台？"
+            ]
+          },
+          "tags": [
+            "AR",
+            "滤镜",
+            "互动"
+          ]
+        },
+        {
+          "id": "I24_map_story_infographic",
+          "name": "地图故事信息图",
+          "short_description": "将路线/区域信息转为地图信息图，突出路径与指标。",
+          "category_id": "text2image",
+          "prompt_template": "针对区域 {{region}} 绘制地图信息图，数据点 {{data_points}}，路线/热点 {{highlight_routes}}，地图风格 {{map_style}}，聚焦层级 {{focus_level}}，配色 {{color_palette}}，标注语言 {{annotation_language}}，画幅 {{aspect_ratio}}。需保证路径与地理一致。",
+          "placeholders": [
+            {
+              "key": "region",
+              "label": "地区",
+              "type": "string",
+              "required": true,
+              "hint": "国家/城市/商圈",
+              "ai_fill": true
+            },
+            {
+              "key": "data_points",
+              "label": "数据点",
+              "type": "textarea",
+              "required": true,
+              "hint": "坐标/名称/指标",
+              "ai_fill": true
+            },
+            {
+              "key": "highlight_routes",
+              "label": "路线/热点",
+              "type": "string",
+              "required": false,
+              "hint": "路径、流线或区域",
+              "ai_fill": true
+            },
+            {
+              "key": "map_style",
+              "label": "地图风格",
+              "type": "enum",
+              "required": true,
+              "hint": "底图样式",
+              "enum_options": [
+                "扁平简约",
+                "地铁风",
+                "等高线",
+                "夜光霓虹"
+              ],
+              "default": "扁平简约",
+              "ai_fill": false
+            },
+            {
+              "key": "focus_level",
+              "label": "聚焦层级",
+              "type": "enum",
+              "required": true,
+              "hint": "地图缩放级别",
+              "enum_options": [
+                "城市",
+                "国家",
+                "区域",
+                "全球"
+              ],
+              "default": "城市",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "分区/路线配色",
+              "ai_fill": true
+            },
+            {
+              "key": "annotation_language",
+              "label": "标注语言",
+              "type": "enum",
+              "required": false,
+              "hint": "地图文字",
+              "enum_options": [
+                "中英双语",
+                "中文",
+                "英文"
+              ],
+              "default": "中英双语",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "16:9",
+                "4:5",
+                "1:1"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "map_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "focus_level",
+              "label": "层级",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "annotation_language",
+              "label": "语言",
+              "type": "enum",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "路径/数据点位置与地区匹配",
+              "标注清晰不重叠"
+            ],
+            "manual_checklist": [
+              "配色是否区分层级与路线？",
+              "地图比例与真实地理是否一致？",
+              "文字语言是否符合受众？"
+            ]
+          },
+          "tags": [
+            "地图",
+            "信息图",
+            "路线规划"
+          ]
+        },
+        {
+          "id": "I25_brand_guideline_sheet",
+          "name": "品牌规范单页",
+          "short_description": "一页总结品牌 logo、色彩、字体与 do/don't。",
+          "category_id": "text2image",
+          "prompt_template": "为品牌 {{brand_name}} 生成规范单页，包含 Logo 用法 {{logo_usage}}，色板 {{palette}}，字体 {{typography}}，图片风格 {{imagery_style}}，禁用事项 {{forbidden}}，版式 {{layout_style}}，画幅 {{aspect_ratio}}。突出可用规范与示例。",
+          "placeholders": [
+            {
+              "key": "brand_name",
+              "label": "品牌名",
+              "type": "string",
+              "required": true,
+              "hint": "品牌或产品线名称",
+              "ai_fill": true
+            },
+            {
+              "key": "logo_usage",
+              "label": "Logo 用法",
+              "type": "textarea",
+              "required": true,
+              "hint": "安全区/最小尺寸/禁用",
+              "ai_fill": true
+            },
+            {
+              "key": "palette",
+              "label": "色板",
+              "type": "string",
+              "required": true,
+              "hint": "主色、辅色、强调色",
+              "ai_fill": true
+            },
+            {
+              "key": "typography",
+              "label": "字体",
+              "type": "string",
+              "required": true,
+              "hint": "标题/正文字体与字重",
+              "ai_fill": true
+            },
+            {
+              "key": "imagery_style",
+              "label": "图像风格",
+              "type": "enum",
+              "required": true,
+              "hint": "配图/插画风格",
+              "enum_options": [
+                "真实摄影",
+                "插画",
+                "混合",
+                "线稿"
+              ],
+              "default": "混合",
+              "ai_fill": false
+            },
+            {
+              "key": "forbidden",
+              "label": "禁用",
+              "type": "string",
+              "required": false,
+              "hint": "禁止的颜色/角度/变形等",
+              "ai_fill": true
+            },
+            {
+              "key": "layout_style",
+              "label": "版式",
+              "type": "enum",
+              "required": true,
+              "hint": "单页结构",
+              "enum_options": [
+                "分栏网格",
+                "模块贴纸",
+                "A4 手册",
+                "卡片集合"
+              ],
+              "default": "分栏网格",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出尺寸",
+              "enum_options": [
+                "A4 纵向",
+                "A4 横向",
+                "16:9"
+              ],
+              "default": "A4 纵向",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "layout_style",
+              "label": "版式",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "imagery_style",
+              "label": "图像风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "Logo/色板/字体信息完整",
+              "版式未遮挡关键规范"
+            ],
+            "manual_checklist": [
+              "Do & Don't 是否清晰对比？",
+              "色彩与字体演示是否符合品牌？",
+              "可实际落地的间距/尺寸是否标注？"
+            ]
+          },
+          "tags": [
+            "品牌规范",
+            "单页",
+            "设计系统"
+          ]
+        },
+        {
+          "id": "I26_recipe_step_board",
+          "name": "料理步骤图解",
+          "short_description": "将食谱转为步骤图解/九宫格，便于快速学习。",
+          "category_id": "text2image",
+          "prompt_template": "生成料理 {{dish_name}} 的步骤图解，份量 {{servings}}，步骤 {{steps}}，工具 {{tools}}，风格 {{style}}，配色 {{palette}}，导航形式 {{overlay_nav}}，画幅 {{aspect_ratio}}。强调食材/火候/时间图示。",
+          "placeholders": [
+            {
+              "key": "dish_name",
+              "label": "菜名",
+              "type": "string",
+              "required": true,
+              "hint": "菜品名称",
+              "ai_fill": true
+            },
+            {
+              "key": "servings",
+              "label": "份量",
+              "type": "number",
+              "required": false,
+              "hint": "份数",
+              "default": 2,
+              "constraints": {
+                "min": 1,
+                "max": 8
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "steps",
+              "label": "步骤",
+              "type": "textarea",
+              "required": true,
+              "hint": "步骤清单，含时间/温度",
+              "ai_fill": true
+            },
+            {
+              "key": "tools",
+              "label": "工具",
+              "type": "string",
+              "required": false,
+              "hint": "主要锅具/工具",
+              "ai_fill": true
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "图解视觉",
+              "enum_options": [
+                "厨房摄影",
+                "手绘步骤",
+                "矢量扁平",
+                "复古食谱"
+              ],
+              "default": "手绘步骤",
+              "ai_fill": false
+            },
+            {
+              "key": "palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "如暖色厨房/清新绿色",
+              "ai_fill": true
+            },
+            {
+              "key": "overlay_nav",
+              "label": "导航形式",
+              "type": "enum",
+              "required": false,
+              "hint": "步骤指引样式",
+              "enum_options": [
+                "编号圆点",
+                "连线箭头",
+                "分区色块"
+              ],
+              "default": "编号圆点",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "4:5",
+                "1:1",
+                "16:9"
+              ],
+              "default": "4:5",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "overlay_nav",
+              "label": "导航",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "步骤数量匹配输入 steps",
+              "编号或连线清晰"
+            ],
+            "manual_checklist": [
+              "火候/时间信息是否易读？",
+              "食材与工具是否可辨？",
+              "排版是否避免拥挤？"
+            ]
+          },
+          "tags": [
+            "美食",
+            "步骤图",
+            "教程"
+          ]
+        },
+        {
+          "id": "I27_science_process_diagram",
+          "name": "科学流程示意",
+          "short_description": "科学/工程过程的示意图，兼顾准确与简洁。",
+          "category_id": "text2image",
+          "prompt_template": "将主题 {{topic}} 的流程 {{steps}} 生成示意图，精度 {{precision}}，图标风格 {{icon_style}}，色调 {{color_mood}}，画幅 {{aspect_ratio}}，备注 {{annotations}}。确保方向、顺序与指标清晰。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "化工/物理/电路/生物流程",
+              "ai_fill": true
+            },
+            {
+              "key": "steps",
+              "label": "步骤/阶段",
+              "type": "textarea",
+              "required": true,
+              "hint": "流程节点与顺序",
+              "ai_fill": true
+            },
+            {
+              "key": "precision",
+              "label": "精度",
+              "type": "enum",
+              "required": true,
+              "hint": "图示准确度",
+              "enum_options": [
+                "概念",
+                "半精确",
+                "精确标注"
+              ],
+              "default": "半精确",
+              "ai_fill": false
+            },
+            {
+              "key": "icon_style",
+              "label": "图标风格",
+              "type": "enum",
+              "required": true,
+              "hint": "图形表现",
+              "enum_options": [
+                "轮廓线",
+                "填充扁平",
+                "等距",
+                "手绘"
+              ],
+              "default": "轮廓线",
+              "ai_fill": false
+            },
+            {
+              "key": "color_mood",
+              "label": "色调",
+              "type": "enum",
+              "required": true,
+              "hint": "色彩氛围",
+              "enum_options": [
+                "冷色科技",
+                "暖色科普",
+                "中性灰",
+                "黑板粉笔"
+              ],
+              "default": "冷色科技",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "16:9",
+                "4:3",
+                "1:1"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "annotations",
+              "label": "备注",
+              "type": "string",
+              "required": false,
+              "hint": "单位/公式/注意点",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "precision",
+              "label": "精度",
+              "type": "enum",
+              "control_type": "safety"
+            },
+            {
+              "key": "icon_style",
+              "label": "图标风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "color_mood",
+              "label": "色调",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "步骤顺序与箭头方向一致",
+              "色彩区分阶段清晰"
+            ],
+            "manual_checklist": [
+              "符号/公式是否准确？",
+              "信息密度是否适中？",
+              "精度是否符合 precision 设定？"
+            ]
+          },
+          "tags": [
+            "科普",
+            "流程图",
+            "工程"
+          ]
+        },
+        {
+          "id": "I28_data_tile_dashboard",
+          "name": "仪表盘模块卡片",
+          "short_description": "生成单块 KPI 模块，兼顾数据对比与品牌感。",
+          "category_id": "text2image",
+          "prompt_template": "为指标 {{metric_name}} 生成仪表盘模块，比较窗口 {{comparison_window}}，图表类型 {{viz_type}}，KPI 列表 {{kpis}}，受众 {{audience}}，色彩 {{color_palette}}，密度 {{density}}，画幅 {{aspect_ratio}}。确保数据可读与留白平衡。",
+          "placeholders": [
+            {
+              "key": "metric_name",
+              "label": "核心指标",
+              "type": "string",
+              "required": true,
+              "hint": "如 CVR、DAU、GMV",
+              "ai_fill": true
+            },
+            {
+              "key": "comparison_window",
+              "label": "对比窗口",
+              "type": "string",
+              "required": false,
+              "hint": "如 近 7 天 vs 上周",
+              "default": "近 7 天 vs 上周",
+              "ai_fill": true
+            },
+            {
+              "key": "viz_type",
+              "label": "图表类型",
+              "type": "enum",
+              "required": true,
+              "hint": "主视图选择",
+              "enum_options": [
+                "迷你条形",
+                "折线",
+                "仪表盘",
+                "分布"
+              ],
+              "default": "折线",
+              "ai_fill": false
+            },
+            {
+              "key": "kpis",
+              "label": "KPI 列表",
+              "type": "textarea",
+              "required": true,
+              "hint": "需呈现的数值/百分比",
+              "ai_fill": true
+            },
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "required": true,
+              "hint": "阅读者角色",
+              "enum_options": [
+                "CEO 摘要",
+                "运营团队",
+                "技术监控",
+                "市场"
+              ],
+              "default": "运营团队",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "中性色 + 强调色",
+              "ai_fill": true
+            },
+            {
+              "key": "density",
+              "label": "密度",
+              "type": "enum",
+              "required": true,
+              "hint": "信息密度",
+              "enum_options": [
+                "宽松",
+                "中等",
+                "紧凑"
+              ],
+              "default": "中等",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "模块比例",
+              "enum_options": [
+                "4:3",
+                "1:1",
+                "16:9"
+              ],
+              "default": "4:3",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "viz_type",
+              "label": "图表",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "control_type": "audience"
+            },
+            {
+              "key": "density",
+              "label": "密度",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "核心指标与对比窗口可读",
+              "色彩对比满足无障碍"
+            ],
+            "manual_checklist": [
+              "信息层级是否符合受众？",
+              "图表是否与 KPI 匹配？",
+              "数字/单位是否标注清晰？"
+            ]
+          },
+          "tags": [
+            "仪表盘",
+            "数据可视化",
+            "KPI"
+          ]
+        },
+        {
+          "id": "I29_workflow_flow_scene",
+          "name": "流程场景可视化",
+          "short_description": "把服务流/业务流转成视觉化流程或场景分步。",
+          "category_id": "text2image",
+          "prompt_template": "将流程 {{workflow}} 绘制为 {{orientation}}，参与者 {{actors}}，渠道 {{channels}}，风险点 {{highlight_risks}}，风格 {{style}}，配色 {{color_palette}}，画幅 {{aspect_ratio}}。需突出阶段/责任人与关键触点。",
+          "placeholders": [
+            {
+              "key": "workflow",
+              "label": "流程描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "阶段/环节/顺序",
+              "ai_fill": true
+            },
+            {
+              "key": "actors",
+              "label": "参与者",
+              "type": "string",
+              "required": true,
+              "hint": "角色或部门",
+              "ai_fill": true
+            },
+            {
+              "key": "channels",
+              "label": "渠道",
+              "type": "string",
+              "required": false,
+              "hint": "线上/线下/APP/客服等",
+              "ai_fill": true
+            },
+            {
+              "key": "highlight_risks",
+              "label": "风险点",
+              "type": "string",
+              "required": false,
+              "hint": "易出错或瓶颈环节",
+              "ai_fill": true
+            },
+            {
+              "key": "orientation",
+              "label": "布局形态",
+              "type": "enum",
+              "required": true,
+              "hint": "流程呈现形式",
+              "enum_options": [
+                "横向泳道",
+                "竖向泳道",
+                "时间轴",
+                "分步卡片"
+              ],
+              "default": "横向泳道",
+              "ai_fill": false
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "视觉表达",
+              "enum_options": [
+                "线框简约",
+                "彩色图解",
+                "真实场景",
+                "像素画"
+              ],
+              "default": "线框简约",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "分泳道/角色配色",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "16:9",
+                "4:3",
+                "1:1"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "orientation",
+              "label": "布局",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "actors",
+              "label": "参与者",
+              "type": "string",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "主流程顺序清晰可读",
+              "角色/渠道区分明确"
+            ],
+            "manual_checklist": [
+              "风险点是否标记清楚？",
+              "布局是否避免视觉拥挤？",
+              "颜色与文字是否支持无障碍阅读？"
+            ]
+          },
+          "tags": [
+            "流程",
+            "服务蓝图",
+            "场景化"
+          ]
+        },
+        {
+          "id": "I30_portrait_style_match",
+          "name": "人像风格复刻",
+          "short_description": "保留人物特征与姿态，迁移到目标风格。",
+          "category_id": "text2image",
+          "prompt_template": "根据人物描述 {{subject_description}}，以风格参考 {{target_style_reference}} 生成人像。表情 {{expression}}，光线 {{lighting}}，背景 {{background}}，配饰说明 {{accessory_notes}}，色调 {{color_palette}}。保持五官比例与姿态一致。",
+          "placeholders": [
+            {
+              "key": "subject_description",
+              "label": "人物描述",
+              "type": "string",
+              "required": true,
+              "hint": "性别/年龄/姿态/发型/服装",
+              "ai_fill": true
+            },
+            {
+              "key": "target_style_reference",
+              "label": "风格参考",
+              "type": "string",
+              "required": true,
+              "hint": "画风/摄影师/时期/链接",
+              "ai_fill": true
+            },
+            {
+              "key": "expression",
+              "label": "表情",
+              "type": "enum",
+              "required": true,
+              "hint": "面部情绪",
+              "enum_options": [
+                "自然微笑",
+                "严肃凝视",
+                "侧脸沉思",
+                "动态动作"
+              ],
+              "default": "自然微笑",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "required": true,
+              "hint": "人像光影",
+              "enum_options": [
+                "柔光棚拍",
+                "窗边斜光",
+                "霓虹对比",
+                "黄金时刻"
+              ],
+              "default": "柔光棚拍",
+              "ai_fill": false
+            },
+            {
+              "key": "background",
+              "label": "背景",
+              "type": "enum",
+              "required": false,
+              "hint": "背景处理",
+              "enum_options": [
+                "纯色",
+                "渐变",
+                "场景虚化",
+                "建筑场景"
+              ],
+              "default": "纯色",
+              "ai_fill": false
+            },
+            {
+              "key": "accessory_notes",
+              "label": "配饰说明",
+              "type": "string",
+              "required": false,
+              "hint": "眼镜/首饰/道具等",
+              "ai_fill": true
+            },
+            {
+              "key": "color_palette",
+              "label": "色调",
+              "type": "string",
+              "required": false,
+              "hint": "肤色/服装/背景配色",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "lighting",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "expression",
+              "label": "表情",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "background",
+              "label": "背景",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "人物特征与姿态保持一致",
+              "光线与背景不过度抢眼"
+            ],
+            "manual_checklist": [
+              "风格迁移是否保留原神态？",
+              "肤色与服饰色彩是否自然？",
+              "配饰是否与风格协调？"
+            ]
+          },
+          "tags": [
+            "人像",
+            "风格迁移",
+            "写实"
+          ]
+        },
+        {
+          "id": "I31_interior_layout_plan",
+          "name": "室内布局草图",
+          "short_description": "根据面积与需求生成室内布局示意，含光线与风格。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{room_type}} 生成布局示意，面积 {{area}} ㎡，需求/限制 {{constraints}}，家具 {{furniture_list}}，风格 {{style}}，光线计划 {{lighting_plan}}，色彩 {{color_palette}}，视角 {{orientation}}。保持动线与尺度合理。",
+          "placeholders": [
+            {
+              "key": "room_type",
+              "label": "空间类型",
+              "type": "enum",
+              "required": true,
+              "hint": "室内空间类型",
+              "enum_options": [
+                "客厅",
+                "卧室",
+                "餐厨",
+                "办公室",
+                "零售"
+              ],
+              "default": "客厅",
+              "ai_fill": false
+            },
+            {
+              "key": "area",
+              "label": "面积",
+              "type": "number",
+              "required": false,
+              "hint": "面积，平方米",
+              "default": 30,
+              "ai_fill": false
+            },
+            {
+              "key": "constraints",
+              "label": "限制",
+              "type": "string",
+              "required": false,
+              "hint": "承重墙/采光/动线需求",
+              "ai_fill": true
+            },
+            {
+              "key": "furniture_list",
+              "label": "家具清单",
+              "type": "textarea",
+              "required": true,
+              "hint": "主要家具及尺寸要求",
+              "ai_fill": true
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "室内设计风格",
+              "enum_options": [
+                "日系极简",
+                "北欧木质",
+                "工业风",
+                "现代商务"
+              ],
+              "default": "日系极简",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting_plan",
+              "label": "光线计划",
+              "type": "string",
+              "required": false,
+              "hint": "主灯/辅灯/自然光处理",
+              "ai_fill": true
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "墙面/地面/点缀色",
+              "ai_fill": true
+            },
+            {
+              "key": "orientation",
+              "label": "视角",
+              "type": "enum",
+              "required": false,
+              "hint": "呈现方式",
+              "enum_options": [
+                "俯视",
+                "平面 2D",
+                "等距",
+                "透视 3D"
+              ],
+              "default": "俯视",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "orientation",
+              "label": "视角",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "room_type",
+              "label": "空间",
+              "type": "enum",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "主要家具位置与动线清晰",
+              "比例与面积大致合理"
+            ],
+            "manual_checklist": [
+              "采光与灯位是否符合需求？",
+              "风格与配色是否一致？",
+              "留有足够行走空间？"
+            ]
+          },
+          "tags": [
+            "室内设计",
+            "布局",
+            "平面图"
+          ]
+        },
+        {
+          "id": "I32_game_level_moodboard",
+          "name": "游戏关卡情绪板",
+          "short_description": "按题材输出关卡情绪板，含关键场景与色气氛。",
+          "category_id": "text2image",
+          "prompt_template": "为游戏题材 {{genre}} 的关卡生成情绪板，关卡目标 {{level_goal}}，关键场景元素 {{key_setpieces}}，机位 {{camera_angle}}，参考风格 {{reference_style}}，色调 {{color_palette}}，氛围 {{mood}}，画幅 {{aspect_ratio}}。突出场景层次与光影。",
+          "placeholders": [
+            {
+              "key": "genre",
+              "label": "题材",
+              "type": "enum",
+              "required": true,
+              "hint": "游戏风格",
+              "enum_options": [
+                "科幻",
+                "奇幻",
+                "末日",
+                "轻松休闲",
+                "古典"
+              ],
+              "default": "科幻",
+              "ai_fill": false
+            },
+            {
+              "key": "level_goal",
+              "label": "关卡目标",
+              "type": "string",
+              "required": true,
+              "hint": "通关目标或体验",
+              "ai_fill": true
+            },
+            {
+              "key": "key_setpieces",
+              "label": "关键场景",
+              "type": "string",
+              "required": true,
+              "hint": "地标/机关/叙事节点",
+              "ai_fill": true
+            },
+            {
+              "key": "camera_angle",
+              "label": "机位",
+              "type": "enum",
+              "required": true,
+              "hint": "玩法视角",
+              "enum_options": [
+                "俯视",
+                "第三人称",
+                "横版",
+                "第一人称"
+              ],
+              "default": "第三人称",
+              "ai_fill": false
+            },
+            {
+              "key": "reference_style",
+              "label": "参考风格",
+              "type": "enum",
+              "required": true,
+              "hint": "画面表现",
+              "enum_options": [
+                "写实",
+                "半写实",
+                "卡通",
+                "像素"
+              ],
+              "default": "半写实",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "配色",
+              "type": "string",
+              "required": false,
+              "hint": "主色/气氛色",
+              "ai_fill": true
+            },
+            {
+              "key": "mood",
+              "label": "氛围",
+              "type": "enum",
+              "required": false,
+              "hint": "情绪基调",
+              "enum_options": [
+                "压迫感",
+                "希望感",
+                "神秘",
+                "轻盈"
+              ],
+              "default": "神秘",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅",
+              "type": "enum",
+              "required": false,
+              "hint": "输出比例",
+              "enum_options": [
+                "16:9",
+                "21:9",
+                "4:5"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "reference_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "camera_angle",
+              "label": "机位",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "genre",
+              "label": "题材",
+              "type": "enum",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "关卡目标与场景元素对应",
+              "光影/机位符合题材与玩法"
+            ],
+            "manual_checklist": [
+              "色调与氛围是否统一？",
+              "关键场景是否可辨且层级分明？",
+              "参考风格是否在各元素保持一致？"
+            ]
+          },
+          "tags": [
+            "游戏",
+            "情绪板",
+            "关卡"
+          ]
+        },
+        {
+          "id": "NB_MANGA_PIPELINE",
+          "name": "漫画一条龙（翻译+上色+材质）",
+          "short_description": "黑白漫画翻译、上色、材质转换的一体化模版。",
+          "category_id": "text2image",
+          "prompt_template": "对上传的黑白漫画进行多步编辑：1) 文字翻译：将所有 {{source_language}} 文本翻译为 {{target_language}}，保留语气，将译文放回原对白气泡，字体 {{text_style}}。2) 上色：在不改变分镜、人物表情与 {{keep_elements}} 的前提下，从黑白上色为 {{color_style}}。3) 材质转换：整体画面转为 {{material_style}}，仍保持分镜节奏和角色位置。输出：生成完整漫画页（{{output_layout}}），不增加分镜、不添加额外说明或水印。",
+          "placeholders": [
+            {
+              "key": "source_language",
+              "label": "原始语言",
+              "type": "string",
+              "required": true,
+              "hint": "原漫画文字语言",
+              "default": "日文",
+              "ai_fill": true
+            },
+            {
+              "key": "target_language",
+              "label": "目标语言",
+              "type": "string",
+              "required": true,
+              "hint": "翻译后语言",
+              "default": "中文简体",
+              "ai_fill": true
+            },
+            {
+              "key": "keep_elements",
+              "label": "保持不变",
+              "type": "textarea",
+              "required": false,
+              "hint": "必须保留的分镜与内容",
+              "default": "分镜布局、人物表情、背景构图",
+              "ai_fill": false
+            },
+            {
+              "key": "color_style",
+              "label": "上色风格",
+              "type": "enum",
+              "required": true,
+              "hint": "彩色化的风格",
+              "enum_options": [
+                "动漫原作风",
+                "柔和动画风",
+                "写实渲染",
+                "插画水彩"
+              ],
+              "default": "动漫原作风",
+              "ai_fill": false
+            },
+            {
+              "key": "material_style",
+              "label": "材质风格",
+              "type": "enum",
+              "required": true,
+              "hint": "整体材质/质感转换",
+              "enum_options": [
+                "3D 毛绒",
+                "石头马赛克",
+                "铜制浮雕",
+                "纸质水彩"
+              ],
+              "default": "3D 毛绒",
+              "ai_fill": false
+            },
+            {
+              "key": "text_style",
+              "label": "文字风格",
+              "type": "enum",
+              "required": true,
+              "hint": "对白字体风格",
+              "enum_options": [
+                "漫画字体",
+                "手写感",
+                "印刷体"
+              ],
+              "default": "漫画字体",
+              "ai_fill": false
+            },
+            {
+              "key": "output_layout",
+              "label": "输出布局",
+              "type": "enum",
+              "required": true,
+              "hint": "单页/多页/保持原尺寸",
+              "enum_options": [
+                "保持原尺寸",
+                "单页",
+                "多页排版"
+              ],
+              "default": "保持原尺寸",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "color_style",
+              "label": "上色风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "material_style",
+              "label": "材质风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "target_language",
+              "label": "目标语言",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "对白文本全部替换为 target_language",
+              "分镜布局与人物位置保持不变"
+            ],
+            "manual_checklist": [
+              "所有文字是否成功变成目标语言？",
+              "分镜和画面内容是否保持原样（没有被重绘乱改）？",
+              "新增的色彩/材质是否整体统一、不割裂？"
+            ]
+          },
+          "tags": [
+            "漫画",
+            "翻译",
+            "上色"
+          ],
+          "example_inputs": [
+            {
+              "name": "日漫英译上色",
+              "placeholder_values": {
+                "source_language": "日文",
+                "target_language": "英文",
+                "keep_elements": "分镜节奏与人物表情",
+                "color_style": "柔和动画风",
+                "material_style": "纸质水彩",
+                "text_style": "漫画字体",
+                "output_layout": "保持原尺寸"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_MOVIE_POSTER_CN_EN",
+          "name": "双语电影主视觉海报",
+          "short_description": "一次输出中英标题、副标题与完整海报排版。",
+          "category_id": "text2image",
+          "prompt_template": "为作品生成艺术海报：场景围绕 {{scene_description}}，整体画风 {{art_style}}，画幅 {{aspect_ratio}}。文字排版：主标题以 {{work_title_cn}} 为主、{{work_title_en}} 为辅，字体 {{font_style}}；副标题使用 {{subtitle_cn}} / {{subtitle_en}}（若提供）；根据 {{text_density}} 决定是否加入演职员表、节日 logo 等小字。要求所有中文/英文清晰可辨，无乱码，主视觉干净有层次。",
+          "placeholders": [
+            {
+              "key": "work_title_cn",
+              "label": "中文主标题",
+              "type": "string",
+              "required": true,
+              "hint": "作品中文名",
+              "default": "死亡诗社",
+              "ai_fill": true
+            },
+            {
+              "key": "work_title_en",
+              "label": "英文主标题",
+              "type": "string",
+              "required": true,
+              "hint": "作品英文名",
+              "default": "Dead Poets Society",
+              "ai_fill": true
+            },
+            {
+              "key": "subtitle_cn",
+              "label": "中文副标题",
+              "type": "string",
+              "required": false,
+              "hint": "标语 / slogan",
+              "ai_fill": true
+            },
+            {
+              "key": "subtitle_en",
+              "label": "英文副标题",
+              "type": "string",
+              "required": false,
+              "hint": "tagline / 副标题",
+              "ai_fill": true
+            },
+            {
+              "key": "scene_description",
+              "label": "场景描述",
+              "type": "textarea",
+              "required": true,
+              "hint": "经典场景或氛围",
+              "ai_fill": true
+            },
+            {
+              "key": "art_style",
+              "label": "画风",
+              "type": "enum",
+              "required": true,
+              "hint": "海报整体风格",
+              "enum_options": [
+                "复古海报",
+                "水墨风",
+                "赛博朋克",
+                "极简平面",
+                "插画光影"
+              ],
+              "default": "复古海报",
+              "ai_fill": false
+            },
+            {
+              "key": "text_density",
+              "label": "文字密度",
+              "type": "enum",
+              "required": true,
+              "hint": "字多或简约",
+              "enum_options": [
+                "少量",
+                "正常",
+                "超多文字"
+              ],
+              "default": "正常",
+              "ai_fill": false
+            },
+            {
+              "key": "font_style",
+              "label": "主标题字体风格",
+              "type": "enum",
+              "required": true,
+              "hint": "字体风格",
+              "enum_options": [
+                "手写",
+                "流动艺术字",
+                "无衬线",
+                "衬线"
+              ],
+              "default": "衬线",
+              "ai_fill": false
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "画幅比例",
+              "type": "enum",
+              "required": false,
+              "hint": "常见海报比例",
+              "enum_options": [
+                "2:3",
+                "9:16",
+                "1:1"
+              ],
+              "default": "2:3",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "art_style",
+              "label": "画风",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "text_density",
+              "label": "文字密度",
+              "type": "enum",
+              "control_type": "length"
+            },
+            {
+              "key": "font_style",
+              "label": "字体",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "主标题包含 work_title_cn 与 work_title_en",
+              "画幅符合 aspect_ratio 设置"
+            ],
+            "manual_checklist": [
+              "主标题中/英文是否都出现且拼写正确？",
+              "场景是否符合 scene_description？",
+              "字多时，是否仍然清晰可读，没有乱码感？"
+            ]
+          },
+          "tags": [
+            "海报",
+            "双语",
+            "主视觉"
+          ],
+          "example_inputs": [
+            {
+              "name": "Robot Dreams 双语海报",
+              "placeholder_values": {
+                "work_title_cn": "机器人之梦",
+                "work_title_en": "Robot Dreams",
+                "subtitle_cn": "孤独的夏日与一只狗",
+                "subtitle_en": "A summer of friendship",
+                "scene_description": "80 年代纽约街头，孤单的小狗看向远去的地铁",
+                "art_style": "复古海报",
+                "text_density": "正常",
+                "font_style": "手写",
+                "aspect_ratio": "2:3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_KNOWLEDGE_DIAGRAM_CN",
+          "name": "中文结构解说图",
+          "short_description": "把系统/工艺做成中文结构或流程解说图。",
+          "category_id": "text2image",
+          "prompt_template": "针对 {{topic}} 制作一张 {{diagram_type}} 的中文解说图：中央展示主体结构或流程，周边分区按部件或步骤标注。用规范中文，信息量按 {{detail_level}}，文字密度按 {{text_density}} 控制；每个重要节点有标题和简短解释。画面风格 {{visual_style}}，布局清晰易读。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "解说主题",
+              "type": "string",
+              "required": true,
+              "hint": "对象或系统名称",
+              "ai_fill": true
+            },
+            {
+              "key": "diagram_type",
+              "label": "解说类型",
+              "type": "enum",
+              "required": true,
+              "hint": "结构/流程/对比",
+              "enum_options": [
+                "结构分解",
+                "流程步骤",
+                "对比说明"
+              ],
+              "default": "结构分解",
+              "ai_fill": false
+            },
+            {
+              "key": "detail_level",
+              "label": "细节程度",
+              "type": "enum",
+              "required": true,
+              "hint": "信息精简程度",
+              "enum_options": [
+                "简要",
+                "中等",
+                "详细"
+              ],
+              "default": "中等",
+              "ai_fill": false
+            },
+            {
+              "key": "text_density",
+              "label": "文字密度",
+              "type": "enum",
+              "required": true,
+              "hint": "文字多少",
+              "enum_options": [
+                "少量标签",
+                "适中",
+                "大段讲解"
+              ],
+              "default": "适中",
+              "ai_fill": false
+            },
+            {
+              "key": "visual_style",
+              "label": "画面风格",
+              "type": "enum",
+              "required": true,
+              "hint": "插画/写实/赛博等",
+              "enum_options": [
+                "写实",
+                "科普插画",
+                "赛博朋克",
+                "卡通"
+              ],
+              "default": "科普插画",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "diagram_type",
+              "label": "解说类型",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "detail_level",
+              "label": "细节程度",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "text_density",
+              "label": "文字密度",
+              "type": "enum",
+              "control_type": "length"
+            },
+            {
+              "key": "visual_style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "全部文字使用中文",
+              "包含分区或标注说明"
+            ],
+            "manual_checklist": [
+              "各部分文字是否对齐正确位置？",
+              "信息量是否适配解说图，不会太空或太挤？",
+              "中文有无明显错别字或乱码？"
+            ]
+          },
+          "tags": [
+            "科普",
+            "结构图",
+            "解说"
+          ],
+          "example_inputs": [
+            {
+              "name": "应县木塔结构解说",
+              "placeholder_values": {
+                "topic": "应县木塔结构",
+                "diagram_type": "结构分解",
+                "detail_level": "详细",
+                "text_density": "适中",
+                "visual_style": "科普插画"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_SOLUTION_SCRATCHPAD",
+          "name": "解题草稿纸",
+          "short_description": "演算并以手写草稿纸风格展示解题过程。",
+          "category_id": "text2image",
+          "prompt_template": "在一张草稿纸风格页面上书写 {{problem_source}} 的完整解题过程。语言使用 {{language}}，逐步推理，每一步写出算式或文字说明，关键步骤可圈出或用箭头标记。纸张质感为草稿纸，笔迹 {{handwriting_style}}；布局遵循 {{layout_style}}，像真实学生手写草稿而非打印。给出最终答案并保持过程连贯。",
+          "placeholders": [
+            {
+              "key": "problem_source",
+              "label": "题目内容",
+              "type": "textarea",
+              "required": true,
+              "hint": "题目文本或描述",
+              "ai_fill": true
+            },
+            {
+              "key": "grade_level",
+              "label": "难度/年级",
+              "type": "enum",
+              "required": true,
+              "hint": "题目级别",
+              "enum_options": [
+                "初中",
+                "高中",
+                "大学",
+                "竞赛"
+              ],
+              "default": "高中",
+              "ai_fill": false
+            },
+            {
+              "key": "handwriting_style",
+              "label": "笔迹风格",
+              "type": "enum",
+              "required": true,
+              "hint": "草稿文字风格",
+              "enum_options": [
+                "工整",
+                "中性",
+                "潦草"
+              ],
+              "default": "中性",
+              "ai_fill": false
+            },
+            {
+              "key": "layout_style",
+              "label": "草稿布局",
+              "type": "enum",
+              "required": true,
+              "hint": "排版方式",
+              "enum_options": [
+                "单列自上而下",
+                "多列分区",
+                "中间结论框",
+                "步骤编号"
+              ],
+              "default": "单列自上而下",
+              "ai_fill": false
+            },
+            {
+              "key": "language",
+              "label": "书写语言",
+              "type": "enum",
+              "required": true,
+              "hint": "草稿所用语言",
+              "enum_options": [
+                "中文",
+                "英文"
+              ],
+              "default": "中文",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "handwriting_style",
+              "label": "笔迹",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "layout_style",
+              "label": "布局",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "language",
+              "label": "语言",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "包含解题步骤与最终答案",
+              "文字语言符合 language 设置"
+            ],
+            "manual_checklist": [
+              "计算是否正确，有无跳步？",
+              "解题步骤是否连贯、可读，像真实草稿？",
+              "关键步骤是否有明显标记（圈/箭头）？"
+            ]
+          },
+          "tags": [
+            "解题",
+            "草稿纸",
+            "手写"
+          ],
+          "example_inputs": [
+            {
+              "name": "高中物理草稿纸",
+              "placeholder_values": {
+                "problem_source": "求斜面上滑块的加速度与摩擦力，已知质量、倾角与摩擦系数。",
+                "grade_level": "高中",
+                "handwriting_style": "工整",
+                "layout_style": "多列分区",
+                "language": "中文"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PAPER_TO_WHITEBOARD",
+          "name": "论文/长文 → 白板板书",
+          "short_description": "把论文或长文整理成老师上课的白板照片。",
+          "category_id": "text2image",
+          "prompt_template": "将 {{source_type}} 《{{topic}}》的核心内容浓缩成白板板书效果：根据 {{key_sections}} 组织板书，使用手写风格，标题、要点、箭头与框线刻画关系，可用不同颜色笔标记重点。布局按照 {{board_layout}}，文字密度按 {{text_density}} 控制，确保可读、有层次，像老师现场讲解的白板照片，不要做成海报或图文混排广告。",
+          "placeholders": [
+            {
+              "key": "source_type",
+              "label": "来源类型",
+              "type": "enum",
+              "required": true,
+              "hint": "论文/长文/公告等",
+              "enum_options": [
+                "论文",
+                "长文",
+                "公告",
+                "报告"
+              ],
+              "default": "论文",
+              "ai_fill": false
+            },
+            {
+              "key": "topic",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "论文或文章主题",
+              "ai_fill": true
+            },
+            {
+              "key": "key_sections",
+              "label": "重点章节",
+              "type": "textarea",
+              "required": true,
+              "hint": "背景/方法/结论等要突出部分",
+              "ai_fill": true
+            },
+            {
+              "key": "board_layout",
+              "label": "白板布局",
+              "type": "enum",
+              "required": true,
+              "hint": "分区与排版",
+              "enum_options": [
+                "左右分栏",
+                "三分区",
+                "时间线",
+                "满板"
+              ],
+              "default": "三分区",
+              "ai_fill": false
+            },
+            {
+              "key": "text_density",
+              "label": "板书密度",
+              "type": "enum",
+              "required": true,
+              "hint": "文字多少",
+              "enum_options": [
+                "大纲式",
+                "正常",
+                "密集"
+              ],
+              "default": "正常",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "board_layout",
+              "label": "布局",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "text_density",
+              "label": "板书密度",
+              "type": "enum",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "板书包含 key_sections 中的要点",
+              "板书风格为手写白板而非印刷"
+            ],
+            "manual_checklist": [
+              "是否抓住原文核心？",
+              "板书是否可读、有层次？",
+              "是否像老师写的白板，而不是海报？"
+            ]
+          },
+          "tags": [
+            "白板",
+            "板书",
+            "知识整理"
+          ],
+          "example_inputs": [
+            {
+              "name": "Transformer 论文板书",
+              "placeholder_values": {
+                "source_type": "论文",
+                "topic": "Attention Is All You Need",
+                "key_sections": "模型结构；自注意力公式；训练设置；实验指标；结论",
+                "board_layout": "左右分栏",
+                "text_density": "密集"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_GAME_UI_MOCK",
+          "name": "游戏界面截图模版",
+          "short_description": "生成特定类型游戏的 HUD/聊天/结算界面截图。",
+          "category_id": "text2image",
+          "prompt_template": "生成一张游戏界面截图级画面，类型 {{game_genre}}，参考 {{reference_game}}，场景聚焦 {{scene_focus}}。画面需包含 {{ui_elements}}，各 UI 元素位置清晰。聊天/文本采用 {{language}}，聊天风格 {{chat_style}}（若为互喷，保持真实但不过线）。整体质感接近真实游戏截图，HUD、技能栏、小地图等信息可读。",
+          "placeholders": [
+            {
+              "key": "game_genre",
+              "label": "游戏类型",
+              "type": "enum",
+              "required": true,
+              "hint": "FPS/MOBA/RPG 等",
+              "enum_options": [
+                "FPS",
+                "MOBA",
+                "RPG",
+                "休闲",
+                "模拟"
+              ],
+              "default": "MOBA",
+              "ai_fill": false
+            },
+            {
+              "key": "reference_game",
+              "label": "参考游戏",
+              "type": "enum",
+              "required": true,
+              "hint": "视觉/交互参考",
+              "enum_options": [
+                "潜水员戴夫",
+                "使命召唤",
+                "王者荣耀",
+                "LOL",
+                "原创风格"
+              ],
+              "default": "LOL",
+              "ai_fill": true
+            },
+            {
+              "key": "scene_focus",
+              "label": "场景焦点",
+              "type": "enum",
+              "required": true,
+              "hint": "战斗瞬间/结算/大厅等",
+              "enum_options": [
+                "战斗瞬间",
+                "深海探险",
+                "结算界面",
+                "聊天室",
+                "等待大厅"
+              ],
+              "default": "结算界面",
+              "ai_fill": false
+            },
+            {
+              "key": "ui_elements",
+              "label": "UI 元素",
+              "type": "textarea",
+              "required": true,
+              "hint": "血条、小地图、技能栏、聊天框等",
+              "default": "血条、小地图、技能栏、聊天框",
+              "ai_fill": true
+            },
+            {
+              "key": "chat_style",
+              "label": "聊天风格",
+              "type": "enum",
+              "required": true,
+              "hint": "玩家对话语气",
+              "enum_options": [
+                "正常沟通",
+                "祖安互喷",
+                "战术交流",
+                "夸张搞笑"
+              ],
+              "default": "正常沟通",
+              "ai_fill": false
+            },
+            {
+              "key": "language",
+              "label": "界面语言",
+              "type": "enum",
+              "required": true,
+              "hint": "游戏文本语言",
+              "enum_options": [
+                "中文",
+                "英文",
+                "日文"
+              ],
+              "default": "中文",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "game_genre",
+              "label": "类型",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "reference_game",
+              "label": "参考游戏",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "scene_focus",
+              "label": "场景",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "chat_style",
+              "label": "对话风格",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "画面包含 ui_elements 中的核心 HUD/聊天元素",
+              "界面文字语言符合 language 设置"
+            ],
+            "manual_checklist": [
+              "UI 是否一眼看出是什么类型游戏？",
+              "聊天内容是否符合该游戏玩家的气质？",
+              "界面排版是否清晰，元素不混乱？"
+            ]
+          },
+          "tags": [
+            "游戏UI",
+            "截图",
+            "HUD"
+          ],
+          "example_inputs": [
+            {
+              "name": "MOBA 结算界面",
+              "placeholder_values": {
+                "game_genre": "MOBA",
+                "reference_game": "王者荣耀",
+                "scene_focus": "结算界面",
+                "ui_elements": "比分、战绩、MVP 标记、聊天框",
+                "chat_style": "祖安互喷",
+                "language": "中文"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PRODUCT_RENDER_MULTISCENE_CN",
+          "name": "产品多场景渲染（中文文字保真）",
+          "short_description": "多场景高质量产品渲染，确保文字一致清晰。",
+          "category_id": "text2image",
+          "prompt_template": "为 {{product_type}} 生成多场景高质量渲染。产品设计：{{product_design}}，关键文字 {{text_content}}，在所有场景中保持文字形态一致且清晰。根据 {{scenes}} 依次展示产品置于不同环境，光线风格使用 {{lighting_style}}，保持真实光影与材质。禁止修改产品本体的文字或图案，画面可作海报或物料主图。",
+          "placeholders": [
+            {
+              "key": "product_type",
+              "label": "产品类型",
+              "type": "string",
+              "required": true,
+              "hint": "CD/饮料瓶/书籍等",
+              "ai_fill": true
+            },
+            {
+              "key": "product_design",
+              "label": "产品设计",
+              "type": "textarea",
+              "required": true,
+              "hint": "外观、主视觉、材质描述",
+              "ai_fill": true
+            },
+            {
+              "key": "text_content",
+              "label": "文字内容",
+              "type": "textarea",
+              "required": true,
+              "hint": "主标题、副标题、品牌名等",
+              "ai_fill": true
+            },
+            {
+              "key": "scenes",
+              "label": "场景列表",
+              "type": "textarea",
+              "required": true,
+              "hint": "如：唱片店、城市街头、演唱会现场",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_style",
+              "label": "光线风格",
+              "type": "enum",
+              "required": true,
+              "hint": "布光/氛围",
+              "enum_options": [
+                "复古钨丝灯",
+                "电影级布光",
+                "自然光",
+                "霓虹灯"
+              ],
+              "default": "自然光",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "scenes",
+              "label": "场景",
+              "type": "textarea",
+              "control_type": "structure"
+            },
+            {
+              "key": "lighting_style",
+              "label": "光线",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "所有场景中 text_content 清晰可读",
+              "产品造型在不同场景中保持一致"
+            ],
+            "manual_checklist": [
+              "产品字体在所有图片中是否完全一致？",
+              "场景切换是否自然，不像贴图硬扣上去？",
+              "整体风格是否适合作为海报/物料图？"
+            ]
+          },
+          "tags": [
+            "产品渲染",
+            "多场景",
+            "中文文字"
+          ],
+          "example_inputs": [
+            {
+              "name": "CD 多场景海报",
+              "placeholder_values": {
+                "product_type": "音乐专辑 CD",
+                "product_design": "黑胶质感外壳，封面是周杰伦剪影和霓虹字",
+                "text_content": "主标题《MOJITO》；副标题 Jay Chou；品牌 JVR",
+                "scenes": "唱片店货架；城市街头霓虹灯下；演唱会现场纪念摊位",
+                "lighting_style": "电影级布光"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PERLER_BEADS_STYLE",
+          "name": "拼豆/像素手作风",
+          "short_description": "把任意主体转为拼豆/像素手作感的插画或产品图。",
+          "category_id": "text2image",
+          "prompt_template": "将 {{subject}} 以拼豆/像素手作风格呈现：所有形状由颗粒拼豆构成，具备网格感。场景类型 {{scene_type}}，作品维度 {{beads_dimension}}，色卡风格 {{color_palette}}。展示方式为 {{presentation_style}}，保证主体轮廓和特征可辨认，画面有手作质感而非普通像素画或积木。",
+          "placeholders": [
+            {
+              "key": "subject",
+              "label": "主体",
+              "type": "string",
+              "required": true,
+              "hint": "人物/宠物/物品",
+              "ai_fill": true
+            },
+            {
+              "key": "scene_type",
+              "label": "场景类型",
+              "type": "enum",
+              "required": true,
+              "hint": "盒装/成品/散落材料等",
+              "enum_options": [
+                "盒装展示",
+                "完成品平铺",
+                "散落材料图",
+                "组合套装"
+              ],
+              "default": "盒装展示",
+              "ai_fill": false
+            },
+            {
+              "key": "beads_dimension",
+              "label": "拼豆维度",
+              "type": "enum",
+              "required": true,
+              "hint": "平面或立体",
+              "enum_options": [
+                "平面像素画",
+                "立体拼豆公仔"
+              ],
+              "default": "立体拼豆公仔",
+              "ai_fill": false
+            },
+            {
+              "key": "color_palette",
+              "label": "色卡风格",
+              "type": "enum",
+              "required": true,
+              "hint": "配色方向",
+              "enum_options": [
+                "高饱和",
+                "马卡龙",
+                "复古",
+                "莫兰迪"
+              ],
+              "default": "马卡龙",
+              "ai_fill": false
+            },
+            {
+              "key": "presentation_style",
+              "label": "展示形式",
+              "type": "enum",
+              "required": true,
+              "hint": "摄影/过程/说明图等",
+              "enum_options": [
+                "产品摄影",
+                "桌面手作过程",
+                "材料说明图",
+                "展览陈列"
+              ],
+              "default": "产品摄影",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "scene_type",
+              "label": "场景",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "beads_dimension",
+              "label": "维度",
+              "type": "enum",
+              "control_type": "structure"
+            },
+            {
+              "key": "color_palette",
+              "label": "色卡",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "presentation_style",
+              "label": "展示形式",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "主体以拼豆颗粒呈现，具有网格感",
+              "主体特征可辨认"
+            ],
+            "manual_checklist": [
+              "是否一眼看出是拼豆，而不是普通像素画/积木？",
+              "主体是否仍然可辨认？",
+              "色彩与手作质感是否舒适统一？"
+            ]
+          },
+          "tags": [
+            "拼豆",
+            "像素",
+            "手作"
+          ],
+          "example_inputs": [
+            {
+              "name": "拼豆小狗",
+              "placeholder_values": {
+                "subject": "一只卷毛小狗",
+                "scene_type": "散落材料图",
+                "beads_dimension": "平面像素画",
+                "color_palette": "高饱和",
+                "presentation_style": "桌面手作过程"
+              }
+            }
+          ]
         }
       ]
     }
