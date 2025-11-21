@@ -6293,6 +6293,786 @@
           ]
         },
         {
+          "id": "NB_BILINGUAL_PROMPT_CARD",
+          "name": "Nano Banana bilingual prompt card",
+          "short_description": "Produce Chinese + English prompts and a quick reference in one go.",
+          "category_id": "text2image",
+          "prompt_template": "Output a bilingual prompt card for Nano Banana Pro to quickly generate {{use_case}}. Requirements: 1) Scenario goal: describe the desired outcome in one sentence (Chinese + English). 2) Visual elements: bullet the {{subject_focus}}, what must include {{must_include}}, and what to avoid {{avoid_elements}}. 3) Style & aspect ratio: specify {{style}} and {{aspect_ratio}}, and give both CN/EN wording. 4) Full prompts in two languages: provide a Chinese prompt first, then an English prompt; both must cover lighting, composition, and text layout (if text is needed, note the language and placement for {{text_content}}). Output format: Markdown with three sections—“Chinese Prompt” / “English Prompt” / “Key Takeaways”—clear enough to copy directly.",
+          "placeholders": [
+            {
+              "key": "use_case",
+              "label": "Use case",
+              "type": "string",
+              "required": true,
+              "hint": "Need to solve this time",
+              "ai_fill": true
+            },
+            {
+              "key": "subject_focus",
+              "label": "Subject focus",
+              "type": "string",
+              "required": true,
+              "hint": "Main character or core object",
+              "default": "Person/product/scene",
+              "ai_fill": true
+            },
+            {
+              "key": "must_include",
+              "label": "Must include",
+              "type": "textarea",
+              "required": false,
+              "hint": "Essential elements or props",
+              "default": "Key props, brand logo, environment details",
+              "ai_fill": true
+            },
+            {
+              "key": "avoid_elements",
+              "label": "Avoid",
+              "type": "textarea",
+              "required": false,
+              "hint": "Content to leave out",
+              "default": "Extra watermarks, garbled text, unrelated characters",
+              "ai_fill": false
+            },
+            {
+              "key": "style",
+              "label": "Style",
+              "type": "enum",
+              "required": true,
+              "hint": "Visual direction",
+              "enum_options": [
+                "Realistic photography",
+                "Modern flat illustration",
+                "Cinematic film look",
+                "Commercial poster",
+                "Infographic"
+              ],
+              "default": "Realistic photography",
+              "ai_fill": true
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "Aspect ratio",
+              "type": "enum",
+              "required": true,
+              "hint": "Final frame ratio",
+              "enum_options": [
+                "1:1",
+                "16:9",
+                "9:16"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "text_content",
+              "label": "Text content",
+              "type": "string",
+              "required": false,
+              "hint": "Words to appear in the frame",
+              "default": "Title and subtitle, no garbled text",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "Style",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "aspect_ratio",
+              "label": "Aspect",
+              "type": "enum",
+              "control_type": "ratio"
+            }
+          ],
+          "tags": [
+            "Bilingual",
+            "Prompt",
+            "Nano Banana"
+          ],
+          "example_inputs": [
+            {
+              "name": "Educational infographic",
+              "placeholder_values": {
+                "use_case": "Explain photosynthesis to high schoolers",
+                "subject_focus": "Plants, sunlight, bubble arrows",
+                "must_include": "CO2 → entering leaves, O2 → released, energy flow",
+                "avoid_elements": "Cartoon faces, over-decorated fonts",
+                "style": "Infographic",
+                "aspect_ratio": "16:9",
+                "text_content": "Chinese and English labels must be clear"
+              },
+              "notes": "Need dual-language prompts for easy copy/paste"
+            }
+          ]
+        },
+        {
+          "id": "NB_GEOMETRY_VISUAL_SOLVE",
+          "name": "Geometry visual solution overlay",
+          "short_description": "Overlay helper lines, labels, and brief notes on the problem diagram.",
+          "category_id": "text2image",
+          "prompt_template": "On top of the original {{problem_focus}} diagram, generate a solution-visualized version. Action: add red dashed auxiliary lines to reveal {{hidden_relations}}, highlight {{highlight_shapes}}. Annotation: clearly label {{new_points_labels}} and place a short explanation on the right describing why each helper line is drawn ({{annotation_style}}). Keep the original size and ratio, and avoid covering existing text.",
+          "placeholders": [
+            {
+              "key": "problem_focus",
+              "label": "Problem focus",
+              "type": "string",
+              "required": true,
+              "hint": "Geometry topic or concept",
+              "ai_fill": true
+            },
+            {
+              "key": "hidden_relations",
+              "label": "Hidden relations",
+              "type": "textarea",
+              "required": true,
+              "hint": "Perpendiculars/parallel lines/angle bisectors to reveal",
+              "ai_fill": true
+            },
+            {
+              "key": "highlight_shapes",
+              "label": "Shapes to highlight",
+              "type": "textarea",
+              "required": true,
+              "hint": "Key triangles or angles",
+              "ai_fill": true
+            },
+            {
+              "key": "new_points_labels",
+              "label": "New point labels",
+              "type": "string",
+              "required": true,
+              "hint": "Naming for new helper points",
+              "default": "A1, B1 letter sequence",
+              "ai_fill": false
+            },
+            {
+              "key": "annotation_style",
+              "label": "Annotation language",
+              "type": "string",
+              "required": false,
+              "hint": "Language/format for the notes",
+              "default": "Simplified Chinese with angle marks if needed",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "annotation_style",
+              "label": "Annotation format",
+              "type": "string",
+              "control_type": "structure"
+            }
+          ],
+          "tags": [
+            "education",
+            "geometry",
+            "solution overlay",
+            "annotations"
+          ],
+          "example_inputs": [
+            {
+              "name": "Isosceles triangle helper lines",
+              "placeholder_values": {
+                "problem_focus": "Altitude and midpoint properties in an isosceles triangle",
+                "hidden_relations": "Drop a perpendicular from the apex to the base, connect the base midpoint and mark parallel relation",
+                "highlight_shapes": "Two congruent right triangles and the angle bisector at the apex",
+                "new_points_labels": "D, E, F from left to right",
+                "annotation_style": "Chinese angle labels with a 3-line explanation on the right"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_BUSINESS_HEADSHOT",
+          "name": "AI business headshot",
+          "short_description": "Keep facial consistency while producing a professional portrait.",
+          "category_id": "text2image",
+          "prompt_template": "Keep the uploaded face perfectly consistent and create a {{orientation}} {{outfit_style}} business portrait. Background: {{background_style}}. Lighting: {{lighting_setup}}. Expression: {{expression}}. Use {{camera_setup}} for real skin texture, natural catchlights, and detailed fabric; realistic and clean overall.",
+          "placeholders": [
+            {
+              "key": "orientation",
+              "label": "Framing",
+              "type": "enum",
+              "required": true,
+              "enum_options": [
+                "Headshot",
+                "Half-body",
+                "Full-body"
+              ],
+              "default": "Headshot",
+              "ai_fill": true
+            },
+            {
+              "key": "outfit_style",
+              "label": "Outfit style",
+              "type": "string",
+              "required": true,
+              "hint": "Suit/shirt, etc.",
+              "ai_fill": true
+            },
+            {
+              "key": "background_style",
+              "label": "Background",
+              "type": "string",
+              "required": true,
+              "hint": "Solid/gradient studio/office",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_setup",
+              "label": "Lighting",
+              "type": "string",
+              "required": true,
+              "hint": "Three-point/soft light/rim light",
+              "ai_fill": true
+            },
+            {
+              "key": "expression",
+              "label": "Expression",
+              "type": "string",
+              "required": false,
+              "default": "Confident, friendly smile",
+              "ai_fill": false
+            },
+            {
+              "key": "camera_setup",
+              "label": "Camera/lens",
+              "type": "string",
+              "required": false,
+              "default": "Sony A7III with 85mm f/1.4 portrait lens",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "outfit_style",
+              "label": "Outfit",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "background_style",
+              "label": "Background",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "portrait",
+            "business",
+            "face consistency"
+          ],
+          "example_inputs": [
+            {
+              "name": "Badge/LinkedIn ready",
+              "placeholder_values": {
+                "orientation": "Headshot",
+                "outfit_style": "Navy blazer with white shirt",
+                "background_style": "Dark gray gradient studio with subtle vignette",
+                "lighting_setup": "Classic three-point with gentle fill and rim",
+                "expression": "Natural smile, steady gaze",
+                "camera_setup": "85mm f/1.4 shallow depth of field"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_VIRTUAL_MODEL_TRYON",
+          "name": "Virtual model try-on",
+          "short_description": "Combine flat-lay garments with a model mood shot for a realistic wear look.",
+          "category_id": "text2image",
+          "prompt_template": "Use garment Image 1 and model Image 2 to generate a full or half-body shot where the model wears the item. The garment must drape naturally and keep {{fabric_details}} textures. Match lighting to {{ambient_light}}, background to {{background_setting}}, and pose to {{model_pose}}. Clean ecommerce lookbook style.",
+          "placeholders": [
+            {
+              "key": "fabric_details",
+              "label": "Fabric details",
+              "type": "string",
+              "required": true,
+              "hint": "Texture/color/logo",
+              "ai_fill": true
+            },
+            {
+              "key": "model_pose",
+              "label": "Model pose",
+              "type": "string",
+              "required": true,
+              "hint": "Standing/turning/walking, etc.",
+              "ai_fill": true
+            },
+            {
+              "key": "ambient_light",
+              "label": "Lighting",
+              "type": "string",
+              "required": true,
+              "hint": "Studio soft light or street natural light",
+              "ai_fill": true
+            },
+            {
+              "key": "background_setting",
+              "label": "Background",
+              "type": "string",
+              "required": true,
+              "hint": "Clean backdrop/street scene/studio",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "background_setting",
+              "label": "Background",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "ambient_light",
+              "label": "Lighting",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "ecommerce",
+            "try-on",
+            "portrait"
+          ],
+          "example_inputs": [
+            {
+              "name": "Summer tee on model",
+              "placeholder_values": {
+                "fabric_details": "White cotton tee with a small chest logo",
+                "model_pose": "Standing with hands in pockets, smiling at camera",
+                "ambient_light": "Natural window light, soft shadows",
+                "background_setting": "Clean light-gray studio backdrop"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_WHITE_BG_PRODUCT_SHOT",
+          "name": "Pure white product hero",
+          "short_description": "Auto cut-out and cleanup for a professional white background hero image.",
+          "category_id": "text2image",
+          "prompt_template": "Detect the main product and remove hands or clutter to create a premium white-background hero shot. Subject: {{product_name}} with crisp material detail. Background pure white with {{shadow_style}} contact shadow. Lighting: {{lighting_style}}. Fix {{defects_to_fix}} so the result is sharp and color accurate.",
+          "placeholders": [
+            {
+              "key": "product_name",
+              "label": "Product name",
+              "type": "string",
+              "required": true,
+              "hint": "Main item category",
+              "ai_fill": true
+            },
+            {
+              "key": "defects_to_fix",
+              "label": "Defects to fix",
+              "type": "textarea",
+              "required": true,
+              "hint": "Hands/stains/distortion",
+              "ai_fill": true
+            },
+            {
+              "key": "shadow_style",
+              "label": "Shadow style",
+              "type": "string",
+              "required": false,
+              "default": "Light natural contact shadow",
+              "ai_fill": false
+            },
+            {
+              "key": "lighting_style",
+              "label": "Lighting",
+              "type": "string",
+              "required": false,
+              "default": "Soft commercial studio light, even with no blown highlights",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "shadow_style",
+              "label": "Shadow",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "ecommerce",
+            "cutout",
+            "white background"
+          ],
+          "example_inputs": [
+            {
+              "name": "Clean white hero",
+              "placeholder_values": {
+                "product_name": "Stainless steel insulated bottle",
+                "defects_to_fix": "Remove holding fingers, correct glare and distortion",
+                "shadow_style": "Soft oval contact shadow under the base",
+                "lighting_style": "Softbox lighting with clear texture"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_HANDDRAWN_FLOWCHART",
+          "name": "Hand-drawn flowchart cleanup",
+          "short_description": "Turn whiteboard sketches into McKinsey-style business flowcharts.",
+          "category_id": "text2image",
+          "prompt_template": "Convert the hand-drawn flow sketch into a professional business flowchart. Use the {{color_palette}} palette, align all nodes to a strict grid, and keep connectors as orthogonal arrows. Transcribe {{shape_labels}} into a readable sans-serif and keep {{brand_font}} styling. Pure white background, minimalist, emphasizing {{business_goal}} logic.",
+          "placeholders": [
+            {
+              "key": "business_goal",
+              "label": "Business goal",
+              "type": "string",
+              "required": true,
+              "hint": "What the flow communicates",
+              "ai_fill": true
+            },
+            {
+              "key": "shape_labels",
+              "label": "Node labels",
+              "type": "textarea",
+              "required": true,
+              "hint": "Text inside boxes/diamonds",
+              "ai_fill": true
+            },
+            {
+              "key": "color_palette",
+              "label": "Palette",
+              "type": "string",
+              "required": false,
+              "default": "Sophisticated blue + gray with ample whitespace",
+              "ai_fill": false
+            },
+            {
+              "key": "brand_font",
+              "label": "Font style",
+              "type": "string",
+              "required": false,
+              "default": "Bold sans-serif (e.g., Arial/Roboto)",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "color_palette",
+              "label": "Palette",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "flowchart",
+            "work",
+            "vector"
+          ],
+          "example_inputs": [
+            {
+              "name": "Project approval flow",
+              "placeholder_values": {
+                "business_goal": "Project kickoff approval",
+                "shape_labels": "Requirement intake → Solution review → Costing → Leadership approval → Kickoff",
+                "color_palette": "Deep blue primary + light gray frames",
+                "brand_font": "Roboto bold"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_UI_WIREFRAME_TO_HIFI",
+          "name": "Wireframe to hi-fi mobile UI",
+          "short_description": "Turn rough wireframes into modern, production-ready screens.",
+          "category_id": "text2image",
+          "prompt_template": "Transform the uploaded wireframe into a high-fidelity mobile screen. Use {{design_system}} design language with primary color {{primary_color}}, modern rounding, shadows, and spacing. Preserve the placement/hierarchy of {{primary_action}}, swap scribbles for high-quality placeholders, and fill text areas with clean typesetting. Place the result inside a {{device_frame}} mockup for clear presentation.",
+          "placeholders": [
+            {
+              "key": "design_system",
+              "label": "Design system",
+              "type": "string",
+              "required": true,
+              "hint": "e.g., iOS / Material 3",
+              "ai_fill": true
+            },
+            {
+              "key": "primary_color",
+              "label": "Primary color",
+              "type": "string",
+              "required": true,
+              "hint": "Main UI color",
+              "ai_fill": true
+            },
+            {
+              "key": "primary_action",
+              "label": "Primary action",
+              "type": "string",
+              "required": true,
+              "hint": "Main CTA content/location",
+              "ai_fill": true
+            },
+            {
+              "key": "device_frame",
+              "label": "Device frame",
+              "type": "string",
+              "required": false,
+              "default": "Realistic iPhone 16 frame",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "design_system",
+              "label": "System",
+              "type": "string",
+              "control_type": "style"
+            },
+            {
+              "key": "primary_color",
+              "label": "Primary",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "UI",
+            "hi-fi",
+            "mobile"
+          ],
+          "example_inputs": [
+            {
+              "name": "Coffee ordering app",
+              "placeholder_values": {
+                "design_system": "Material Design 3",
+                "primary_color": "Vibrant orange #F36B2D",
+                "primary_action": "Bottom primary button “Order”",
+                "device_frame": "iPhone mock with status bar"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_SMART_OUTPAINT_169",
+          "name": "Smart outpaint 16:9",
+          "short_description": "Expand to the target ratio, completing environment and cropped elements.",
+          "category_id": "text2image",
+          "prompt_template": "Expand the image to {{target_ratio}}, primarily extending toward {{expansion_sides}}. Seamlessly continue the background based on {{environment_clues}} and naturally complete {{important_elements}} while keeping the main subject undistorted. Match lighting/texture to the original and avoid {{avoid_elements}}.",
+          "placeholders": [
+            {
+              "key": "target_ratio",
+              "label": "Target ratio",
+              "type": "enum",
+              "required": true,
+              "enum_options": [
+                "16:9",
+                "4:3",
+                "21:9"
+              ],
+              "default": "16:9",
+              "ai_fill": false
+            },
+            {
+              "key": "expansion_sides",
+              "label": "Expansion direction",
+              "type": "string",
+              "required": true,
+              "hint": "Left/right/all sides/top",
+              "ai_fill": true
+            },
+            {
+              "key": "environment_clues",
+              "label": "Environment clues",
+              "type": "textarea",
+              "required": true,
+              "hint": "Sky/sea/building texture, etc.",
+              "ai_fill": true
+            },
+            {
+              "key": "important_elements",
+              "label": "Elements to complete",
+              "type": "textarea",
+              "required": false,
+              "default": "Cropped shoulder or tree branches",
+              "ai_fill": false
+            },
+            {
+              "key": "avoid_elements",
+              "label": "Avoid",
+              "type": "textarea",
+              "required": false,
+              "default": "Repeating textures or stretched blur",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "target_ratio",
+              "label": "Ratio",
+              "type": "enum",
+              "control_type": "ratio"
+            }
+          ],
+          "tags": [
+            "outpaint",
+            "retouch",
+            "wallpaper"
+          ],
+          "example_inputs": [
+            {
+              "name": "Trip photo desktop wallpaper",
+              "placeholder_values": {
+                "target_ratio": "16:9",
+                "expansion_sides": "Left and right sides",
+                "environment_clues": "Blue sky, mountains, grass texture",
+                "important_elements": "Full left shoulder and right hand of the person",
+                "avoid_elements": "Duplicated mountain chunks or blurry clouds"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_CONTEXT_CLEAN_REMOVAL",
+          "name": "Context-aware cleanup",
+          "short_description": "Remove clutter/people and inpaint believable backgrounds.",
+          "category_id": "text2image",
+          "prompt_template": "Keep the main {{main_subject}} intact, remove {{remove_items}}, and fill with matching {{background_description}}. Lighting and depth should follow the original ({{lighting_notes}}) with no smear or blur artifacts.",
+          "placeholders": [
+            {
+              "key": "main_subject",
+              "label": "Main subject",
+              "type": "string",
+              "required": true,
+              "hint": "Describe the key person/object",
+              "ai_fill": true
+            },
+            {
+              "key": "remove_items",
+              "label": "Items to remove",
+              "type": "textarea",
+              "required": true,
+              "hint": "Tourists/bins/clutter to erase",
+              "ai_fill": true
+            },
+            {
+              "key": "background_description",
+              "label": "Background fill",
+              "type": "textarea",
+              "required": true,
+              "hint": "Stones/wall/landscape details to restore",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_notes",
+              "label": "Lighting notes",
+              "type": "string",
+              "required": false,
+              "default": "Afternoon natural light, shallow depth of field",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "background_description",
+              "label": "Background",
+              "type": "textarea",
+              "control_type": "structure"
+            }
+          ],
+          "tags": [
+            "retouch",
+            "cleanup",
+            "travel"
+          ],
+          "example_inputs": [
+            {
+              "name": "Empty the landmark",
+              "placeholder_values": {
+                "main_subject": "Two tourists posing in the foreground",
+                "remove_items": "Scattered tourists and a trash bin in the back",
+                "background_description": "Cobblestone path and green trees extending backward, railing fully continuous",
+                "lighting_notes": "Overcast soft light with blurred background"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_MENU_TRANSLATION_TEXTURE",
+          "name": "Menu translation with texture",
+          "short_description": "Translate wall/paper menus while keeping original texture and layout.",
+          "category_id": "text2image",
+          "prompt_template": "Translate the {{source_language}} menu into {{target_language}}, erase the original text, and refill the background texture ({{texture_notes}}). Render new text in {{font_style}}, keep greasy/worn feel, preserve prices and symbols {{currency_keep}}, and align naturally to the original positions.",
+          "placeholders": [
+            {
+              "key": "source_language",
+              "label": "Source language",
+              "type": "string",
+              "required": true,
+              "hint": "Language on the wall/menu",
+              "default": "Chinese",
+              "ai_fill": true
+            },
+            {
+              "key": "target_language",
+              "label": "Target language",
+              "type": "string",
+              "required": true,
+              "hint": "Language to translate into",
+              "default": "English",
+              "ai_fill": true
+            },
+            {
+              "key": "texture_notes",
+              "label": "Texture notes",
+              "type": "textarea",
+              "required": false,
+              "default": "Greasy wall or yellowed paper texture with stains",
+              "ai_fill": false
+            },
+            {
+              "key": "font_style",
+              "label": "Font style",
+              "type": "string",
+              "required": false,
+              "default": "Handwritten/chalk style matching the original",
+              "ai_fill": false
+            },
+            {
+              "key": "currency_keep",
+              "label": "Price preservation",
+              "type": "string",
+              "required": false,
+              "default": "Keep ¥ and numbers unchanged",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "target_language",
+              "label": "Target language",
+              "type": "string",
+              "control_type": "structure"
+            }
+          ],
+          "tags": [
+            "translation",
+            "lifestyle",
+            "texture"
+          ],
+          "example_inputs": [
+            {
+              "name": "Hole-in-the-wall menu",
+              "placeholder_values": {
+                "source_language": "Chinese",
+                "target_language": "English",
+                "texture_notes": "Grease and wear on the wall, slightly faded",
+                "font_style": "Chalky handwritten strokes, slightly rough",
+                "currency_keep": "All ¥ prices stay as-is"
+              }
+            }
+          ]
+        },
+        {
           "id": "NB_BOOK_PAGE_CONTINUATION",
           "name": "Book page continuation (next page layout + illustration continuation)",
           "short_description": "Continue the content and layout of the previous page to generate the text and illustration layout of the next page.",
@@ -6398,6 +7178,637 @@
                 "text_style": "Songti",
                 "content_summary": "The previous page tells about the little fox lying on the grass at night and looking at the moon, and decided to build a small wooden ladder to reach the moonlight.",
                 "page_layout": "Above picture below"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_CINEMATIC_FILM_PORTRAIT",
+          "name": "Cinematic film-style portrait",
+          "short_description": "Keep face consistency and create an emotional film look portrait.",
+          "category_id": "text2image",
+          "prompt_template": "Keep the uploaded face identical and generate a cinematic portrait set in {{setting}}. Style: {{film_stock}} film look, light coming from {{lighting_direction}}, creating a {{mood_keywords}} mood. Pose/expression: {{pose_action}}. Details: natural skin texture, gentle grain, depth of field.",
+          "placeholders": [
+            {
+              "key": "setting",
+              "label": "Setting",
+              "type": "string",
+              "required": true,
+              "hint": "E.g., street café window, neon rain night",
+              "ai_fill": true
+            },
+            {
+              "key": "film_stock",
+              "label": "Film look",
+              "type": "string",
+              "required": true,
+              "hint": "Kodak Portra 400, cinematic soft focus",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting_direction",
+              "label": "Lighting direction",
+              "type": "string",
+              "required": true,
+              "hint": "Side/back/warm window light",
+              "ai_fill": true
+            },
+            {
+              "key": "mood_keywords",
+              "label": "Mood keywords",
+              "type": "textarea",
+              "required": true,
+              "hint": "Nostalgic, dreamy, storytelling",
+              "ai_fill": true
+            },
+            {
+              "key": "pose_action",
+              "label": "Pose & action",
+              "type": "string",
+              "required": true,
+              "hint": "Gaze direction, gesture, prop",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "film_stock",
+              "label": "Film look",
+              "type": "string",
+              "control_type": "style"
+            }
+          ],
+          "tags": [
+            "portrait",
+            "film look",
+            "mood",
+            "style transfer"
+          ],
+          "example_inputs": [
+            {
+              "name": "Golden hour café portrait",
+              "placeholder_values": {
+                "setting": "Street café window at sunset",
+                "film_stock": "Kodak Portra 400",
+                "lighting_direction": "Warm back/side light from the window",
+                "mood_keywords": "Warm, nostalgic, storytelling",
+                "pose_action": "Looking out the window holding a coffee, relaxed smile"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_FURNITURE_ROOM_COMPOSITE",
+          "name": "Furniture composite in room",
+          "short_description": "Place furniture into a room photo with matched perspective and lighting.",
+          "category_id": "text2image",
+          "prompt_template": "Composite {{furniture_item}} into the living room photo, positioned at {{placement}}. Requirements: match perspective and scale to walls/floor; cast realistic shadows based on {{light_source}}; align color temperature/materials with the room; keep everything else unchanged.",
+          "placeholders": [
+            {
+              "key": "furniture_item",
+              "label": "Furniture item",
+              "type": "string",
+              "required": true,
+              "hint": "Beige sofa, round coffee table",
+              "ai_fill": true
+            },
+            {
+              "key": "placement",
+              "label": "Placement",
+              "type": "string",
+              "required": true,
+              "hint": "Against main wall/by window/under TV",
+              "ai_fill": true
+            },
+            {
+              "key": "light_source",
+              "label": "Light source",
+              "type": "string",
+              "required": true,
+              "hint": "Window/ceiling lamp/floor lamp",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "interior",
+            "composite",
+            "lighting match"
+          ],
+          "example_inputs": [
+            {
+              "name": "Place beige sofa",
+              "placeholder_values": {
+                "furniture_item": "Beige three-seat sofa",
+                "placement": "Centered on the main living room wall",
+                "light_source": "Natural light from the left window"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_FLOORPLAN_DESIGN_BOARD",
+          "name": "Floor plan design collage",
+          "short_description": "Turn a floor plan into a collage-style whole-home design board.",
+          "category_id": "text2image",
+          "prompt_template": "Using the uploaded floor plan, create a collage board. Layout: top main image shows a wide view of {{main_area}}; bottom left shows {{bedroom_view}}, bottom middle shows {{study_view}}, bottom right shows {{topdown_view}}. Consistent style: {{style_theme}}, lighting {{lighting}}, high-res output.",
+          "placeholders": [
+            {
+              "key": "main_area",
+              "label": "Main area",
+              "type": "string",
+              "required": true,
+              "hint": "Living + dining perspective",
+              "ai_fill": true
+            },
+            {
+              "key": "bedroom_view",
+              "label": "Bedroom view",
+              "type": "string",
+              "required": true,
+              "hint": "Bed and window angle",
+              "ai_fill": true
+            },
+            {
+              "key": "study_view",
+              "label": "Study view",
+              "type": "string",
+              "required": true,
+              "hint": "Desk and storage layout",
+              "ai_fill": true
+            },
+            {
+              "key": "topdown_view",
+              "label": "Top-down content",
+              "type": "string",
+              "required": true,
+              "hint": "Furniture circulation and scale",
+              "ai_fill": true
+            },
+            {
+              "key": "style_theme",
+              "label": "Style theme",
+              "type": "string",
+              "required": true,
+              "hint": "Modern minimalist, natural wood",
+              "ai_fill": true
+            },
+            {
+              "key": "lighting",
+              "label": "Lighting",
+              "type": "string",
+              "required": true,
+              "hint": "Soft daylight, warm sunset",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "interior",
+            "design board",
+            "collage"
+          ],
+          "example_inputs": [
+            {
+              "name": "Modern minimalist board",
+              "placeholder_values": {
+                "main_area": "Living room connected to dining table",
+                "bedroom_view": "Bed wall with bay window",
+                "study_view": "Desk facing window, side bookshelf",
+                "topdown_view": "3D top-down furniture layout",
+                "style_theme": "Modern minimalist with warm wood floor and off-white walls",
+                "lighting": "Soft natural light"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_VIRAL_THUMBNAIL",
+          "name": "Viral thumbnail poster",
+          "short_description": "Left-person pointing to right subject with bold headline integration.",
+          "category_id": "text2image",
+          "prompt_template": "Use the uploaded person and keep facial consistency. Composition: person on the left {{person_pose}} pointing to the right-side {{hero_subject}}. Add {{graphic_element}} to guide attention. Text: overlay {{headline_text}} in the center with {{headline_style}}; must be high-contrast and readable. Background {{background_setting}} with vivid saturation and contrast.",
+          "placeholders": [
+            {
+              "key": "person_pose",
+              "label": "Person pose",
+              "type": "string",
+              "required": true,
+              "hint": "Pointing right, excited expression",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_subject",
+              "label": "Right-side subject",
+              "type": "string",
+              "required": true,
+              "hint": "Food/prop/product",
+              "ai_fill": true
+            },
+            {
+              "key": "graphic_element",
+              "label": "Graphic element",
+              "type": "string",
+              "required": true,
+              "hint": "Bold arrow/beam",
+              "ai_fill": true
+            },
+            {
+              "key": "headline_text",
+              "label": "Headline",
+              "type": "string",
+              "required": true,
+              "hint": "Punchy slogan",
+              "ai_fill": true
+            },
+            {
+              "key": "headline_style",
+              "label": "Headline style",
+              "type": "string",
+              "required": true,
+              "hint": "Bold outline/shadow",
+              "ai_fill": true
+            },
+            {
+              "key": "background_setting",
+              "label": "Background",
+              "type": "string",
+              "required": true,
+              "hint": "Blurred kitchen/color gradient",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "thumbnail",
+            "content",
+            "type"
+          ],
+          "example_inputs": [
+            {
+              "name": "3-minute recipe cover",
+              "placeholder_values": {
+                "person_pose": "Excited, pointing right with smile",
+                "hero_subject": "Close-up avocado toast",
+                "graphic_element": "Thick yellow arrow",
+                "headline_text": "Done in 3 mins!",
+                "headline_style": "White bold text with black outline and strong shadow",
+                "background_setting": "Bright blurred kitchen"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PROMO_POSTER",
+          "name": "Promotional poster",
+          "short_description": "One-shot promo poster with hero product and clear offer text.",
+          "category_id": "text2image",
+          "prompt_template": "Design a promotional poster for a {{business_type}}. Hero: cinematic close-up of {{hero_product}} centered. Background: {{background_mood}}. Text integration: top main title {{main_title}} in {{title_style}}; side badge with {{offer_text}}; footer with {{footer_text}}. Ensure correct spelling, alignment, and depth integration.",
+          "placeholders": [
+            {
+              "key": "business_type",
+              "label": "Business type",
+              "type": "string",
+              "required": true,
+              "hint": "Coffee shop/restaurant/retail",
+              "ai_fill": true
+            },
+            {
+              "key": "hero_product",
+              "label": "Hero product",
+              "type": "string",
+              "required": true,
+              "hint": "Cappuccino, dessert",
+              "ai_fill": true
+            },
+            {
+              "key": "background_mood",
+              "label": "Background mood",
+              "type": "string",
+              "required": true,
+              "hint": "Autumn wood table, warm leaves",
+              "ai_fill": true
+            },
+            {
+              "key": "main_title",
+              "label": "Main title",
+              "type": "string",
+              "required": true,
+              "hint": "Campaign name",
+              "ai_fill": true
+            },
+            {
+              "key": "title_style",
+              "label": "Title style",
+              "type": "string",
+              "required": true,
+              "hint": "Gold serif/modern sans",
+              "ai_fill": true
+            },
+            {
+              "key": "offer_text",
+              "label": "Offer text",
+              "type": "string",
+              "required": true,
+              "hint": "BOGO, limited-time",
+              "ai_fill": true
+            },
+            {
+              "key": "footer_text",
+              "label": "Footer note",
+              "type": "string",
+              "required": true,
+              "hint": "Limited Time Only",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "promo",
+            "poster",
+            "type"
+          ],
+          "example_inputs": [
+            {
+              "name": "Autumn coffee promo",
+              "placeholder_values": {
+                "business_type": "Coffee shop",
+                "hero_product": "Steaming cappuccino",
+                "background_mood": "Warm wooden table with autumn leaves",
+                "main_title": "Autumn Special",
+                "title_style": "Elegant gold serif",
+                "offer_text": "Buy One Get One Free",
+                "footer_text": "Limited Time Only"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_COMIC_LOCALIZATION",
+          "name": "Comic/meme localization",
+          "short_description": "Erase original text and re-render translated text in matching style.",
+          "category_id": "text2image",
+          "prompt_template": "Translate {{source_language}} text in the image into {{target_language}}. Steps: erase original bubble/caption text and restore the background; render the translation using matching {{text_style}} fonts; fit naturally without covering characters. Background fill must be clean with no smudges.",
+          "placeholders": [
+            {
+              "key": "source_language",
+              "label": "Source language",
+              "type": "string",
+              "required": true,
+              "hint": "Japanese/English, etc.",
+              "ai_fill": true
+            },
+            {
+              "key": "target_language",
+              "label": "Target language",
+              "type": "string",
+              "required": true,
+              "hint": "Chinese/English",
+              "ai_fill": true
+            },
+            {
+              "key": "text_style",
+              "label": "Text style",
+              "type": "string",
+              "required": true,
+              "hint": "Handwritten or bold meme font",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "translation",
+            "comic",
+            "text replacement"
+          ],
+          "example_inputs": [
+            {
+              "name": "Japanese comic to Chinese",
+              "placeholder_values": {
+                "source_language": "Japanese",
+                "target_language": "Chinese",
+                "text_style": "Casual handwritten"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_ALLERGY_CARD",
+          "name": "Allergy warning card",
+          "short_description": "High-contrast digital card for allergy/diet warnings.",
+          "category_id": "text2image",
+          "prompt_template": "Design a full-screen warning graphic for an allergy to {{allergen}}. Composition: realistic icon with bold red prohibition sign in the center. Text: big top alert {{warning_title}}; middle line in {{local_text}}; bottom line {{english_warning}}. Style: flat vector, white background, high contrast, no extra clutter.",
+          "placeholders": [
+            {
+              "key": "allergen",
+              "label": "Allergen",
+              "type": "string",
+              "required": true,
+              "hint": "Peanuts/seafood/milk",
+              "ai_fill": true
+            },
+            {
+              "key": "warning_title",
+              "label": "Top warning",
+              "type": "string",
+              "required": true,
+              "default": "WARNING!",
+              "ai_fill": false
+            },
+            {
+              "key": "local_text",
+              "label": "Local language text",
+              "type": "string",
+              "required": true,
+              "hint": "Local language + allergy message",
+              "ai_fill": true
+            },
+            {
+              "key": "english_warning",
+              "label": "English warning",
+              "type": "string",
+              "required": true,
+              "hint": "NO xxx! Serious Health Risk.",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "travel",
+            "warning",
+            "text layout"
+          ],
+          "example_inputs": [
+            {
+              "name": "Peanut allergy in Thailand",
+              "placeholder_values": {
+                "allergen": "Peanuts",
+                "warning_title": "WARNING!",
+                "local_text": "ฉันแพ้ถั่วลิสง",
+                "english_warning": "NO PEANUTS! Serious Health Risk."
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_TRAVEL_DEST_CARD",
+          "name": "Travel destination card",
+          "short_description": "Full-screen card for taxis/wayfinding with clear landmark and text.",
+          "category_id": "text2image",
+          "prompt_template": "Create a vertical travel card. Top half shows a clear illustration or cutout of {{landmark_visual}}. Text: huge local instruction {{local_instruction}} at the top, large local place name {{local_name}} in the middle, and {{english_name}} at the bottom. Clean flat background, optimized for readability from a distance.",
+          "placeholders": [
+            {
+              "key": "landmark_visual",
+              "label": "Landmark visual",
+              "type": "string",
+              "required": true,
+              "hint": "Temple/attraction/hotel exterior",
+              "ai_fill": true
+            },
+            {
+              "key": "local_instruction",
+              "label": "Local instruction",
+              "type": "string",
+              "required": true,
+              "default": "ここへお願いします",
+              "ai_fill": false
+            },
+            {
+              "key": "local_name",
+              "label": "Local name",
+              "type": "string",
+              "required": true,
+              "ai_fill": true
+            },
+            {
+              "key": "english_name",
+              "label": "English name",
+              "type": "string",
+              "required": true,
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "travel",
+            "card",
+            "readability"
+          ],
+          "example_inputs": [
+            {
+              "name": "Senso-ji card",
+              "placeholder_values": {
+                "landmark_visual": "Illustration of the Kaminarimon lantern at Senso-ji",
+                "local_instruction": "ここへお願いします",
+                "local_name": "浅草寺",
+                "english_name": "Senso-ji Temple"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_POPMART_AVATAR",
+          "name": "3D blind-box avatar",
+          "short_description": "Turn a real person into a cute Pop Mart-style 3D figurine avatar.",
+          "category_id": "text2image",
+          "prompt_template": "Transform the uploaded person into a cute 3D Pop Mart blind box character. Keep {{key_features}} recognizable and add {{accessories}}. Style: C4D render, chibi proportions, soft studio lighting, plastic sheen. Background {{background_color}}, expression {{expression}}.",
+          "placeholders": [
+            {
+              "key": "key_features",
+              "label": "Key features",
+              "type": "textarea",
+              "required": true,
+              "hint": "Hair color, glasses, hairstyle",
+              "ai_fill": true
+            },
+            {
+              "key": "accessories",
+              "label": "Accessories",
+              "type": "string",
+              "required": false,
+              "hint": "Hat/bag/badge",
+              "ai_fill": true
+            },
+            {
+              "key": "background_color",
+              "label": "Background color",
+              "type": "string",
+              "required": true,
+              "default": "Soft blue",
+              "ai_fill": false
+            },
+            {
+              "key": "expression",
+              "label": "Expression",
+              "type": "string",
+              "required": true,
+              "hint": "Friendly/smile/cute",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "avatar",
+            "3D",
+            "cartoon"
+          ],
+          "example_inputs": [
+            {
+              "name": "Glasses girl avatar",
+              "placeholder_values": {
+                "key_features": "Brown short hair, black frame glasses",
+                "accessories": "Small crossbody bag",
+                "background_color": "Pastel pink-blue gradient",
+                "expression": "Smiling, facing forward"
+              }
+            }
+          ]
+        },
+        {
+          "id": "NB_PET_STICKER_DOODLE",
+          "name": "Pet doodle sticker",
+          "short_description": "Convert a pet photo into a funny ugly-cute line-drawn sticker.",
+          "category_id": "text2image",
+          "prompt_template": "Turn the uploaded {{pet_type}} photo into an ugly-cute line doodle sticker. Style: minimal black-and-white doodle on white. Exaggerate the expression to {{exaggerated_expression}} with {{doodle_elements}} around the head. Add handwritten Chinese caption {{caption_text}} at the bottom. Keep the pet's likeness recognizable.",
+          "placeholders": [
+            {
+              "key": "pet_type",
+              "label": "Pet type",
+              "type": "string",
+              "required": true,
+              "hint": "Cat/dog",
+              "ai_fill": true
+            },
+            {
+              "key": "exaggerated_expression",
+              "label": "Exaggerated expression",
+              "type": "string",
+              "required": true,
+              "hint": "Shocked/judgmental/lazy",
+              "ai_fill": true
+            },
+            {
+              "key": "doodle_elements",
+              "label": "Doodle elements",
+              "type": "string",
+              "required": true,
+              "hint": "Sweat drops/question marks/stars",
+              "ai_fill": true
+            },
+            {
+              "key": "caption_text",
+              "label": "Chinese caption",
+              "type": "string",
+              "required": true,
+              "hint": "搞快点/累了/暗中观察",
+              "ai_fill": true
+            }
+          ],
+          "tags": [
+            "pet",
+            "sticker",
+            "doodle"
+          ],
+          "example_inputs": [
+            {
+              "name": "Cat observing",
+              "placeholder_values": {
+                "pet_type": "Cat",
+                "exaggerated_expression": "Half-squint judgment face",
+                "doodle_elements": "Small question marks and sweat drops",
+                "caption_text": "暗中观察"
               }
             }
           ]
