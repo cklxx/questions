@@ -5,6 +5,7 @@ interface Translation {
     siteTitle: string;
     siteDescription: string;
     keywords: string;
+    seoNote: string;
     headerTitle: string;
     stats: {
         categories: string;
@@ -101,6 +102,7 @@ export const translations: Record<Language, Translation> = {
         siteTitle: '问题模版平台 · 精选 AI Prompt 模版库',
         siteDescription: '精选跨场景的 Prompt 模版，内置评价规则与示例，一键渲染与复制，帮助团队快速交付高质量的 AI 产出。',
         keywords: 'Prompt 模版,AI 提示词,AI 生产力,模板库',
+        seoNote: '本网站是专为 nano banana pro 的提示词模版',
         headerTitle: '精选模版',
         stats: {
             categories: '类',
@@ -195,6 +197,7 @@ export const translations: Record<Language, Translation> = {
         siteTitle: 'Prompt Template Hub · Curated AI Prompt Library',
         siteDescription: 'Curated prompt templates with built-in scoring rules and examples—render, copy, and ship high-quality AI outputs fast.',
         keywords: 'Prompt templates, AI prompts, productivity, template library',
+        seoNote: 'Prompt templates tailored for nano banana pro (本网站是专为 nano banana pro 的提示词模版)',
         headerTitle: 'Curated Templates',
         stats: {
             categories: 'categories',

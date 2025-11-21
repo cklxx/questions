@@ -263,8 +263,11 @@ function App() {
     useEffect(() => {
         const canonicalPath = templateDetail ? `/templates/${templateDetail.id}` : '/';
         const canonicalUrl = `${siteUrl}${canonicalPath}`;
-        const desc = templateDetail?.short_description || t.siteDescription;
-        const keywords = templateDetail?.tags?.join(', ') || t.keywords;
+        const baseDesc = templateDetail?.short_description || t.siteDescription;
+        const desc = `${baseDesc} · ${t.seoNote}`;
+        const keywords = templateDetail?.tags?.length
+            ? `${templateDetail.tags.join(', ')}, ${t.seoNote}`
+            : `${t.keywords}, ${t.seoNote}`;
         const metaTitle = templateDetail ? `${templateDetail.name} · ${t.siteName}` : t.siteTitle;
 
         ensureCanonical(canonicalUrl);
@@ -295,7 +298,16 @@ function App() {
               }
             : null;
         setJsonLd('ld-template', templateLd);
-    }, [siteUrl, t.jsonLdLanguage, t.keywords, t.siteDescription, t.siteName, t.siteTitle, templateDetail]);
+    }, [
+        siteUrl,
+        t.jsonLdLanguage,
+        t.keywords,
+        t.seoNote,
+        t.siteDescription,
+        t.siteName,
+        t.siteTitle,
+        templateDetail,
+    ]);
 
     useEffect(() => {
         if (!templates.length) {
