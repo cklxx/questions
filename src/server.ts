@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { readFileSync, statSync } from 'fs';
+import { existsSync, readFileSync, statSync } from 'fs';
 import geoip from 'geoip-lite';
 import { getAIConfig } from './aiFiller';
 
@@ -40,9 +40,13 @@ const loadDataset = (lang: Language, filePath: string) => {
   };
 };
 
+const zhDataset = loadDataset('zh', dataPath);
+if (!existsSync(dataPathEn)) {
+  console.warn('templates_en.json not found, falling back to zh dataset for en requests.');
+}
 const datasets: Record<Language, ReturnType<typeof loadDataset>> = {
-  zh: loadDataset('zh', dataPath),
-  en: loadDataset('en', dataPathEn),
+  zh: zhDataset,
+  en: existsSync(dataPathEn) ? loadDataset('en', dataPathEn) : zhDataset,
 };
 
 const defaultDataset = datasets[defaultLanguage];
