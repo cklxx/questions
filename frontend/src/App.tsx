@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     Layout,
     Search,
@@ -17,6 +17,7 @@ import {
     Filter,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { trackEvent } from '@/lib/analytics';
 import type { Template, Category, AIConfig, Language } from '@/types';
 import { getTranslations } from '@/lib/i18n';
 import { Button } from '@/components/ui/Button';
@@ -112,6 +113,7 @@ function App() {
     const [selectedModels, setSelectedModels] = useState<string[]>([]);
     const [selectedMediums, setSelectedMediums] = useState<string[]>([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [activeRecommendation, setActiveRecommendation] = useState<string | null>(null);
     const siteUrl = useMemo(
         () => (import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '')).replace(/\/+$/, ''),
         [],
@@ -170,11 +172,64 @@ function App() {
             .slice(0, 12)
             .map(([tag]) => tag);
     }, [templates]);
+    const recommendedCombos = useMemo(
+        () => [
+            {
+                id: 'text-llm',
+                label: t.recommendations.textLLM,
+                models: ['gpt-claude'],
+                mediums: ['text'],
+                category: 'text2text',
+                tags: [],
+            },
+            {
+                id: 'image-mj',
+                label: t.recommendations.imageMJ,
+                models: ['midjourney-sd'],
+                mediums: ['image'],
+                category: 'text2image',
+                tags: ['风格迁移', '海报'].filter((tag) => tagOptions.includes(tag)),
+            },
+            {
+                id: 'artifact-code',
+                label: t.recommendations.artifact,
+                models: ['gpt-claude'],
+                mediums: ['artifact'],
+                category: 'text2artifact',
+                tags: [],
+            },
+        ],
+        [tagOptions, t.recommendations.artifact, t.recommendations.imageMJ, t.recommendations.textLLM],
+    );
+    const arrayEqual = useCallback((a: string[], b: string[]) => a.length === b.length && a.every((item) => b.includes(item)), []);
+    const applyRecommendation = (id: string) => {
+        const combo = recommendedCombos.find((item) => item.id === id);
+        if (!combo) return;
+        if (activeRecommendation === id) {
+            setActiveRecommendation(null);
+            return;
+        }
+        setSelectedModels(combo.models);
+        setSelectedMediums(combo.mediums);
+        setSelectedTags(combo.tags || []);
+        setSelectedCategory(combo.category || '');
+        setActiveRecommendation(id);
+        trackEvent('filter:recommendation', {
+            id,
+            models: combo.models,
+            mediums: combo.mediums,
+            tags: combo.tags,
+            category: combo.category,
+        });
+    };
     const clearFilters = () => {
         setSelectedModels([]);
         setSelectedMediums([]);
         setSelectedTags([]);
+        setSelectedCategory('');
+        setActiveRecommendation(null);
         setSearch('');
+        trackEvent('filter:clear');
     };
 
     useEffect(() => {
@@ -210,6 +265,32 @@ function App() {
     useEffect(() => {
         setSelectedTags((prev) => prev.filter((tag) => tagOptions.includes(tag)));
     }, [tagOptions]);
+
+    useEffect(() => {
+        if (!activeRecommendation) return;
+        const combo = recommendedCombos.find((item) => item.id === activeRecommendation);
+        if (!combo) {
+            setActiveRecommendation(null);
+            return;
+        }
+        const comboCategory = combo.category || '';
+        if (
+            comboCategory !== selectedCategory ||
+            !arrayEqual(combo.models, selectedModels) ||
+            !arrayEqual(combo.mediums, selectedMediums) ||
+            !arrayEqual(combo.tags || [], selectedTags)
+        ) {
+            setActiveRecommendation(null);
+        }
+    }, [
+        activeRecommendation,
+        arrayEqual,
+        recommendedCombos,
+        selectedCategory,
+        selectedMediums,
+        selectedModels,
+        selectedTags,
+    ]);
 
     useEffect(() => {
         if (!templates.length) return;
@@ -393,13 +474,15 @@ function App() {
 
     const copyFilledPrompt = async () => {
         if (!templateDetail) return;
+        trackEvent('copy:filled', { templateId: templateDetail.id });
         const text = renderTemplateLocally(templateDetail, values);
         copyText(text, t.copy.filledPrompt);
     };
 
-    const copyTemplateFromList = async (tpl: Template, mode: 'skeleton' | 'prefilled') => {
+    const copyTemplate = async (tpl: Template, mode: 'skeleton' | 'prefilled', origin: 'list' | 'preview') => {
         const text = mode === 'skeleton' ? tpl.prompt_template || '' : renderTemplateLocally(tpl);
         const label = mode === 'skeleton' ? t.copy.templateSkeleton : t.copy.templateDefaults;
+        trackEvent('copy:template', { mode, origin, templateId: tpl.id });
         copyText(text, label);
     };
 
@@ -511,9 +594,11 @@ function App() {
                             ))}
                         </div>
                         {message && (
-                            <div className="animate-in fade-in slide-in-from-top-2 px-4 py-1.5 bg-white shadow-lg border border-slate-200 rounded-full text-sm text-slate-700 flex items-center gap-2">
+                            <div
+                                className="animate-in fade-in slide-in-from-top-2 px-4 py-1.5 bg-white shadow-lg border border-slate-200 rounded-2xl text-sm text-slate-700 flex items-center gap-2 w-full md:w-auto max-w-full md:max-w-[520px] break-words text-left"
+                            >
                                 <Sparkles className="w-3.5 h-3.5 text-primary" />
-                                {message}
+                                <span className="flex-1 leading-snug">{message}</span>
                             </div>
                         )}
                         <Button
@@ -560,6 +645,25 @@ function App() {
                             </div>
 
                             <div className="space-y-3">
+                                <div>
+                                    <div className="text-[11px] uppercase tracking-wide text-slate-500">{t.recommendations.title}</div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {recommendedCombos.map((combo) => (
+                                            <button
+                                                key={combo.id}
+                                                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                                                    activeRecommendation === combo.id
+                                                        ? 'bg-primary text-white border-primary shadow-sm'
+                                                        : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+                                                }`}
+                                                onClick={() => applyRecommendation(combo.id)}
+                                            >
+                                                {combo.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div>
                                     <div className="text-[11px] uppercase tracking-wide text-slate-500">{t.filterSections.category}</div>
                                     <div className="flex flex-wrap gap-2 mt-2">
@@ -695,7 +799,7 @@ function App() {
                                                     className="px-2.5 py-1 rounded-md border border-slate-200 text-[11px] text-slate-600 bg-white hover:border-primary/40 hover:text-primary transition-colors"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        copyTemplateFromList(tpl, 'prefilled');
+                                                        copyTemplate(tpl, 'prefilled', 'list');
                                                     }}
                                                     title={t.card.defaultsTitle}
                                                 >
@@ -935,7 +1039,7 @@ function App() {
                                     )}
                                     <Button
                                         variant="secondary"
-                                        onClick={() => copyTemplateFromList(templateDetail, 'skeleton')}
+                                        onClick={() => copyTemplate(templateDetail, 'skeleton', 'preview')}
                                         size="sm"
                                         className="h-9 rounded-full px-3 gap-1"
                                         aria-label={t.previewActions.templateTitle}
