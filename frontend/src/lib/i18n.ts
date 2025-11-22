@@ -64,6 +64,12 @@ interface Translation {
         medium: string;
         tags: string;
     };
+    recommendations: {
+        title: string;
+        textLLM: string;
+        imageMJ: string;
+        artifact: string;
+    };
     card: {
         variable: string;
         defaults: string;
@@ -161,6 +167,12 @@ export const translations: Record<Language, Translation> = {
             medium: '媒介',
             tags: '任务 / 标签',
         },
+        recommendations: {
+            title: '推荐组合',
+            textLLM: '文本 · GPT / Claude',
+            imageMJ: '图像 · Midjourney / SD',
+            artifact: '产物 · 代码生成',
+        },
         card: {
             variable: '变量',
             defaults: '默认',
@@ -255,6 +267,12 @@ export const translations: Record<Language, Translation> = {
             model: 'Models',
             medium: 'Medium',
             tags: 'Tasks / Tags',
+        },
+        recommendations: {
+            title: 'Quick picks',
+            textLLM: 'Text · GPT / Claude',
+            imageMJ: 'Image · Midjourney / SD',
+            artifact: 'Artifact · Code-first',
         },
         card: {
             variable: 'Skeleton',
