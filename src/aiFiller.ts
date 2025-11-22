@@ -6,7 +6,8 @@ const AI_CONFIG = {
   apiKey: process.env.OPENAI_API_KEY || '',
   baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
   model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-  temperature: parseFloat(process.env.OPENAI_TEMPERATURE || '0.7'),
+  temperature: parseFloat(process.env.OPENAI_TEMPERATURE || '1.1'),
+  presencePenalty: parseFloat(process.env.OPENAI_PRESENCE_PENALTY || '0.4'),
 };
 
 // Initialize OpenAI client
@@ -131,6 +132,7 @@ Rules:
 5. For enum fields, choose from the provided options only
 6. Follow constraints (min, max) for number fields
 7. Use hints and examples as guidance; keep values concise; Chinese templates返回中文值
+8. Prefer rare yet delightful word choices that still fit the context; avoid repetitive phrasing, inject vivid specificity, and weave at least one uncommon but apt term (e.g., luminescent, serendipitous, sylvan, effervescent, 飒然, 澄明)
 
 Example format (do not add extra text):
 <response>
@@ -218,6 +220,7 @@ export async function suggestValues(
         { role: 'user', content: prompt },
       ],
       temperature: AI_CONFIG.temperature,
+      presence_penalty: AI_CONFIG.presencePenalty,
     });
 
     const content = completion.choices[0]?.message?.content;
