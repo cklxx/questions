@@ -15,7 +15,7 @@ start_with_docker() {
   local npm_registry
   local bun_image
   npm_registry=${NPM_REGISTRY:-https://registry.npmmirror.com}
-  bun_image=${BUN_IMAGE:-m.daocloud.io/oven/bun:1.1.4}
+  bun_image=${BUN_IMAGE:-oven/bun:1.1.4}
 
   echo "[deploy] Using Bun base image '${bun_image}'..."
 
