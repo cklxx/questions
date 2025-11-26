@@ -3,7 +3,8 @@ set -euo pipefail
 
 IMAGE_NAME=${IMAGE_NAME:-prompt-template-platform}
 CONTAINER_NAME=${CONTAINER_NAME:-prompt-template-platform}
-PORT=${PORT:-3000}
+APP_PORT=${APP_PORT:-3000}
+HOST_PORT=${HOST_PORT:-80}
 
 command_exists() {
   command -v "$1" >/dev/null 2>&1
@@ -18,9 +19,9 @@ start_with_docker() {
     docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
   fi
 
-  echo "[deploy] Starting container '${CONTAINER_NAME}' on port ${PORT}..."
-  docker run -d --name "$CONTAINER_NAME" -e PORT="$PORT" -p "${PORT}:${PORT}" "$IMAGE_NAME"
-  echo "[deploy] Done. Service should be reachable at http://localhost:${PORT}"
+  echo "[deploy] Starting container '${CONTAINER_NAME}' (app port ${APP_PORT} -> host port ${HOST_PORT})..."
+  docker run -d --name "$CONTAINER_NAME" -e PORT="$APP_PORT" -p "${HOST_PORT}:80" "$IMAGE_NAME"
+  echo "[deploy] Done. Service should be reachable at http://localhost:${HOST_PORT}"
 }
 
 start_with_bun() {
@@ -41,11 +42,11 @@ start_with_bun() {
   cd frontend && bun run build && cd ..
   
   echo "[deploy] Preparing assets..."
-  PORT="$PORT" bun run prepare-assets
+  PORT="$APP_PORT" bun run prepare-assets
 
   echo "[deploy] Starting server directly from TypeScript via Bun (Ctrl+C to stop)..."
   # start script is: NODE_ENV=production bun src/server.ts
-  PORT="$PORT" bun run start
+  PORT="$APP_PORT" bun run start
 }
 
 main() {
