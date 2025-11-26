@@ -120,11 +120,16 @@
 
 ### 6.3 Docker + Bun 部署
 1. 构建镜像：`docker build -t prompt-template-platform .`
-2. 运行容器：`docker run -p 3000:3000 prompt-template-platform`
+   - 构建时会自动探测可达性：若能访问阿里云镜像则替换为国内源，否则保留官方源；也可通过 `--build-arg DEBIAN_MIRROR=<host>` 强制指定。
+2. 运行容器：`docker run -p 80:80 prompt-template-platform`
+   - 容器内的 Bun 服务监听 `3000`，Nginx 反向代理到容器端口 `80`，因此宿主机直接访问 `http://localhost:80` 即可。
 
 ### 6.4 一键部署脚本
 * 运行：`npm run deploy`
 * 行为：自动检测 Docker，若无则回退到 Bun 本地运行（自动处理依赖安装和前端构建）。
+* 配置：
+  * `HOST_PORT`：宿主机暴露的端口，默认 `80`（Docker 模式时映射到容器的 `80`）。
+  * `APP_PORT`：应用内部监听端口，默认 `3000`（Docker + Nginx 反代到 80；本地 Bun 模式直接监听该端口）。
 
 ### 6.5 端到端（E2E）测试
 1. 安装 Playwright：`npx playwright install --with-deps`
