@@ -1,5 +1,5 @@
 # Bun-based container for the prompt template platform
-ARG BUN_IMAGE=m.daocloud.io/oven/bun:1.1.4
+ARG BUN_IMAGE=oven/bun:1.1.4
 FROM ${BUN_IMAGE}
 
 WORKDIR /app
