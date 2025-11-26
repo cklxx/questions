@@ -12,7 +12,17 @@ command_exists() {
 
 start_with_docker() {
   echo "[deploy] Docker detected. Building image '${IMAGE_NAME}'..."
-  docker build -t "$IMAGE_NAME" .
+  local npm_registry
+  local bun_image
+  npm_registry=${NPM_REGISTRY:-https://registry.npmmirror.com}
+  bun_image=${BUN_IMAGE:-m.daocloud.io/oven/bun:1.1.4}
+
+  echo "[deploy] Using Bun base image '${bun_image}'..."
+
+  if ! docker build --build-arg "NPM_REGISTRY=${npm_registry}" --build-arg "BUN_IMAGE=${bun_image}" -t "$IMAGE_NAME" .; then
+    echo "[deploy] Docker build failed (likely due to network access). Falling back to Bun." >&2
+    return 1
+  fi
 
   if docker ps -a --format '{{.Names}}' | grep -Eq "^${CONTAINER_NAME}$"; then
     echo "[deploy] Removing existing container '${CONTAINER_NAME}'..."
@@ -31,7 +41,15 @@ start_with_bun() {
   fi
 
   echo "[deploy] Docker not found; falling back to Bun local run."
-  
+
+  local npm_registry
+  npm_registry=${NPM_REGISTRY:-https://registry.npmmirror.com}
+
+  echo "[deploy] Using registry '${npm_registry}' for Bun installs..."
+  export npm_config_registry="$npm_registry"
+  export NPM_CONFIG_REGISTRY="$npm_registry"
+  export BUN_INSTALL_REGISTRY="$npm_registry"
+
   echo "[deploy] Installing root dependencies..."
   bun install
 
@@ -51,7 +69,9 @@ start_with_bun() {
 
 main() {
   if command_exists docker; then
-    start_with_docker
+    if ! start_with_docker; then
+      start_with_bun
+    fi
   else
     start_with_bun
   fi

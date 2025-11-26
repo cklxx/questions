@@ -1,12 +1,16 @@
 # Bun-based container for the prompt template platform
-FROM oven/bun:1.1.4
+ARG BUN_IMAGE=m.daocloud.io/oven/bun:1.1.4
+FROM ${BUN_IMAGE}
 
 WORKDIR /app
 
 ARG DEBIAN_MIRROR=auto
+ARG NPM_REGISTRY=https://registry.npmmirror.com
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV NPM_CONFIG_REGISTRY=$NPM_REGISTRY
+ENV BUN_INSTALL_REGISTRY=$NPM_REGISTRY
 
 RUN set -eux; \
   MIRROR="$DEBIAN_MIRROR"; \
