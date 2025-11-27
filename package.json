@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "bun --watch src/server.ts",
     "start": "NODE_ENV=production bun src/server.ts",
+    "start:node": "NODE_ENV=production node --loader ts-node/esm src/server.ts",
     "build": "cd frontend && bun run build",
+    "build:node": "npm --prefix frontend run build",
     "deploy": "scripts/deploy.sh",
     "test:e2e": "bunx --bun playwright test --ui",
     "prepare-assets": "node scripts/prepare-assets.js",
