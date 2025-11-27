@@ -20,7 +20,7 @@ start_with_docker() {
   echo "[deploy] Using Bun base image '${bun_image}'..."
 
   if ! docker build --build-arg "NPM_REGISTRY=${npm_registry}" --build-arg "BUN_IMAGE=${bun_image}" -t "$IMAGE_NAME" .; then
-    echo "[deploy] Docker build failed (likely due to network access). Falling back to Bun." >&2
+    echo "[deploy] Docker build failed (likely due to network access). Falling back to local runtime." >&2
     return 1
   fi
 
@@ -34,46 +34,66 @@ start_with_docker() {
   echo "[deploy] Done. Service should be reachable at http://localhost:${HOST_PORT}"
 }
 
-start_with_bun() {
-  if ! command_exists bun; then
-    echo "[deploy] Neither Docker nor Bun is available. Please install one of them to deploy." >&2
-    exit 1
-  fi
-
-  echo "[deploy] Docker not found; falling back to Bun local run."
-
+start_with_local_runtime() {
   local npm_registry
   npm_registry=${NPM_REGISTRY:-https://registry.npmmirror.com}
 
-  echo "[deploy] Using registry '${npm_registry}' for Bun installs..."
+  echo "[deploy] Using registry '${npm_registry}' for installs..."
   export npm_config_registry="$npm_registry"
   export NPM_CONFIG_REGISTRY="$npm_registry"
   export BUN_INSTALL_REGISTRY="$npm_registry"
 
-  echo "[deploy] Installing root dependencies..."
-  bun install
+  if command_exists bun; then
+    echo "[deploy] Docker not found; falling back to Bun local run."
 
-  echo "[deploy] Installing frontend dependencies..."
-  cd frontend && bun install && cd ..
+    echo "[deploy] Installing root dependencies..."
+    bun install
 
-  echo "[deploy] Building frontend..."
-  cd frontend && bun run build && cd ..
-  
-  echo "[deploy] Preparing assets..."
-  PORT="$APP_PORT" bun run prepare-assets
+    echo "[deploy] Installing frontend dependencies..."
+    cd frontend && bun install && cd ..
 
-  echo "[deploy] Starting server directly from TypeScript via Bun (Ctrl+C to stop)..."
-  # start script is: NODE_ENV=production bun src/server.ts
-  PORT="$APP_PORT" bun run start
+    echo "[deploy] Building frontend..."
+    cd frontend && bun run build && cd ..
+
+    echo "[deploy] Preparing assets..."
+    PORT="$APP_PORT" bun run prepare-assets
+
+    echo "[deploy] Starting server directly from TypeScript via Bun (Ctrl+C to stop)..."
+    PORT="$APP_PORT" bun run start
+    return
+  fi
+
+  if command_exists npm && command_exists node; then
+    echo "[deploy] Docker and Bun not available; using npm + Node fallback."
+
+    echo "[deploy] Installing root dependencies with npm..."
+    npm install
+
+    echo "[deploy] Installing frontend dependencies with npm..."
+    npm --prefix frontend install
+
+    echo "[deploy] Building frontend with npm..."
+    npm run build:node
+
+    echo "[deploy] Preparing assets..."
+    PORT="$APP_PORT" npm run prepare-assets
+
+    echo "[deploy] Starting server via ts-node (Ctrl+C to stop)..."
+    PORT="$APP_PORT" npm run start:node
+    return
+  fi
+
+  echo "[deploy] Docker, Bun, and npm are unavailable. Please install one of them to deploy." >&2
+  exit 1
 }
 
 main() {
   if command_exists docker; then
     if ! start_with_docker; then
-      start_with_bun
+      start_with_local_runtime
     fi
   else
-    start_with_bun
+    start_with_local_runtime
   fi
 }
 
