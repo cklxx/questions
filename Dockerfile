@@ -1,5 +1,7 @@
 # Node-based container for the prompt template platform
-FROM node:22-alpine
+# Allow the base image to be overridden (e.g., use Tencent Cloud mirror in China)
+ARG NODE_IMAGE=node:22-alpine
+FROM ${NODE_IMAGE}
 
 WORKDIR /app
 
