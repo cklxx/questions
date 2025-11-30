@@ -429,6 +429,44 @@ function App() {
         });
     }, [templates, search, selectedModels, selectedMediums, selectedTags]);
 
+    const manualFillPrompt = useMemo(() => {
+        if (!templateDetail) return '';
+        const header =
+            language === 'zh'
+                ? `任务：为“${templateDetail.name}”模版补全内容并做适度优化。`
+                : `Task: complete and lightly polish the "${templateDetail.name}" prompt template.`;
+        const goal =
+            language === 'zh'
+                ? '目标：直接返回可用的完整提示词。'
+                : 'Goal: return a ready-to-use prompt.';
+        const desc = templateDetail.short_description
+            ? language === 'zh'
+                ? `模版描述：${templateDetail.short_description}`
+                : `Template description: ${templateDetail.short_description}`
+            : '';
+        const fieldTitle = language === 'zh' ? '需要填的字段：' : 'Fields to fill:';
+        const fieldLines = (templateDetail.placeholders || []).map((p) => {
+            const required = p.required ? (language === 'zh' ? '（必填）' : ' (required)') : '';
+            const hint = p.hint
+                ? `${language === 'zh' ? '提示' : 'Hint'}：${p.hint}`
+                : '';
+            const existing = values[p.key];
+            const hasExisting = existing !== undefined && existing !== null && existing !== '';
+            const existingText = hasExisting
+                ? `${language === 'zh' ? '已知' : 'Given'}：${existing}`
+                : '';
+            const parts = [`${p.label}${required}`];
+            if (hint) parts.push(hint);
+            if (existingText) parts.push(existingText);
+            return `- ${parts.join(' · ')}`;
+        });
+        const closing =
+            language === 'zh'
+                ? '请按以上信息直接输出最终提示词。'
+                : 'Use the details above and respond with the final prompt only.';
+        return [header, goal, desc, fieldTitle, ...fieldLines, closing].filter(Boolean).join('\n');
+    }, [language, templateDetail, values]);
+
     const handleAIFill = async (targetKey?: string) => {
         if (!templateDetail) return;
         setIsAIFilling(true);
@@ -470,6 +508,10 @@ function App() {
             setMessage(t.copy.failed);
         }
         setTimeout(() => setMessage(''), 2500);
+    };
+
+    const copyManualFillPrompt = () => {
+        copyText(manualFillPrompt, t.aiFill.manualCopySuccess);
     };
 
     const copyFilledPrompt = async () => {
@@ -883,6 +925,20 @@ function App() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
+                                    {aiConfig && !aiConfig.configured && (
+                                        <Button
+                                            variant="secondary"
+                                            onClick={copyManualFillPrompt}
+                                            size="sm"
+                                            className="h-9 rounded-full gap-2 border-dashed border-slate-300"
+                                            aria-label={t.aiFill.manualCopyLabel}
+                                            title={t.aiFill.manualCopyLabel}
+                                        >
+                                            <Copy className="w-4 h-4" />
+                                            <span className="hidden sm:inline">{t.aiFill.manualCopyLabel}</span>
+                                            <span className="sm:hidden">我是…</span>
+                                        </Button>
+                                    )}
                                     <Button
                                         onClick={() => handleAIFill()}
                                         disabled={isAIFilling || !aiConfig?.configured}

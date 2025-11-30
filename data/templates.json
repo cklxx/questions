@@ -294,6 +294,137 @@
               "notes": "关注合规与用户体验风险"
             }
           ]
+        },
+        {
+          "id": "T4_pm_feature_design",
+          "name": "新功能需求全链路",
+          "short_description": "以产品经理视角输出完整的新功能设计包。",
+          "category_id": "text2text",
+          "prompt_template": "以 {{product_role}} 的视角，为产品 {{product_name}} 设计一项新功能，核心业务目标是 {{business_goal}}。背景：用户/场景 {{context}}，目标用户 {{target_users}}，核心痛点 {{core_pain_points}}。请完成：1) 目标用户、核心痛点与场景 2) 功能目标、关键价值与成功指标 3) 核心流程：主流程 + 异常流程，并给出信息架构 4) MVP 范围与优先级拆解（Must/Should/Could/Won’t） 5) 需求文档要点（功能描述、关键交互、文案、边界/约束、埋点与数据需求） 6) 上线验收清单与风险/依赖 7) 一句话卖点与 30 字内用户可见文案。输出使用分节小标题与 bullet。",
+          "placeholders": [
+            {
+              "key": "product_name",
+              "label": "产品名称",
+              "type": "string",
+              "required": true,
+              "hint": "要设计新功能的产品",
+              "ai_fill": true
+            },
+            {
+              "key": "business_goal",
+              "label": "业务目标",
+              "type": "string",
+              "required": true,
+              "hint": "本次功能要达成的核心业务指标",
+              "ai_fill": true
+            },
+            {
+              "key": "context",
+              "label": "场景与背景",
+              "type": "textarea",
+              "required": true,
+              "hint": "当前用户场景、资源与约束",
+              "ai_fill": true
+            },
+            {
+              "key": "target_users",
+              "label": "目标用户",
+              "type": "string",
+              "required": true,
+              "hint": "核心人群画像",
+              "ai_fill": true
+            },
+            {
+              "key": "core_pain_points",
+              "label": "核心痛点",
+              "type": "textarea",
+              "required": true,
+              "hint": "用户未被满足的需求/痛点",
+              "ai_fill": true
+            },
+            {
+              "key": "product_role",
+              "label": "视角",
+              "type": "string",
+              "required": false,
+              "hint": "输出所采用的角色视角",
+              "default": "产品经理",
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": false,
+              "hint": "输出的风格",
+              "enum_options": [
+                "简洁干练",
+                "务实落地",
+                "鼓舞团队"
+              ],
+              "default": "简洁干练",
+              "ai_fill": false
+            },
+            {
+              "key": "max_words",
+              "label": "字数上限",
+              "type": "number",
+              "required": false,
+              "hint": "整体输出字数限制",
+              "default": 450,
+              "constraints": {
+                "min": 200,
+                "max": 800
+              },
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "max_words",
+              "label": "长度",
+              "type": "number",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "输出不超过 max_words 字",
+              "Must/Should/Could/Won’t 均有列出",
+              "包含主流程与异常流程的分节"
+            ],
+            "manual_checklist": [
+              "成功指标是否可度量、可观测？",
+              "异常流程是否覆盖高风险场景？",
+              "风险/依赖是否有可落地的缓释措施？"
+            ]
+          },
+          "tags": [
+            "产品经理",
+            "需求设计",
+            "执行落地"
+          ],
+          "example_inputs": [
+            {
+              "name": "会员商城：一键凑单",
+              "placeholder_values": {
+                "product_name": "会员积分商城",
+                "business_goal": "提升月度客单价 8% 并降低库存积压",
+                "context": "积分商品库存分散，用户需要凑单满 99 元免邮；移动端为主，开发人力 1 名前端 + 1 名后端两周迭代。",
+                "target_users": "近 90 天有 2 次以上积分兑换的活跃会员",
+                "core_pain_points": "凑单耗时、免邮门槛不透明、易重复购买",
+                "tone": "务实落地",
+                "max_words": 480
+              },
+              "notes": "强调指标、流程与边界条件"
+            }
+          ]
         }
       ]
     },
