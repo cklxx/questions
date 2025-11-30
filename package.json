@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --watch src/server.ts",
     "start": "NODE_ENV=production bun src/server.ts",
-    "start:node": "NODE_ENV=production node --loader ts-node/esm src/server.ts",
+    "start:node": "NODE_ENV=production tsx src/server.ts",
     "build": "cd frontend && bun run build",
     "build:node": "npm --prefix frontend run build",
     "deploy": "scripts/deploy.sh",
@@ -29,6 +29,7 @@
     "@types/node": "^24.10.1",
     "@vitejs/plugin-react": "^5.1.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.5.4",
     "vite": "^7.2.4"
   }
