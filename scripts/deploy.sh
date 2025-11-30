@@ -15,7 +15,24 @@ start_with_docker() {
   local npm_registry
   local node_image
   npm_registry=${NPM_REGISTRY:-https://registry.npmmirror.com}
-  node_image=${NODE_IMAGE:-docker.m.daocloud.io/library/node:22-alpine}
+
+  choose_node_image() {
+    if [ -n "${NODE_IMAGE:-}" ]; then
+      echo "$NODE_IMAGE"
+      return
+    fi
+
+    # Tencent Cloud Lighthouse provides a built-in Docker Hub mirror
+    # (mirror.ccs.tencentyun.com). Prefer it when metadata is reachable.
+    if curl -fsS --connect-timeout 2 --max-time 3 http://metadata.tencentyun.com/latest/meta-data/instance-id >/dev/null 2>&1; then
+      echo "mirror.ccs.tencentyun.com/library/node:22-alpine"
+      return
+    fi
+
+    echo "docker.m.daocloud.io/library/node:22-alpine"
+  }
+
+  node_image=$(choose_node_image)
 
   echo "[deploy] Using Node base image '${node_image}'..."
 
