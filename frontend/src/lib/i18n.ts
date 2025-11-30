@@ -33,6 +33,8 @@ interface Translation {
         buttonLabel: string;
         badge: string;
         tooltip: string;
+        manualCopyLabel: string;
+        manualCopySuccess: string;
     };
     gemini: {
         missing: string;
@@ -136,6 +138,8 @@ export const translations: Record<Language, Translation> = {
             buttonLabel: 'AI 补全',
             badge: '已补全',
             tooltip: 'AI 自动填充',
+            manualCopyLabel: '复制“我是…帮我填词”',
+            manualCopySuccess: '📋 已复制，粘贴到免费助手即可自动填词',
         },
         gemini: {
             missing: '⚠️ 请先填写模板生成 Prompt',
@@ -237,6 +241,8 @@ export const translations: Record<Language, Translation> = {
             buttonLabel: 'AI Fill',
             badge: 'Filled',
             tooltip: 'AI autofill',
+            manualCopyLabel: 'Copy “I am… fill it for me”',
+            manualCopySuccess: '📋 Copied. Paste into any free assistant to auto-fill.',
         },
         gemini: {
             missing: '⚠️ Please generate a prompt first',
