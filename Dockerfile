@@ -18,9 +18,9 @@ COPY data ./data
 COPY public ./public
 
 # Prepare vendor assets for the public build
-RUN npm run prepare-assets
+RUN bun run prepare-assets
 
 ENV NODE_ENV=production
 EXPOSE 80
 
-CMD ["npm", "run", "start:node"]
+CMD ["bun", "start"]
