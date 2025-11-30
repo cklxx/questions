@@ -296,85 +296,80 @@
           ]
         },
         {
-          "id": "T4_pm_feature_design",
-          "name": "新功能需求全链路",
-          "short_description": "以产品经理视角输出完整的新功能设计包。",
+          "id": "T4_longform_article",
+          "name": "长文深度稿生成器",
+          "short_description": "按受众和角度生成可直接发布的长文。",
           "category_id": "text2text",
-          "prompt_template": "以 {{product_role}} 的视角，为产品 {{product_name}} 设计一项新功能，核心业务目标是 {{business_goal}}。背景：用户/场景 {{context}}，目标用户 {{target_users}}，核心痛点 {{core_pain_points}}。请完成：1) 目标用户、核心痛点与场景 2) 功能目标、关键价值与成功指标 3) 核心流程：主流程 + 异常流程，并给出信息架构 4) MVP 范围与优先级拆解（Must/Should/Could/Won’t） 5) 需求文档要点（功能描述、关键交互、文案、边界/约束、埋点与数据需求） 6) 上线验收清单与风险/依赖 7) 一句话卖点与 30 字内用户可见文案。输出使用分节小标题与 bullet。",
+          "prompt_template": "针对 {{topic}}，面向 {{audience}} 用 {{article_type}} 角度写一篇长文。要求：1) 30 字内的总起标题 2) 3-5 个带小标题的段落，结构为引子-论证-行动建议 3) 嵌入案例或数据：{{proof_points}} 4) 语气 {{tone}}，全文不超过 {{word_limit}} 字，并附 3 条要点摘要。",
           "placeholders": [
             {
-              "key": "product_name",
-              "label": "产品名称",
+              "key": "topic",
+              "label": "主题",
               "type": "string",
               "required": true,
-              "hint": "要设计新功能的产品",
+              "hint": "文章要讨论的核心问题",
               "ai_fill": true
             },
             {
-              "key": "business_goal",
-              "label": "业务目标",
-              "type": "string",
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
               "required": true,
-              "hint": "本次功能要达成的核心业务指标",
+              "hint": "目标读者类型",
+              "enum_options": [
+                "C 端用户",
+                "B 端决策者",
+                "行业大众"
+              ],
+              "default": "行业大众",
               "ai_fill": true
             },
             {
-              "key": "context",
-              "label": "场景与背景",
-              "type": "textarea",
+              "key": "article_type",
+              "label": "写作角度",
+              "type": "enum",
               "required": true,
-              "hint": "当前用户场景、资源与约束",
-              "ai_fill": true
-            },
-            {
-              "key": "target_users",
-              "label": "目标用户",
-              "type": "string",
-              "required": true,
-              "hint": "核心人群画像",
-              "ai_fill": true
-            },
-            {
-              "key": "core_pain_points",
-              "label": "核心痛点",
-              "type": "textarea",
-              "required": true,
-              "hint": "用户未被满足的需求/痛点",
-              "ai_fill": true
-            },
-            {
-              "key": "product_role",
-              "label": "视角",
-              "type": "string",
-              "required": false,
-              "hint": "输出所采用的角色视角",
-              "default": "产品经理",
+              "hint": "内容侧重点",
+              "enum_options": [
+                "趋势观察",
+                "案例拆解",
+                "操作指南"
+              ],
+              "default": "趋势观察",
               "ai_fill": false
+            },
+            {
+              "key": "proof_points",
+              "label": "案例/数据",
+              "type": "textarea",
+              "required": false,
+              "hint": "可引用的案例、数据、观察",
+              "ai_fill": true
             },
             {
               "key": "tone",
               "label": "语气",
               "type": "enum",
-              "required": false,
-              "hint": "输出的风格",
+              "required": true,
+              "hint": "文风与表达方式",
               "enum_options": [
-                "简洁干练",
-                "务实落地",
-                "鼓舞团队"
+                "理性克制",
+                "故事化",
+                "直接干练"
               ],
-              "default": "简洁干练",
+              "default": "理性克制",
               "ai_fill": false
             },
             {
-              "key": "max_words",
-              "label": "字数上限",
+              "key": "word_limit",
+              "label": "长度",
               "type": "number",
               "required": false,
-              "hint": "整体输出字数限制",
-              "default": 450,
+              "hint": "文章总字数上限",
+              "default": 1200,
               "constraints": {
-                "min": 200,
-                "max": 800
+                "min": 600,
+                "max": 2000
               },
               "ai_fill": false
             }
@@ -387,7 +382,128 @@
               "control_type": "style"
             },
             {
-              "key": "max_words",
+              "key": "word_limit",
+              "label": "长度",
+              "type": "number",
+              "control_type": "length"
+            },
+            {
+              "key": "article_type",
+              "label": "角度",
+              "type": "enum",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "包含标题与 3-5 个小标题段落",
+              "全文不超过 word_limit 字"
+            ],
+            "manual_checklist": [
+              "行动建议是否可执行？",
+              "引用的案例或数据是否支撑观点？",
+              "摘要是否能单独传播？"
+            ]
+          },
+          "tags": [
+            "长文",
+            "内容营销",
+            "结构化"
+          ],
+          "example_inputs": [
+            {
+              "name": "SaaS 客户成功实践",
+              "placeholder_values": {
+                "topic": "如何用产品内引导提升企业软件留存",
+                "audience": "B 端决策者",
+                "article_type": "案例拆解",
+                "proof_points": "Slack、Figma 的增长案例；季度留存率数据",
+                "tone": "故事化",
+                "word_limit": 1400
+              }
+            }
+          ]
+        },
+        {
+          "id": "T5_wechat_column",
+          "name": "公众号爆款稿件",
+          "short_description": "生成符合公众号节奏的标题、导语与正文。",
+          "category_id": "text2text",
+          "prompt_template": "为公众号写一篇关于 {{topic}} 的文章，目标结果：{{target_result}}。请完成：1) 3 个 30 字内的吸引标题，包含 {{hook_style}} 的视角；2) 50 字导语；3) 正文 3 段，每段含示例或引用；4) 结尾 CTA 和转发引导。语气 {{tone}}，总字数不超过 {{word_limit}} 字。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "话题",
+              "type": "string",
+              "required": true,
+              "hint": "文章要讨论的主题",
+              "ai_fill": true
+            },
+            {
+              "key": "target_result",
+              "label": "目标结果",
+              "type": "string",
+              "required": true,
+              "hint": "读者阅读后希望达成的效果",
+              "ai_fill": true
+            },
+            {
+              "key": "hook_style",
+              "label": "开头视角",
+              "type": "enum",
+              "required": true,
+              "hint": "标题与导语的切入方式",
+              "enum_options": [
+                "痛点切入",
+                "趋势蹭热",
+                "案例解构"
+              ],
+              "default": "痛点切入",
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "公众号文风",
+              "enum_options": [
+                "亲和分享",
+                "理性拆解",
+                "犀利观点"
+              ],
+              "default": "亲和分享",
+              "ai_fill": false
+            },
+            {
+              "key": "word_limit",
+              "label": "长度",
+              "type": "number",
+              "required": false,
+              "hint": "文章总字数限制",
+              "default": 900,
+              "constraints": {
+                "min": 500,
+                "max": 1300
+              },
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "hook_style",
+              "label": "视角",
+              "type": "enum",
+              "control_type": "audience"
+            },
+            {
+              "key": "word_limit",
               "label": "长度",
               "type": "number",
               "control_type": "length"
@@ -395,34 +511,612 @@
           ],
           "evaluation_rules": {
             "auto_checks": [
-              "输出不超过 max_words 字",
-              "Must/Should/Could/Won’t 均有列出",
-              "包含主流程与异常流程的分节"
+              "输出 3 个标题、导语与 3 段正文",
+              "总字数不超过 word_limit"
             ],
             "manual_checklist": [
-              "成功指标是否可度量、可观测？",
-              "异常流程是否覆盖高风险场景？",
-              "风险/依赖是否有可落地的缓释措施？"
+              "CTA 是否明确并符合公众号语境？",
+              "引用的示例是否可信？",
+              "导语与正文是否紧密衔接？"
             ]
           },
           "tags": [
-            "产品经理",
-            "需求设计",
-            "执行落地"
+            "公众号",
+            "长文",
+            "运营"
           ],
           "example_inputs": [
             {
-              "name": "会员商城：一键凑单",
+              "name": "AI 办公提效",
               "placeholder_values": {
-                "product_name": "会员积分商城",
-                "business_goal": "提升月度客单价 8% 并降低库存积压",
-                "context": "积分商品库存分散，用户需要凑单满 99 元免邮；移动端为主，开发人力 1 名前端 + 1 名后端两周迭代。",
-                "target_users": "近 90 天有 2 次以上积分兑换的活跃会员",
-                "core_pain_points": "凑单耗时、免邮门槛不透明、易重复购买",
-                "tone": "务实落地",
-                "max_words": 480
+                "topic": "用 AI 提升日常办公效率的 5 个动作",
+                "target_result": "读者能立刻尝试 2-3 个动作",
+                "hook_style": "趋势蹭热",
+                "tone": "理性拆解",
+                "word_limit": 950
               },
-              "notes": "强调指标、流程与边界条件"
+              "notes": "突出可操作性与案例截图"
+            }
+          ]
+        },
+        {
+          "id": "T7_microcopy_batch",
+          "name": "产品微文案批量生成",
+          "short_description": "为界面状态批量生成多条 A/B 文案。",
+          "category_id": "text2text",
+          "prompt_template": "针对以下产品场景：{{scenarios}}，为 {{count}} 个位置生成微文案。每条需包含：使用场景、主要文案、次要提示、是否包含 {{tone}} 语气的行动按钮文案，并遵守限制：{{constraints}}。输出表格，长度控制在每条 25 字以内。",
+          "placeholders": [
+            {
+              "key": "scenarios",
+              "label": "产品场景",
+              "type": "textarea",
+              "required": true,
+              "hint": "页面或状态描述，如空状态、加载失败等",
+              "ai_fill": true
+            },
+            {
+              "key": "count",
+              "label": "位置数量",
+              "type": "number",
+              "required": false,
+              "hint": "需要生成的微文案条数",
+              "default": 6,
+              "constraints": {
+                "min": 3,
+                "max": 10
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "文案的品牌调性",
+              "enum_options": [
+                "友好鼓励",
+                "冷静克制",
+                "权威专业"
+              ],
+              "default": "友好鼓励",
+              "ai_fill": false
+            },
+            {
+              "key": "constraints",
+              "label": "限制",
+              "type": "string",
+              "required": false,
+              "hint": "合规或品牌限制",
+              "default": "遵守无歧视/无夸大原则",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "count",
+              "label": "数量",
+              "type": "number",
+              "control_type": "length"
+            },
+            {
+              "key": "constraints",
+              "label": "限制",
+              "type": "string",
+              "control_type": "safety"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "每条文案不超过 25 字",
+              "输出条数不超过 count"
+            ],
+            "manual_checklist": [
+              "行动按钮与场景是否匹配？",
+              "提示语是否清晰且不冗长？",
+              "限制条件是否得到遵守？"
+            ]
+          },
+          "tags": [
+            "UX",
+            "Microcopy",
+            "A/B"
+          ],
+          "example_inputs": [
+            {
+              "name": "支付失败兜底",
+              "placeholder_values": {
+                "scenarios": "支付失败后的重试提示；订单超时；余额不足",
+                "count": 5,
+                "tone": "权威专业",
+                "constraints": "避免出现具体银行名称"
+              },
+              "notes": "强调安全感与可行操作"
+            }
+          ]
+        },
+        {
+          "id": "T8_dialogue_script",
+          "name": "客服/培训对话脚本",
+          "short_description": "生成多轮对话脚本与升级提示。",
+          "category_id": "text2text",
+          "prompt_template": "根据场景 {{scenario}} 和角色设定 {{personas}}，生成 {{rounds}} 轮对话脚本，目标是 {{goal}}。要求：1) 每轮含角色标注与目的 2) 预判客户情绪与应对话术 3) 若超出权限时的升级/回访提示。语气 {{tone}}。",
+          "placeholders": [
+            {
+              "key": "scenario",
+              "label": "服务场景",
+              "type": "string",
+              "required": true,
+              "hint": "对话发生的背景",
+              "ai_fill": true
+            },
+            {
+              "key": "personas",
+              "label": "角色设定",
+              "type": "textarea",
+              "required": true,
+              "hint": "客服/学员/讲师等的特征与边界",
+              "ai_fill": true
+            },
+            {
+              "key": "rounds",
+              "label": "轮次",
+              "type": "number",
+              "required": false,
+              "hint": "需要输出的对话轮次",
+              "default": 4,
+              "constraints": {
+                "min": 3,
+                "max": 8
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "goal",
+              "label": "目标",
+              "type": "textarea",
+              "required": true,
+              "hint": "对话希望达成的结果",
+              "ai_fill": true
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "话术风格",
+              "enum_options": [
+                "真诚安抚",
+                "专业指导",
+                "严谨合规"
+              ],
+              "default": "专业指导",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "rounds",
+              "label": "轮次",
+              "type": "number",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "包含 rounds 轮对话并标注角色",
+              "每轮包含情绪/目的与应对"
+            ],
+            "manual_checklist": [
+              "升级或回访提示是否具体？",
+              "语气是否符合设定？",
+              "目标是否在最后得到呼应？"
+            ]
+          },
+          "tags": [
+            "对话",
+            "客服",
+            "培训"
+          ],
+          "example_inputs": [
+            {
+              "name": "线上课程退款",
+              "placeholder_values": {
+                "scenario": "学员反馈课程不如预期，申请退款",
+                "personas": "客服需遵守退款政策；学员情绪波动，担忧浪费时间",
+                "rounds": 5,
+                "goal": "稳定情绪并引导选择转班/退款流程",
+                "tone": "真诚安抚"
+              }
+            }
+          ]
+        },
+        {
+          "id": "T9_story_hooks",
+          "name": "故事化开头与标题组合",
+          "short_description": "提供可直接使用的标题与开场段。",
+          "category_id": "text2text",
+          "prompt_template": "围绕 {{topic}}，为受众 {{audience}} 输出 5 个标题与 3 段 80 字内的故事化开头，风格 {{style}}。每个标题需与对应开头匹配，并标注情绪/视角。避免标题党，保持信息量。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "文章或视频的主题",
+              "ai_fill": true
+            },
+            {
+              "key": "audience",
+              "label": "受众",
+              "type": "enum",
+              "required": true,
+              "hint": "主要读者/观众",
+              "enum_options": [
+                "职场",
+                "消费",
+                "技术"
+              ],
+              "default": "职场",
+              "ai_fill": true
+            },
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "故事化开头的手法",
+              "enum_options": [
+                "悬念",
+                "冲突",
+                "数据洞察"
+              ],
+              "default": "数据洞察",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "style",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "输出 5 个标题与 3 段开头",
+              "每段开头不超过 80 字"
+            ],
+            "manual_checklist": [
+              "标题与开头的情绪/视角是否匹配？",
+              "是否避免夸张或误导？",
+              "信息量是否足够支撑点击？"
+            ]
+          },
+          "tags": [
+            "标题",
+            "开头",
+            "创意"
+          ],
+          "example_inputs": [
+            {
+              "name": "职场跨界转型",
+              "placeholder_values": {
+                "topic": "从大厂产品转行做独立开发",
+                "audience": "职场",
+                "style": "悬念"
+              },
+              "notes": "突出风险与收获的对比"
+            }
+          ]
+        },
+        {
+          "id": "T11_faq_builder",
+          "name": "FAQ/知识库生成",
+          "short_description": "从素材生成问答对并标注来源。",
+          "category_id": "text2text",
+          "prompt_template": "基于素材 {{source_notes}}，为 {{product_or_topic}} 生成 FAQ。输出至少 {{pair_count}} 组问答：问题、简明回答、可引用的来源片段或链接、适用范围。语气 {{tone}}，避免承诺不可控的结果。",
+          "placeholders": [
+            {
+              "key": "source_notes",
+              "label": "素材",
+              "type": "textarea",
+              "required": true,
+              "hint": "产品说明、会议纪要或政策摘要",
+              "ai_fill": true
+            },
+            {
+              "key": "product_or_topic",
+              "label": "产品/主题",
+              "type": "string",
+              "required": true,
+              "hint": "FAQ 面向的对象",
+              "ai_fill": true
+            },
+            {
+              "key": "pair_count",
+              "label": "问答数量",
+              "type": "number",
+              "required": false,
+              "hint": "需要的问答组数",
+              "default": 8,
+              "constraints": {
+                "min": 4,
+                "max": 12
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "回答的风格",
+              "enum_options": [
+                "官方说明",
+                "友好客服",
+                "技术支持"
+              ],
+              "default": "官方说明",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "pair_count",
+              "label": "数量",
+              "type": "number",
+              "control_type": "structure"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "输出的问答组不少于 pair_count 组",
+              "每条回答包含来源或证据"
+            ],
+            "manual_checklist": [
+              "是否避免过度承诺？",
+              "来源是否可信且可定位？",
+              "问答是否覆盖常见异议？"
+            ]
+          },
+          "tags": [
+            "FAQ",
+            "支持文档",
+            "知识库"
+          ],
+          "example_inputs": [
+            {
+              "name": "企业存储产品",
+              "placeholder_values": {
+                "source_notes": "私有化部署要求；备份与恢复 SLA；安全合规条款",
+                "product_or_topic": "企业级对象存储",
+                "pair_count": 6,
+                "tone": "技术支持"
+              }
+            }
+          ]
+        },
+        {
+          "id": "T12_bilingual_tagline",
+          "name": "双语口号 & USP",
+          "short_description": "生成中英文 tagline 与核心卖点。",
+          "category_id": "text2text",
+          "prompt_template": "为品牌/产品 {{brand}} 生成 {{option_count}} 组口号，每组包含：中文标题（不超过 12 字）、英文 tagline、1 句 USP 支撑点。风格 {{tone}}，必须避免夸张用语并注明适用场景：{{context}}。",
+          "placeholders": [
+            {
+              "key": "brand",
+              "label": "品牌/产品",
+              "type": "string",
+              "required": true,
+              "hint": "需要提炼卖点的对象",
+              "ai_fill": true
+            },
+            {
+              "key": "option_count",
+              "label": "选项数量",
+              "type": "number",
+              "required": false,
+              "hint": "需要的口号组数",
+              "default": 5,
+              "constraints": {
+                "min": 3,
+                "max": 8
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "风格",
+              "type": "enum",
+              "required": true,
+              "hint": "口号的表达风格",
+              "enum_options": [
+                "温暖可信",
+                "锋利直接",
+                "年轻有趣"
+              ],
+              "default": "温暖可信",
+              "ai_fill": false
+            },
+            {
+              "key": "context",
+              "label": "使用场景",
+              "type": "string",
+              "required": false,
+              "hint": "口号应用的渠道/场景",
+              "default": "线上宣传",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "风格",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "option_count",
+              "label": "数量",
+              "type": "number",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "输出口号组数不超过 option_count",
+              "中文标题不超过 12 字且包含 USP"
+            ],
+            "manual_checklist": [
+              "中英文表达是否含义一致？",
+              "卖点是否具体而非空洞？",
+              "场景标注是否明确？"
+            ]
+          },
+          "tags": [
+            "品牌",
+            "双语",
+            "slogan"
+          ],
+          "example_inputs": [
+            {
+              "name": "智能健身镜",
+              "placeholder_values": {
+                "brand": "智能健身镜",
+                "option_count": 4,
+                "tone": "年轻有趣",
+                "context": "短视频广告"
+              },
+              "notes": "突出居家场景与科技感"
+            }
+          ]
+        },
+        {
+          "id": "T13_comment_reply",
+          "name": "多平台评论回复脚本",
+          "short_description": "为短视频/社区评论生成分层回复。",
+          "category_id": "text2text",
+          "prompt_template": "针对内容主题 {{topic}}，需要回应的评论列表：{{comments}}。生成 {{reply_layers}} 层回复：1) 公开短评，2) 延伸讨论提问，3) 私信/引导行动。每条回复须保持 {{tone}} 语气，遵守限制：{{guardrails}}。",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "主题",
+              "type": "string",
+              "required": true,
+              "hint": "原帖或视频的主题",
+              "ai_fill": true
+            },
+            {
+              "key": "comments",
+              "label": "评论内容",
+              "type": "textarea",
+              "required": true,
+              "hint": "需要回复的评论原文，分行填写",
+              "ai_fill": true
+            },
+            {
+              "key": "reply_layers",
+              "label": "层级数",
+              "type": "number",
+              "required": false,
+              "hint": "需要输出的回复层级",
+              "default": 3,
+              "constraints": {
+                "min": 2,
+                "max": 4
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "required": true,
+              "hint": "回复的风格",
+              "enum_options": [
+                "真诚感谢",
+                "幽默机智",
+                "专业克制"
+              ],
+              "default": "真诚感谢",
+              "ai_fill": false
+            },
+            {
+              "key": "guardrails",
+              "label": "限制",
+              "type": "string",
+              "required": false,
+              "hint": "需要避免的表达或承诺",
+              "default": "避免过度承诺或敏感话题",
+              "ai_fill": true
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "语气",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "reply_layers",
+              "label": "层级",
+              "type": "number",
+              "control_type": "structure"
+            },
+            {
+              "key": "guardrails",
+              "label": "限制",
+              "type": "string",
+              "control_type": "safety"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "每条评论提供多层回复并保持语气一致",
+              "遵守 guardrails 中的限制"
+            ],
+            "manual_checklist": [
+              "是否引导继续讨论而非结束？",
+              "是否避免争议或违规话题？",
+              "私信/引导是否自然？"
+            ]
+          },
+          "tags": [
+            "运营",
+            "评论回复",
+            "社交"
+          ],
+          "example_inputs": [
+            {
+              "name": "短视频产品问答",
+              "placeholder_values": {
+                "topic": "新发布的记事应用",
+                "comments": "这和备忘录有啥区别？\n支持安卓吗？\n数据会不会泄露？",
+                "reply_layers": 3,
+                "tone": "幽默机智",
+                "guardrails": "不承诺上线时间，避免谈及隐私内部实现"
+              },
+              "notes": "兼顾公开回复与私信引导"
             }
           ]
         }
