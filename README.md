@@ -120,7 +120,8 @@
 
 ### 6.3 Docker + Bun 部署
 1. 构建镜像：`docker build -t prompt-template-platform .`
-   - 构建时会自动探测可达性：若能访问阿里云镜像则替换为国内源，否则保留官方源；也可通过 `--build-arg DEBIAN_MIRROR=<host>` 强制指定。
+   - 构建时支持覆盖基础镜像源（用于国内网络）。如需在腾讯云轻量服务器使用官方镜像的代理，可执行：
+     `docker build --build-arg NODE_IMAGE=mirror.ccs.tencentyun.com/library/node:22-alpine -t prompt-template-platform .`
 2. 运行容器：`docker run -p 80:80 prompt-template-platform`
    - 容器内的 Bun 服务监听 `3000`，Nginx 反向代理到容器端口 `80`，因此宿主机直接访问 `http://localhost:80` 即可。
 

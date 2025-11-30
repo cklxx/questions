@@ -1,11 +1,18 @@
 # Node-based container for the prompt template platform
-FROM node:22-alpine
+# Allow the base image to be overridden (e.g., use Tencent Cloud mirror in China)
+ARG NODE_IMAGE=node:22-alpine
+FROM ${NODE_IMAGE}
 
 WORKDIR /app
 
 ARG NPM_REGISTRY=https://registry.npmmirror.com
 ENV PORT=80
 ENV NPM_CONFIG_REGISTRY=$NPM_REGISTRY
+
+# Install Bun for asset preparation and runtime
+RUN apk add --no-cache bash curl \
+  && curl -fsSL https://bun.sh/install | bash \
+  && ln -s /root/.bun/bin/bun /usr/local/bin/bun
 
 # Install dependencies (including dev) so tsx is available for the Node entrypoint
 COPY package.json package-lock.json tsconfig.json ./
