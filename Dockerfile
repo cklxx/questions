@@ -9,6 +9,11 @@ ARG NPM_REGISTRY=https://registry.npmmirror.com
 ENV PORT=80
 ENV NPM_CONFIG_REGISTRY=$NPM_REGISTRY
 
+# Install Bun for asset preparation and runtime
+RUN apk add --no-cache bash curl \
+  && curl -fsSL https://bun.sh/install | bash \
+  && ln -s /root/.bun/bin/bun /usr/local/bin/bun
+
 # Install dependencies (including dev) so tsx is available for the Node entrypoint
 COPY package.json package-lock.json tsconfig.json ./
 COPY scripts ./scripts
