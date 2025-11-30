@@ -294,6 +294,240 @@
               "notes": "Pay attention to compliance and user experience risks"
             }
           ]
+        },
+        {
+          "id": "T6_linkedin_leadership",
+          "name": "LinkedIn Thought Leadership",
+          "short_description": "English LinkedIn post with hook, body, CTA.",
+          "category_id": "text2text",
+          "prompt_template": "You are crafting a LinkedIn post about {{topic}} for {{audience}} with angle {{angle}}. Deliver: 1) a hook under 20 words; 2) three short paragraphs (<=70 words each) that expand the angle with credibility proof: {{proof}}; 3) a CTA bullet; 4) {{hashtag_count}} relevant hashtags. Tone: {{tone}}.",
+          "placeholders": [
+            {
+              "key": "topic",
+              "label": "Topic",
+              "type": "string",
+              "required": true,
+              "hint": "Core idea to share",
+              "ai_fill": true
+            },
+            {
+              "key": "audience",
+              "label": "Audience",
+              "type": "enum",
+              "required": true,
+              "hint": "Target readers on LinkedIn",
+              "enum_options": [
+                "Product leaders",
+                "Engineers",
+                "Founders",
+                "Marketers"
+              ],
+              "default": "Product leaders",
+              "ai_fill": true
+            },
+            {
+              "key": "angle",
+              "label": "Angle",
+              "type": "string",
+              "required": true,
+              "hint": "Unique perspective or takeaway",
+              "ai_fill": true
+            },
+            {
+              "key": "proof",
+              "label": "Proof points",
+              "type": "textarea",
+              "required": false,
+              "hint": "Data, experience, or references",
+              "ai_fill": true
+            },
+            {
+              "key": "hashtag_count",
+              "label": "Hashtags",
+              "type": "number",
+              "required": false,
+              "hint": "How many hashtags to include",
+              "default": 4,
+              "constraints": {
+                "min": 2,
+                "max": 6
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "tone",
+              "label": "Tone",
+              "type": "enum",
+              "required": true,
+              "hint": "Voice of the post",
+              "enum_options": [
+                "Practical",
+                "Inspiring",
+                "Analytical"
+              ],
+              "default": "Practical",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "tone",
+              "label": "Tone",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "hashtag_count",
+              "label": "Hashtags",
+              "type": "number",
+              "control_type": "structure"
+            },
+            {
+              "key": "angle",
+              "label": "Angle",
+              "type": "string",
+              "control_type": "audience"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "Include hook, 3 body paragraphs, CTA, and hashtags",
+              "Each body paragraph stays under 70 English words"
+            ],
+            "manual_checklist": [
+              "Is the CTA clear without sounding overly promotional?",
+              "Does the hook align with the chosen angle?",
+              "Are the hashtags relevant and counted correctly?"
+            ]
+          },
+          "tags": [
+            "LinkedIn",
+            "English",
+            "Social content"
+          ],
+          "example_inputs": [
+            {
+              "name": "AI and product roadmap",
+              "placeholder_values": {
+                "topic": "Shipping AI features responsibly",
+                "audience": "Product leaders",
+                "angle": "How to balance velocity with model safety",
+                "proof": "Internal launch cadence and user feedback data",
+                "hashtag_count": 4,
+                "tone": "Analytical"
+              }
+            }
+          ]
+        },
+        {
+          "id": "T10_email_campaign",
+          "name": "B2B Email Campaign (EN)",
+          "short_description": "Generate concise English email copy and a single CTA.",
+          "category_id": "text2text",
+          "prompt_template": "Write a {{sequence_type}} email in English promoting {{offer}} to {{audience}}. Include: subject line variations (3), body under {{word_limit}} words with skim-friendly bullets, a single CTA using {{cta_style}} tone, and a postscript that adds credibility. Avoid spammy phrasing.",
+          "placeholders": [
+            {
+              "key": "sequence_type",
+              "label": "Sequence type",
+              "type": "enum",
+              "required": true,
+              "hint": "Where the email sits in the lifecycle",
+              "enum_options": [
+                "Welcome",
+                "Product launch",
+                "Reactivation",
+                "Event invite"
+              ],
+              "default": "Product launch",
+              "ai_fill": false
+            },
+            {
+              "key": "offer",
+              "label": "Offer",
+              "type": "textarea",
+              "required": true,
+              "hint": "Product/event being promoted and its highlights",
+              "ai_fill": true
+            },
+            {
+              "key": "audience",
+              "label": "Audience",
+              "type": "string",
+              "required": true,
+              "hint": "Recipient persona or role",
+              "ai_fill": true
+            },
+            {
+              "key": "word_limit",
+              "label": "Length",
+              "type": "number",
+              "required": false,
+              "hint": "Max body word count",
+              "default": 180,
+              "constraints": {
+                "min": 120,
+                "max": 240
+              },
+              "ai_fill": false
+            },
+            {
+              "key": "cta_style",
+              "label": "CTA tone",
+              "type": "enum",
+              "required": true,
+              "hint": "Style of the call-to-action",
+              "enum_options": [
+                "Direct",
+                "Consultative",
+                "Friendly"
+              ],
+              "default": "Consultative",
+              "ai_fill": false
+            }
+          ],
+          "controls": [
+            {
+              "key": "cta_style",
+              "label": "CTA",
+              "type": "enum",
+              "control_type": "style"
+            },
+            {
+              "key": "word_limit",
+              "label": "Length",
+              "type": "number",
+              "control_type": "length"
+            }
+          ],
+          "evaluation_rules": {
+            "auto_checks": [
+              "Includes 3 subject lines, body, CTA, and P.S.",
+              "Body stays under word_limit English words"
+            ],
+            "manual_checklist": [
+              "Is there a single clear CTA?",
+              "Does it avoid spam-trigger phrasing?",
+              "Are the highlights and proof points credible?"
+            ]
+          },
+          "tags": [
+            "Email",
+            "English",
+            "B2B"
+          ],
+          "example_inputs": [
+            {
+              "name": "Feature launch reminder",
+              "placeholder_values": {
+                "sequence_type": "Product launch",
+                "offer": "Real-time metric monitoring for data teams with a 14-day trial",
+                "audience": "Data engineering managers",
+                "word_limit": 180,
+                "cta_style": "Direct"
+              },
+              "notes": "Highlight value and credible proof"
+            }
+          ]
         }
       ]
     },
