@@ -232,29 +232,33 @@ app.get('/sitemap.xml', (req, res) => {
   res.type('application/xml').send(doc);
 });
 
-// Development: Vite middleware
-if (isDev) {
-  const { createServer } = await import('vite');
-  const vite = await createServer({
-    root: path.join(appRoot, 'frontend'),
-    server: { middlewareMode: true },
-    appType: 'spa',
-  });
-  app.use(vite.middlewares);
-  console.log('🚀 Vite dev server integrated (HMR enabled)');
-}
-// Production: Serve static files
-else {
-  app.use(express.static(path.join(appRoot, 'public')));
-  app.use((_req, res) => {
-    res.sendFile(path.join(appRoot, 'public/index.html'));
-  });
-}
+const startServer = async () => {
+  if (isDev) {
+    const { createServer } = await import('vite');
+    const vite = await createServer({
+      root: path.join(appRoot, 'frontend'),
+      server: { middlewareMode: true },
+      appType: 'spa',
+    });
+    app.use(vite.middlewares);
+    console.log('🚀 Vite dev server integrated (HMR enabled)');
+  } else {
+    app.use(express.static(path.join(appRoot, 'public')));
+    app.use((_req, res) => {
+      res.sendFile(path.join(appRoot, 'public/index.html'));
+    });
+  }
 
-console.log(
-  `Loaded ${defaultDataset.allTemplates.length} templates across ${defaultDataset.data.categories.length} categories.`,
-);
+  console.log(
+    `Loaded ${defaultDataset.allTemplates.length} templates across ${defaultDataset.data.categories.length} categories.`,
+  );
 
-app.listen(PORT, () => {
-  console.log(`Template server running at http://localhost:${PORT}`);
+  app.listen(PORT, () => {
+    console.log(`Template server running at http://localhost:${PORT}`);
+  });
+};
+
+startServer().catch((error) => {
+  console.error('Failed to start server', error);
+  process.exit(1);
 });
