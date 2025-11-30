@@ -13,13 +13,13 @@ command_exists() {
 start_with_docker() {
   echo "[deploy] Docker detected. Building image '${IMAGE_NAME}'..."
   local npm_registry
-  local bun_image
+  local node_image
   npm_registry=${NPM_REGISTRY:-https://registry.npmmirror.com}
-  bun_image=${BUN_IMAGE:-oven/bun:1.1.4}
+  node_image=${NODE_IMAGE:-docker.m.daocloud.io/library/node:22-alpine}
 
-  echo "[deploy] Using Bun base image '${bun_image}'..."
+  echo "[deploy] Using Node base image '${node_image}'..."
 
-  if ! docker build --build-arg "NPM_REGISTRY=${npm_registry}" --build-arg "BUN_IMAGE=${bun_image}" -t "$IMAGE_NAME" .; then
+  if ! docker build --build-arg "NPM_REGISTRY=${npm_registry}" --build-arg "NODE_IMAGE=${node_image}" -t "$IMAGE_NAME" .; then
     echo "[deploy] Docker build failed (likely due to network access). Falling back to local runtime." >&2
     return 1
   fi
